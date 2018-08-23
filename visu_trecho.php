@@ -1,6 +1,10 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select t.Numero_Identificacao,t.Tipo,c.Nome as Crianca,t.N_Alvara as Alvara from crianca c, alvara a, trecho t where c.CPF_Responsavel=t.CPF_Responsavel and c.Nome=t.Nome_Crianca and a.Numero_Identificacao=t.N_Alvara";
+    $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo from criancatrecho ct
+    inner join crianca c on c.id = ct.id_crianca
+    inner join condutor o on o.cpf = ct.cpf_condutor
+    inner join veiculo v on v.placa = ct.placa_veiculo
+    inner join trecho t on t.id = ct.id_trecho";
     
     $result = $conexao->query($sql);
 ?>
@@ -16,43 +20,45 @@ include './inc/conexao.php';
               
               <div class="row">
                 <div class="caixa-f">
-                <div class="col-md-3">
-                  <p class="formu-letra">Número Identificação</p>
+                  <div class="col-md-3">
+                    <p class="formu-letra">Nome da Criança</p>
+                  </div>
+                  <div class="col-md-3">
+                    <p class="formu-letra">Veiculo</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p class="formu-letra">Contudor</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p class="formu-letra">Tipo</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p class="formu-letra">Opções</p>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                  <p class="formu-letra">Nome da Criança</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Alvará</p>
-                </div>
-                <div class="col-md-1">
-                  <p class="formu-letra">Tipo</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Opções</p>
-                </div>
-              </div>
               </div>
               <div id="resultado" class="row">
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
                   <div class="caixa-fl">
                     <div class="col-md-3">
-                      <p class="letra-fi "><?php print $row["Numero_Identificacao"];?></p>
-                    </div>
-                    <div class="col-md-4">
                       <p class="letra-fi "><?php print $row["Crianca"];?></p>
                     </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["Alvara"];?></p>
+                    <div class="col-md-3">
+                      <p class="letra-fi "><?php print $row["Veiculo"];?></p>
                     </div>
-                    <div class="col-md-1">
-                      <p class="letra-fi "><?php if($row["Tipo"]=='I') print "Ida"; else print "Volta";?></p>
+                    <div class="col-md-2">
+                      <p class="letra-fi "><?php print $row["Condutor"];?></p>
+                    </div>
+                    <div class="col-md-2">
+                      <p class="letra-fi "><?php if($row["Tipo"]=='im') print "Ida-Manhã"; if($row["Tipo"]=='vm') print "Volta-Manhã"; if($row["Tipo"]=='it') print "Ida-Tarde"; if($row["Tipo"]=='vt') print "Volta-Tarde"; ?>
+                      </p>
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                        <a href="cad_trecho.php?acao=ALTERAR&id=<?php print $row["Numero_Identificacao"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-trecho"></button></a>
-                        <a href="cad_trecho.php?acao=DELETAR&id=<?php print $row["Numero_Identificacao"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-trecho"></button></a>
-                        <a href="cad_trecho.php?acao=DETALHES&id=<?php print $row["Numero_Identificacao"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-trecho"></button></a>
+                      <!-- não posso alterar nem deletar se tiver em um contrato -->
+                        <a href="cad_trecho.php?acao=ALTERAR&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-trecho"></button></a>
+                        <a href="cad_trecho.php?acao=DELETAR&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-trecho"></button></a>
+                        <a href="cad_trecho.php?acao=DETALHES&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-trecho"></button></a>
                       </p>
                     </div>
                   </div>

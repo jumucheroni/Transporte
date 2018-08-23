@@ -49,7 +49,7 @@ if (!$veiculo && !$condutor) {
 
 if ($acao == "DELETAR"){
       
-  $deletesql = "delete from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."'";
+  $deletesql = "delete from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
   if ($deleteresult){
       $mensagem = "Condução deletada com sucesso!";
   }else{
@@ -58,7 +58,7 @@ if ($acao == "DELETAR"){
 }
 
   if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."'";
+    $sql = "select * from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
     $result = $conexao->query($sql);
     $row = @mysqli_fetch_array($result);
 
@@ -120,6 +120,7 @@ if ($mensagem){
                   <p class="formu-letra">Periodo</p>
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="periodo" maxlength="14">
               			<option id="m" value='m'>Manhã</option>
+                    <option id="a" value='a'>Almoço</option>
               			<option id="t" value='t'>Tarde</option>
                   </select>
                 </div>

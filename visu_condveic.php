@@ -42,13 +42,14 @@ include './inc/conexao.php';
                     <div class="col-md-2">
                       <p class="letra-fi "><?php 
                         if ($row["periodo"] == 'm') print "Manhã";
+                        if ($row["periodo"] == 'a') print "Almoço";
                         if ($row["periodo"] == 't') print "Tarde";?></p>
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                         <a href="cad_condveic.php?acao=ALTERAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-condutor"></button></a>
-                         <a href="cad_condveic.php?acao=DELETAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-condutor"></button></a>
-                        <a href="cad_condveic.php?acao=DETALHES&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-condutor"></button></a>
+                         <a href="cad_condveic.php?acao=ALTERAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-condutor"></button></a>
+                         <a href="cad_condveic.php?acao=DELETAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-condutor"></button></a>
+                        <a href="cad_condveic.php?acao=DETALHES&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-condutor"></button></a>
                       </p>
                     </div>
                   </div>
