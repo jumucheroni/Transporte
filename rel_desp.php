@@ -1,9 +1,9 @@
 <?php include './inc/header.php'; ?>
-<form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
+   <form id="rel_desp" method="post" action="mostra_rel_desp.php"> 
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <p class="titulo-formu">Relatório de Crianças</p>
+              <p class="titulo-formu">Relatório de Pagamentos</p>
         
               <div class="row">
                 <div class="col-md-12">
@@ -14,36 +14,31 @@
                 <div class="col-md-6">
                   <div style="padding: 20px;" class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
-                      <input checked type="radio" name="relatorio" value="R">Responsável<br>
+                      <input checked type="radio" name="relatorio" value="D">Data<br>
                     </label>
                     <label class="btn btn-default">
-                      <input class="input" type="radio" name="relatorio" value="E"> Escola<br>
-                    </label>
-                    <label class="btn btn-default">
-                      <input class="input" type="radio" name="relatorio" value="P"> Período<br>
+                      <input class="input" type="radio" name="relatorio" value="T"> Tipo<br>
                     </label>
                     <label class="btn btn-default">
                       <input class="input" type="radio" name="relatorio" value="V"> Veículo<br>
                     </label>
                   </div>
-                </div>
+                </div> 
                 <div class="col-md-6">
-                  <p class="letra-fi">CPF do Responsável</p>
+                  <p class="letra-fi">Data</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
                   <select multiple hidden class="input-formu" id="select" name="valor" >
-                    <option id="m" value='m'>Manhã</option>
-                    <option id="a" value='a'>Almoço</option>
-                    <option id="t" value='t'>Tarde</option>
+                      <option value="c" id="c">Combustível</option>
+                      <option value="i" id="i">IPVA</option>
+                      <option value="o" id="o">Oficina</option>
                   </select>
-                </div>
-              </div>        
+                </div>  
+              </div>   
               <div class="row">
                 <div class="col-md-12">
                     <button class="btn-salvar" id="gerar" type="Submit">Gerar</button>               
                 </div>
-              </div>
-
-              
+              </div>             
             </div>         
           </div>
         </form>
@@ -53,25 +48,23 @@
 <script type="text/javascript">
     $(document).ready(function(){
       $('input[type=radio][name=relatorio]').change(function() {
-          if (this.value == 'R') {
-              $(".letra-fi").html("CPF do Responsavel");
+          if (this.value == 'D') {
+              $(".letra-fi").html("Data");
               $("#select").hide();
               $("#text").show();
+              $("#text").addClass("nasc");
           }
-          if (this.value == 'E') {
-              $(".letra-fi").html("Nome da Escola");
-              $("#select").hide();
-              $("#text").show();
-          }
-          if (this.value == 'P') {
-              $(".letra-fi").html("Periodo");
+          if (this.value == 'T') {
+              $(".letra-fi").html("Tipo");
               $("#select").show();
               $("#text").hide();
+              $("#text").removeClass("nasc");
           }
           if (this.value == 'V') {
-              $(".letra-fi").html("Veiculo");
+              $(".letra-fi").html("Veículo");
               $("#select").hide();
               $("#text").show();
+              $("#text").removeClass("nasc");
           }
       });
     });

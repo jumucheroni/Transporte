@@ -44,7 +44,7 @@
                                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Financeiro <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="./visu_contrato.php">Contratos</a></li>
-                                    <li><a href="./cad_recebimentos.php">Recebimentos</a></li>
+                                    <li><a href="./visu_recebimentos.php">Recebimentos</a></li>
                                     <li><a href="./visu_despesas.php">Despesas</a></li>
                                     <li><a href="./visu_recibos.php">Recibos</a></li>
                                 </ul>
@@ -52,9 +52,9 @@
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Relatórios <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="./rel_crianca.php">Crianças</a></li> <!-- escola, responsavel, veiculo e periodo -->
-                                    <li><a href="./rel_pagamentos.php">Pagamentos</a></li>
-                                    <li><a href="./rel_despesas.php">Despesas</a></li>
+                                    <li><a href="./rel_crianca.php">Crianças</a></li>
+                                    <li><a href="./rel_pag.php">Pagamentos</a></li>
+                                    <li><a href="./rel_desp.php">Despesas</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown">

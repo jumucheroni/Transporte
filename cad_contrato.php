@@ -13,7 +13,11 @@ if (!$acao){
   $acao = @$_POST["acao"];
 }
 
-  $id                         = @$_POST["id"];
+  $id = @$_POST["id"];
+  if (!$id) {
+   $id = @$_GET["id"]; 
+  }
+
   $id_crianca                 = @$_POST["id_crianca"];
   $data_inicio_contrato       = DtToDb(@$_POST["data_inicio_contrato"]);
   $data_fim_contrato          = DtToDb(@$_POST["data_fim_contrato"]);
@@ -31,14 +35,22 @@ if ($acao=="SALVARCADASTRO"){
 
     $insertsql = "insert into contrato (id_crianca,data_inicio_contrato,data_fim_contrato,dia_vencimento_mensalidade, mensalidade) values (".$id_crianca.",'".$data_inicio_contrato."','".$data_fim_contrato."',".$dia_vencimento_mensalidade.",".$mensalidade.")";
 
-    $insertresult = $conexao->query($insertsql);
-        //ir nos trechos selecionados e salvar o id do contrato criado 
+    $insertresult = $conexao->query($insertsql); 
 
-      $data = $dtini;
-      for ($i = 1 ; $i <= $meses; $i++) {
-        $data = date('Y-m-d', strtotime("+1 month", strtotime($data_inicio_contrato)));
-        // pega essa data converte para texto no data_inicio_contrato e salva no pagamentos 
-      }
+    $id_contrato = $conexao->insert_id;
+    $data = $dtini;
+    for ($i = 1 ; $i <= $meses; $i++) {
+      $insertpagamentosql = "insert into pagamentos (data_prevista_pgto,status,id_contrato) values ('".$data_inicio_contrato."','N',".$id_contrato.")";
+      $insertpagamentosresult = $conexao->query($insertpagamentosql);
+      $data = date('Y-m-d', strtotime("+1 month", strtotime($data_inicio_contrato)));
+      $data_inicio_contrato = $data;
+    }
+
+    foreach ($id_trecho as $value) {
+      $updatetrechosql = "update criancatrecho set id_contrato = ".$id_contrato." where id_crianca = ".$id_crianca." and id_trecho = ".$value;
+      $updatetrechoresult = $conexao->query($updatetrechosql);
+    }
+
     if ($insertresult){
         $mensagem = "Contrato cadastrado com sucesso!";
     }else{
@@ -46,9 +58,10 @@ if ($acao=="SALVARCADASTRO"){
     }
 
 }else if ($acao =="SALVARUPDATE"){
-      // pode alterar a mensalidade, mas os pagamentos que já passaram nao altera
-      $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade." where id = ".$id;
+
+      $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade.", mensalidade = ".$mensalidade." where id = ".$id;
       $updateresult = $conexao->query($updatesql);
+
       if ($updateresult){
           $mensagem = "Contrato atualizada com sucesso!";
       }else{
@@ -127,6 +140,7 @@ if ($mensagem){
 
        <form id="contrato" method="post" action="cad_contrato.php"> 
         <input type="hidden" name="acao" id="acao" value="<?php print $acao; ?>" />
+        <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
@@ -157,6 +171,10 @@ if ($mensagem){
                 </div>
               </div>  
               <div class="row">
+                <div class="col-md-3">
+                  <p class="formu-letra">Mensalidade</p>
+                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="mensalidade" maxlength="20" value="<?php print $mensalidade; ?>"/>
+                </div>
                 <div class="col-md-6">
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Transportes</p>

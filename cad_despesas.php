@@ -109,11 +109,11 @@ if ($mensagem){
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Data da Despesa</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="data_gasto" maxlength="60" value="<?php print $data_gasto; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_gasto" maxlength="60" value="<?php print $data_gasto; ?>"/>
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Valor da Despesa</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="valor_gasto" maxlength="20" value="<?php print $valor_gasto; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_gasto" maxlength="20" value="<?php print $valor_gasto; ?>"/>
                 </div>
               </div>   
               <div class="row">

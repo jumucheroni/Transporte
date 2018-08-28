@@ -5,19 +5,29 @@ $tipo = @$_POST["relatorio"];
 $valor = @$_POST["valor"];
 
 if ($tipo=='R'){
-  $sql = "select Nome as Crianca from crianca where CPF_Responsavel = '".$valor."'";
+  $sql = "select id,nome as Crianca from crianca where cpf_responsavel = '".$valor."'";
   $rel_tipo = "Responsável ".$valor;
 }
 if ($tipo=='E'){
-  $sql = "select c.Nome as Crianca from crianca as c,responsavel as r,escola as e where c.Numero_Identificacao_Escola=e.Numero_Identificacao and e.Nome like '%".$valor."%'";
+  $sql = "select c.id,c.nome as Crianca from crianca as c
+  inner join escola e on c.id_escola=e.id and e.nome like '%".$valor."%'";
   $rel_tipo = "Escola ".$valor;
 }
 if ($tipo=='P'){
-  $sql = "select Nome as Crianca from crianca where Periodo = '".$valor."'";
-  $rel_tipo = "Periodo ".$valor;
+  $sql = "select c.id,c.nome as Crianca from crianca as c
+  inner join criancatrecho ct on c.id = ct.id_crianca 
+  where ct.periodo_conducao = '".$valor."'";
+  if ($valor == 'm')
+    $rel_tipo = "Periodo da Manhã";
+  if ($valor == 'a')
+    $rel_tipo = "Periodo do Almoço";
+  if ($valor == 'm')
+    $rel_tipo = "Periodo da Tarde";
 }
 if ($tipo=='V'){
-  $sql = "select c.Nome as Crianca, t.Tipo from crianca as c ,trecho as t,alvara as a where c.CPF_Responsavel=t.CPF_Responsavel and c.Nome=t.Nome_Crianca and t.n_alvara=a.Numero_Identificacao and a.Placa='".$valor."'";
+  $sql = "select c.id,c.nome as Crianca from crianca c
+  inner join criancatrecho ct on c.id = ct.id_crianca
+  where ct.placa_veiculo like '%".$valor."%'";
   $rel_tipo = "Veículo ".$valor;
 }
 
@@ -38,22 +48,17 @@ $result = $conexao->query($sql);
                     <td width="80%">
                       <p class="formu-letra">Nome</p>
                     </td>
-                  <?php if ($tipo=="V"){ ?>
                     <td width="20%">
-                      <p class="formu-letra">Tipo</p>
                     </td>
-                  <?php } ?>
                 </tr>
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
                   <tr>
                     <td width="80%">
                       <p class="letra-fi "><?php print $row["Crianca"];?></p>
                     </td>
-                     <?php if ($tipo=="V"){ ?>
-                      <td width="20%">
-                        <p class="letra-fi"><?php if($row["Tipo"]=='I') print "Ida"; else print "Volta";?></p>
+                      <td class="nao-imprime" width="20%">
+                        <a href="ver_mais_crianca.php?id=<?php print $row['id'];?>">Ver mais</a>
                       </td>
-                  <?php } ?>
                   </tr>
                 <?php } ?>
               </table>              

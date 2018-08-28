@@ -52,7 +52,7 @@ if (!$acao){
 
 if ($acao=="SALVARCADASTRO"){
 
-    $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino) values (".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."')";
+    $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."')";
 
     $insertresult = $conexao->query($insertsql);
 
@@ -60,9 +60,9 @@ if ($acao=="SALVARCADASTRO"){
       $id_trecho = $conexao->insert_id;
 
       $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."')";
-    }
 
-    $insertcritrechoresult = $conexao->query($insertcritrechosql);
+      $insertcritrechoresult = $conexao->query($insertcritrechosql);
+    }
 
     if ($insertresult && $insertcritrechoresult){
         $mensagem = "Transporte cadastrado com sucesso!";
