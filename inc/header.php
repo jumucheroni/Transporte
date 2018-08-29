@@ -10,6 +10,9 @@
         <link href="css/jquery-ui-1.10.3.css" rel="stylesheet">
         <link href="css/jquery.gritter.css" rel="stylesheet">
         <link rel="shortcut icon" href="images/icon.png">
+        <style type="text/css">
+            #map { height: 100%; }
+        </style>
         
         <title>Transporte Escolar</title>
     
@@ -60,7 +63,7 @@
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Itinerários <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="./itinerarios.php">Mapa</a></li>
+                                    <li><a href="./mapan.php">Mapa</a></li>
                                 </ul>
                             </li>
                         </ul>
