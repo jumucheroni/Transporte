@@ -21,19 +21,14 @@ if (!$acao){
   $bairro        = @$_POST["bairro"];
   $cep           =  str_replace("-", "", @$_POST["cep"]);
   $complemento   = @$_POST["complemento"];
-  $periodo       = @$_POST["periodo"];
+  $estado        = @$_POST["estado"];
+  $cidade        = @$_POST["cidade"];
 
 if ($acao=="SALVARCADASTRO"){
 
-    $insertsql = "insert into escola (nome,tipo,logradouro, numero, bairro, cep, complemento) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."')";
+    $insertsql = "insert into escola (nome,tipo,logradouro, numero, bairro, cep, complemento,cidade,estado) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."','".$cidade."','".$estado."')";
     $insertresult = $conexao->query($insertsql);
-    $n_ident = @mysqli_insert_id();
-    if ($periodo != ""){
-      for ($i = 0; $i<sizeof($periodo); $i++){
-        $insertperido = "insert into periodo (periodo,id_escola) values ('".$periodo[$i]."',".$n_ident.")";
-        $insertperiodoresult = $conexao->query($insertperido);
-      }
-    }
+
     if ($insertresult){
         $mensagem = "Escola cadastrada com sucesso!";
     }else{
@@ -42,17 +37,9 @@ if ($acao=="SALVARCADASTRO"){
 
 }else if ($acao =="SALVARUPDATE"){
       
-      $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' where id='".$n_ident."'";
+      $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' , estado = '".$estado."' , cidade = '".$cidade."' where id='".$n_ident."'";
       $updateresult = $conexao->query($updatesql);
 
-      $deleteperiodo = "delete from periodo where id_escola = '".$n_ident."'";
-      $periododelete = $conexao->query($deleteperiodo);
-      if ($periodo != ""){
-        for ($i = 0; $i<sizeof($periodo); $i++){
-          $insertperido = "insert into periodo (periodo,id_escola) values ('".$periodo[$i]."',".$n_ident.")";
-          $insertperiodoresult = $conexao->query($insertperido);
-        }
-      }
       if ($updateresult){
           $mensagem = "Escola atualizada com sucesso!";
       }else{
@@ -68,8 +55,6 @@ if ($acao == "DELETAR"){
       
   $deletesql = "delete from escola where id = '".$n_ident."'";
   $deleteresult = $conexao->query($deletesql);
-  $deleteperiodo = "delete from periodo where id_escola = '".$n_ident."'";
-  $periododelete = $conexao->query($deleteperiodo);
   if ($deleteresult){
       $mensagem = "Escola deletada com sucesso!";
   }else{
@@ -90,6 +75,8 @@ if ($acao == "DELETAR"){
     $bairro        = $row["bairro"];
     $cep           = $row["cep"];
     $complemento   = $row["complemento"];
+    $cidade        = $row["cidade"];    
+    $estado        = $row["estado"];
   }
 
   if ($acao == "ALTERAR"){
@@ -128,41 +115,44 @@ if ($mensagem){
                 <div class="col-md-6">
                   <p class="formu-letra">Tipo</p>
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" >
-                    <option value="Estadual"<?php if ($tipo == 'E') { echo 'selected="true"'; } ?> id="e">Estadual</option>
-                    <option value="Municipal"<?php if ($tipo == 'M') { echo 'selected="true"'; } ?> id="m">Municipal</option>
-                    <option value="Particular"<?php if ($tipo == 'P') { echo 'selected="true"'; } ?> id="p">Particular</option>
+                    <option value="E"<?php if ($tipo == 'E') { echo 'selected="true"'; } ?> id="e">Estadual</option>
+                    <option value="M"<?php if ($tipo == 'M') { echo 'selected="true"'; } ?> id="m">Municipal</option>
+                    <option value="P"<?php if ($tipo == 'P') { echo 'selected="true"'; } ?> id="p">Particular</option>
                   </select>
-                </div>
-                <div class="col-md-6">
-                  <p class="formu-letra">Periodo</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="periodo" multiple>
-                    <option value="m"<?php if ($periodo == 'm') { echo 'selected="true"'; } ?> id="m">Manhã</option>
-                    <option value="t"<?php if ($periodo == 't') { echo 'selected="true"'; } ?> id="t">Tarde</option>
-                  </select>
-                </div>         
+                </div>        
               </div>
               <div class="row">
                 <div class="col-md-4">
                   <p class="formu-letra">CEP</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" maxlength="9" value="<?php print $cep;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="9" value="<?php print $cep;?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Logradouro</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro" maxlength="100" value="<?php print $logradouro;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro" id="logradouro" maxlength="100" value="<?php print $logradouro;?>"/>
                 </div>
                 <div class="col-md-2">
                   <p class="formu-letra">Numero</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero" maxlength="8" value="<?php print $numero;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero" id="numero" maxlength="8" value="<?php print $numero;?>"/>
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-3">
                   <p class="formu-letra">Complemento</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento" maxlength="60" value="<?php print $complemento;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento" id="complemento" maxlength="60" value="<?php print $complemento;?>"/>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <p class="formu-letra">Bairro</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro" maxlength="30" value="<?php print $bairro;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro" id="bairro" maxlength="30" value="<?php print $bairro;?>"/>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Estado</p>
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Cidade</p>
+                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
+                   </select>
                 </div>
               </div>
               

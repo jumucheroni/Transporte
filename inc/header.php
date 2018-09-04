@@ -63,7 +63,7 @@
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Itinerários <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="./mapan.php">Mapa</a></li>
+                                    <li><a href="./mapa.php">Mapa</a></li>
                                 </ul>
                             </li>
                         </ul>

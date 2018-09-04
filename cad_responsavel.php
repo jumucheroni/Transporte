@@ -26,12 +26,14 @@ if (!$acao){
   $bairro        = @$_POST["bairro"];
   $cep           = str_replace("-", "", @$_POST["cep"]);
   $complemento   = @$_POST["complemento"];
+  $cidade        = @$_POST["cidade"];
+  $estado        = @$_POST["estado"];
 
   $cpf = str_replace(".", "", $cpf);
 
   if ($acao=="SALVARCADASTRO"){
 
-    $insertsql = "insert into responsavel (cpf,nome,parentesco,rg,logradouro, cep, numero, bairro, complemento) values ('".$cpf."','".$nome."','".$parentesco."','".$rg."','".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."')";
+    $insertsql = "insert into responsavel (cpf,nome,parentesco,rg,logradouro, cep, numero, bairro, complemento,cidade,estado) values ('".$cpf."','".$nome."','".$parentesco."','".$rg."','".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
     $insertresult = $conexao->query($insertsql);
 
     for ($i=0;$i<sizeof($telefone); $i++) {
@@ -46,7 +48,7 @@ if (!$acao){
 
 }else if ($acao =="SALVARUPDATE"){
       
-      $updatesql = "update responsavel set nome = '".$nome."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."', rg = '".$rg."', parentesco = '".$parentesco."' where cpf='".$cpf."'";
+      $updatesql = "update responsavel set nome = '".$nome."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."', rg = '".$rg."', parentesco = '".$parentesco."', cidade = '".$cidade."', estado = '".$estado."' where cpf='".$cpf."'";
       $updateresult = $conexao->query($updatesql);
 
       $deletetelefone = "delete from telefone where cpf_responsavel = '".$cpf."'";
@@ -97,6 +99,8 @@ if ($acao == "DELETAR"){
     $bairro        = $row["bairro"];
     $cep           = $row["cep"];
     $complemento   = $row["complemento"];
+    $cidade        = $row["cidade"];
+    $estado        = $row["estado"];
 
     $sqltelefone = "select * from telefone where cpf_responsavel='" . $cpf ."'";
     $resultelefone = $conexao->query($sqltelefone);
@@ -133,7 +137,7 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">CPF</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cpf" type="text" name="cpf" maxlength="14" value="<?php print $cpf;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cpf" type="text" name="cpf" id="cpf" maxlength="14" value="<?php print $cpf;?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Nome</p>
@@ -155,27 +159,37 @@ if ($mensagem){
                 </div>
               </div>
               <div class="row">
+                <div class="col-md-4">
+                  <p class="formu-letra">CEP</p>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="9" value="<?php print $cep;?>"/>
+                </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Logradouro</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro" maxlength="100" value="<?php print $logradouro;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro" id="logradouro" maxlength="100" value="<?php print $logradouro;?>"/>
                 </div>
                 <div class="col-md-2">
                   <p class="formu-letra">Numero</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero" maxlength="8" value="<?php print $numero;?>"/>
-                </div>
-                <div class="col-md-4">
-                  <p class="formu-letra">Bairro</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro" maxlength="30" value="<?php print $bairro;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero" id="numero" maxlength="8" value="<?php print $numero;?>"/>
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-4">
-                  <p class="formu-letra">CEP</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" maxlength="9" value="<?php print $cep;?>"/>
+                <div class="col-md-3">
+                  <p class="formu-letra">Bairro</p>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro" id="bairro" maxlength="30" value="<?php print $bairro;?>"/>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-3">
                   <p class="formu-letra">Complemento</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento" maxlength="60" value="<?php print $complemento;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento" id="complemento" maxlength="60" value="<?php print $complemento;?>"/>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Estado</p>
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Cidade</p>
+                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
+                   </select>
                 </div>
               </div>
               
@@ -198,20 +212,3 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
-
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#responsavel-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#responsavel" ).submit();
-      });
-    });
-
-  </script>

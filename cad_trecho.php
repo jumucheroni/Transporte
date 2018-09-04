@@ -43,16 +43,20 @@ if (!$acao){
   $numero_origem      = @$_POST["numero_origem"];
   $complemento_origem = @$_POST["complemento_origem"];
   $bairro_origem      = @$_POST["bairro_origem"];
+  $cidade_origem      = @$_POST["cidade_origem"];
+  $estado_origem      = @$_POST["estado_origem"];
 
   $cep_destino         = str_replace("-", "", @$_POST["cep_destino"]);
   $logradouro_destino  = @$_POST["logradouro_destino"];
   $numero_destino      = @$_POST["numero_destino"];
   $complemento_destino = @$_POST["complemento_destino"];
   $bairro_destino      = @$_POST["bairro_destino"];
+  $cidade_destino      = @$_POST["cidade_destino"];
+  $estado_destino      = @$_POST["estado_destino"];
 
 if ($acao=="SALVARCADASTRO"){
 
-    $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."')";
+    $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,cidade_origem,estado_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino,cidade_destino,estado_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$cidade_origem."','".$estado_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."','".$cidade_destino."','".$estado_destino."')";
 
     $insertresult = $conexao->query($insertsql);
 
@@ -72,7 +76,7 @@ if ($acao=="SALVARCADASTRO"){
 
 }else if ($acao =="SALVARUPDATE"){
       
-      $updatesql = "update trecho set tipo = '".$tipo."', cep_origem = '".$cep_origem."', logradouro_origem = '".$logradouro_origem."', numero_origem = '".$numero_origem."', bairro_origem = '".$bairro_origem."', complemento_origem = '".$complemento_origem."', cep_destino = '".$cep_destino."', logradouro_destino = '".$logradouro_destino."', numero_destino = '".$numero_destino."', bairro_destino = '".$bairro_destino."', complemento_destino = '".$complemento_destino."' where id=".$id_trecho;
+      $updatesql = "update trecho set tipo = '".$tipo."', cep_origem = '".$cep_origem."', logradouro_origem = '".$logradouro_origem."', numero_origem = '".$numero_origem."', bairro_origem = '".$bairro_origem."', complemento_origem = '".$complemento_origem."', cidade_origem = '".$cidade_origem."', estado_origem = '".$estado_origem."', cep_destino = '".$cep_destino."', logradouro_destino = '".$logradouro_destino."', numero_destino = '".$numero_destino."', bairro_destino = '".$bairro_destino."', complemento_destino = '".$complemento_destino."', cidade_destino = '".$cidade_destino."', estado_destino = '".$estado_destino."' where id=".$id_trecho;
 
       $updatecritrechosql = "update criancatrecho set cpf_condutor = '".$cpf_condutor."', placa_veiculo = '".$placa_veiculo."', periodo_conducao = '".$periodo."' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
 
@@ -129,12 +133,16 @@ if ($acao == "DELETAR"){
     $numero_origem      = $row["numero_origem"];
     $complemento_origem = $row["complemento_origem"];
     $bairro_origem      = $row["bairro_origem"];
+    $cidade_origem      = $row["cidade_origem"];
+    $estado_origem      = $row["estado_origem"];
 
     $cep_destino         = $row["cep_destino"];
     $logradouro_destino  = $row["logradouro_destino"];
     $numero_destino      = $row["numero_destino"];
     $complemento_destino = $row["complemento_destino"];
     $bairro_destino      = $row["bairro_destino"];
+    $cidade_destino      = $row["cidade_destino"];
+    $estado_destino      = $row["estado_destino"];
   }
 
   if ($acao == "ALTERAR"){
@@ -203,50 +211,70 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_origem" maxlength="8" value="<?php print $cep_origem; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_origem" id="cep_origem" maxlength="8" value="<?php print $cep_origem; ?>"/>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-7">
                   <p class="formu-letra">Logradouro - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_origem" maxlength="100" value="<?php print $logradouro_origem; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_origem" id="logradouro_origem" maxlength="100" value="<?php print $logradouro_origem; ?>"/>
+                </div>
+                <div class="col-md-2">
+                  <p class="formu-letra">Número - Origem</p>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_origem" id="numero_origem" maxlength="8" value="<?php print $numero_origem; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
-                  <p class="formu-letra">Número - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_origem" maxlength="8" value="<?php print $numero_origem; ?>"/>
-                </div>
-                <div class="col-md-4">
                   <p class="formu-letra">Bairro - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro_origem" maxlength="30" value="<?php print $bairro_origem; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro_origem" id="bairro_origem" maxlength="30" value="<?php print $bairro_origem; ?>"/>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <p class="formu-letra">Complemento - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento_origem" maxlength="60" value="<?php print $complemento_origem; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento_origem" id="complemento_origem" maxlength="60" value="<?php print $complemento_origem; ?>"/>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Estado - Destino</p>
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado_origem" id="estado_origem">
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Cidade - Destino</p>
+                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade_origem" id="cidade_origem">
+                   </select>
                 </div>
               </div>  
 
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_destino" maxlength="8" value="<?php print $cep_destino; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_destino" id="cep_destino" maxlength="8" value="<?php print $cep_destino; ?>"/>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-7">
                   <p class="formu-letra">Logradouro - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_destino" maxlength="100" value="<?php print $logradouro_destino; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_destino" id="logradouro_destino" maxlength="100" value="<?php print $logradouro_destino; ?>"/>
+                </div>
+                <div class="col-md-2">
+                  <p class="formu-letra">Número - Destino</p>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_destino" id="numero_destino" maxlength="8" value="<?php print $numero_destino; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
-                  <p class="formu-letra">Número - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_destino" maxlength="8" value="<?php print $numero_destino; ?>"/>
-                </div>
-                <div class="col-md-4">
                   <p class="formu-letra">Bairro - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro_destino" maxlength="30" value="<?php print $bairro_destino; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="bairro_destino" id="bairro_destino" maxlength="30" value="<?php print $bairro_destino; ?>"/>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <p class="formu-letra">Complemento - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento_destino" maxlength="60" value="<?php print $complemento_destino; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento_destino" id="complemento_destino" maxlength="60" value="<?php print $complemento_destino; ?>"/>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Estado - Destino</p>
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado_destino" id="estado_destino">
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <p class="formu-letra">Cidade - Destino</p>
+                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade_destino" id="cidade_destino">
+                   </select>
                 </div>
               </div>             
           
