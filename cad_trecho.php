@@ -55,23 +55,29 @@ if (!$acao){
   $estado_destino      = @$_POST["estado_destino"];
 
 if ($acao=="SALVARCADASTRO"){
+    $selectsql = "select periodo_conducao,id_crianca from criancatrecho where periodo_conducao= '".$periodo."' and id_crianca = ".$id_crianca;
+    $selectsqlresult = $conexao->query($selectsql);
 
-    $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,cidade_origem,estado_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino,cidade_destino,estado_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$cidade_origem."','".$estado_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."','".$cidade_destino."','".$estado_destino."')";
+    if ($selectsqlresult->num_rows > 0) {
+        $mensagem = "Transporte já cadastrado para essa criança!";
+    } else {
+      $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,cidade_origem,estado_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino,cidade_destino,estado_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$cidade_origem."','".$estado_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."','".$cidade_destino."','".$estado_destino."')";
 
-    $insertresult = $conexao->query($insertsql);
+      $insertresult = $conexao->query($insertsql);
 
-    if ($insertresult) {
-      $id_trecho = $conexao->insert_id;
+      if ($insertresult) {
+        $id_trecho = $conexao->insert_id;
 
-      $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."')";
+        $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."')";
 
-      $insertcritrechoresult = $conexao->query($insertcritrechosql);
-    }
+        $insertcritrechoresult = $conexao->query($insertcritrechosql);
+      }
 
-    if ($insertresult && $insertcritrechoresult){
-        $mensagem = "Transporte cadastrado com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar o Transporte!";
+      if ($insertresult && $insertcritrechoresult){
+          $mensagem = "Transporte cadastrado com sucesso!";
+      }else{
+          $mensagem = "Erro ao cadastrar o Transporte!";
+      }
     }
 
 }else if ($acao =="SALVARUPDATE"){
@@ -96,17 +102,24 @@ if (!$id_trecho && $id_crianca){
 }
 
 if ($acao == "DELETAR"){
-      
-  $deletesql = "delete from criancatrecho where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
-  $deletesql2 = "delete from trecho where id = ".$id_trecho;
+  $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca." where c.deletado = 'N'";
+  $selectresult = $conexao->query($select);
 
-  $deleteresult = $conexao->query($deletesql);
-  $deleteresult2 = $conexao->query($deletesql2);
-  
-  if ($deleteresult and $deleteresult2){
-      $mensagem = "Transporte deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Transporte!";
+  if ($selectresult->num_rows == 0) {      
+      
+    $deletesql = "update criancatrecho set deletado = 'S' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+    $deletesql2 = "update trecho set deletado = 'S' where id = ".$id_trecho;
+
+    $deleteresult = $conexao->query($deletesql);
+    $deleteresult2 = $conexao->query($deletesql2);
+    
+    if ($deleteresult and $deleteresult2){
+        $mensagem = "Transporte deletado com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar o Transporte!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar o Transporte! Transporte já associado a um contrato ";
   }
 }
 
@@ -153,10 +166,10 @@ if ($acao == "DELETAR"){
     $enablecampos = "readonly";
   }
 
-  $criancasql = "select id,nome from crianca";
+  $criancasql = "select id,nome from crianca where deletado = 'N' ";
   $criancaresult = $conexao->query($criancasql);
 
-  $conducaosql = "select * from condutorveiculo";
+  $conducaosql = "select * from condutorveiculo where deletado = 'N' ";
   $conducaoresult = $conexao->query($conducaosql);
 
 if ($mensagem){
@@ -181,7 +194,8 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-4">
                   <p class="formu-letra">Tipo</p>
-                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" >
+                    <select disabled="true" class="input-formu" type="text" name="tipo" id="tipo" >
+                        <option></option>
                         <option value="im" <?php if ($tipo == 'im') { echo 'selected="true"'; } ?> id="im">Ida-Manhã</option>
                         <option value="it" <?php if ($tipo == 'it') { echo 'selected="true"'; } ?> id="it">Ida-Tarde</option>
                         <option value="vm" <?php if ($tipo == 'vm') { echo 'selected="true"'; } ?> id="vm">Volta-Manhã</option>
@@ -190,7 +204,7 @@ if ($mensagem){
                   </div> 
                 <div class="col-md-8">
                   <p class="formu-letra">Criança</p>
-                   <select <?php print $enablechave; ?> class="input-formu" type="text" name="crianca" maxlength="60">
+                   <select <?php print $enablechave; ?> class="input-formu" type="text" name="crianca" id="crianca" >
                     <?php while ($criancarow = @mysqli_fetch_array($criancaresult)){ ?>
                       <option <?php if ($id_crianca == $criancarow['id'])  { echo 'selected="true"'; } ?> value="<?php print $criancarow['id'];?>"><?php print $criancarow['nome'];?></option>
                     <?php } ?>
@@ -201,7 +215,8 @@ if ($mensagem){
                 
                 <div class="col-md-6">
                   <p class="formu-letra">Condução</p>
-                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="conducao" maxlength="60">
+                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="conducao" id="conducao" >
+                   <option></option>
                     <?php while ($conducaorow = @mysqli_fetch_array($conducaoresult)){ ?>
                       <option <?php if ($cpf_condutor == $conducaorow['cpf_condutor'] && $placa_veiculo == $conducaorow['placa_veiculo'] && $periodo == $conducaorow['periodo'])  { echo 'selected="true"'; } ?> value="<?php print $conducaorow['cpf_condutor'].';'.$conducaorow['placa_veiculo'].';'.$conducaorow['periodo'];?>"><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo']."-".$conducaorow['periodo'];?></option>
                     <?php } ?>
@@ -211,14 +226,14 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep - Origem</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_origem" id="cep_origem" maxlength="8" value="<?php print $cep_origem; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_origem" id="cep_origem" maxlength="9" value="<?php print $cep_origem; ?>"/>
                 </div>
                 <div class="col-md-7">
                   <p class="formu-letra">Logradouro - Origem</p>
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_origem" id="logradouro_origem" maxlength="100" value="<?php print $logradouro_origem; ?>"/>
                 </div>
                 <div class="col-md-2">
-                  <p class="formu-letra">Número - Origem</p>
+                  <p class="formu-letra">Nº - Origem</p>
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_origem" id="numero_origem" maxlength="8" value="<?php print $numero_origem; ?>"/>
                 </div>
               </div>
@@ -232,12 +247,14 @@ if ($mensagem){
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento_origem" id="complemento_origem" maxlength="60" value="<?php print $complemento_origem; ?>"/>
                 </div>
                 <div class="col-md-3">
-                  <p class="formu-letra">Estado - Destino</p>
+                  <p class="formu-letra">Estado - Origem</p>
+                  <input type="hidden" name="uf_origem" id="uf_origem" value="<?php print $estado_origem?>" /> 
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado_origem" id="estado_origem">
                   </select>
                 </div>
                 <div class="col-md-3">
-                  <p class="formu-letra">Cidade - Destino</p>
+                  <p class="formu-letra">Cidade - Origem</p>
+                  <input type="hidden" name="cid_origem" id="cid_origem" value="<?php print $cidade_origem?>" /> 
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade_origem" id="cidade_origem">
                    </select>
                 </div>
@@ -246,14 +263,14 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep - Destino</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_destino" id="cep_destino" maxlength="8" value="<?php print $cep_destino; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep_destino" id="cep_destino" maxlength="9" value="<?php print $cep_destino; ?>"/>
                 </div>
                 <div class="col-md-7">
                   <p class="formu-letra">Logradouro - Destino</p>
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="logradouro_destino" id="logradouro_destino" maxlength="100" value="<?php print $logradouro_destino; ?>"/>
                 </div>
                 <div class="col-md-2">
-                  <p class="formu-letra">Número - Destino</p>
+                  <p class="formu-letra">Nº - Destino</p>
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="numero_destino" id="numero_destino" maxlength="8" value="<?php print $numero_destino; ?>"/>
                 </div>
               </div>
@@ -268,11 +285,13 @@ if ($mensagem){
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Estado - Destino</p>
+                  <input type="hidden" name="uf_destino" id="uf_destino" value="<?php print $estado_destino?>" /> 
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado_destino" id="estado_destino">
                   </select>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Cidade - Destino</p>
+                  <input type="hidden" name="cid_destino" id="cid_destino" value="<?php print $cidade_destino?>" /> 
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade_destino" id="cidade_destino">
                    </select>
                 </div>
@@ -281,7 +300,7 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-12">
                  <?php if ($acao!="DETALHES"){ ?>
-                  <button class="btn-salvar" id="trecho-salvar" type="submit">Salvar</button>  
+                  <button class="btn-salvar" id="trecho-salvar" type="button">Salvar</button>  
                  <?php } ?>
                   <a href="visu_trecho.php" class="btn-cancelar" type="button">Cancelar</a>                  
                 </div>
@@ -297,19 +316,22 @@ if ($mensagem){
 
 <?php include './inc/footer.php'; ?>
 
+<script>
+  $(document).ready(function(){
+    var cep_origem = $("#cep_origem").val();
+    if (cep_origem) {
+      cep_origem = cep_origem.replace("-","");
+      var estado_origem = $("#uf_origem").val();
+      var cidade_origem = $("#cid_origem").val();
+      carregaestadocidade_origem(cep_origem,estado_origem,cidade_origem);
+    }
 
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#trecho-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#trecho" ).submit();
-      });
-    });
-
-  </script>
+    var cep_destino = $("#cep_destino").val();
+    if (cep_destino) {
+      cep_destino = cep_destino.replace("-","");
+      var estado_destino = $("#uf_destino").val();
+      var cidade_destino = $("#cid_destino").val();
+      carregaestadocidade_destino(cep_destino,estado_destino,cidade_destino);
+    }
+  });
+</script>

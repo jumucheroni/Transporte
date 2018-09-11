@@ -18,14 +18,10 @@ if (!$acao){
   $nome                = @$_POST["nome"];
   $data_nascimento     = DtToDb(@$_POST["data_nascimento"]);
   $n_ident_escola      = @$_POST["n_ident_escola"];
-  $serie               = @$_POST["serie"];
-  $dia_inicio          = @$_POST["dia_inicio"];
   $nome_professor      = @$_POST["nome_professor"];
 
-
-
 if ($acao=="SALVARCADASTRO"){
-    $insertsql = "insert into crianca (cpf_responsavel,nome,data_nascimento,id_escola,dia_iniciotransporte,serie,nome_professor) values ('".$cpf_responsavel."','".$nome."','".$data_nascimento."',".$n_ident_escola.",".$dia_inicio.",'".$serie."','".$nome_professor."')";
+    $insertsql = "insert into crianca (cpf_responsavel,nome,data_nascimento,id_escola,nome_professor) values ('".$cpf_responsavel."','".$nome."','".$data_nascimento."',".$n_ident_escola.",'".$nome_professor."')";
     $insertresult = $conexao->query($insertsql);
     if ($insertresult){
         $mensagem = "Criança cadastrada com sucesso!";
@@ -35,7 +31,7 @@ if ($acao=="SALVARCADASTRO"){
 
 }else if ($acao =="SALVARUPDATE"){
       
-      $updatesql = "update crianca set cpf_responsavel='".$cpf_responsavel."', nome='".$nome."', data_nascimento = '".$data_nascimento."', id_escola= ".$n_ident_escola.", serie = '".$serie."', nome_professor = ".$nome_professor.", dia_iniciotransporte = ".$dia_inicio." where id = ".$id;
+      $updatesql = "update crianca set cpf_responsavel='".$cpf_responsavel."', nome='".$nome."', data_nascimento = '".$data_nascimento."', id_escola= ".$n_ident_escola.", nome_professor = ".$nome_professor." where id = ".$id;
       $updateresult = $conexao->query($updatesql);
       if ($updateresult){
           $mensagem = "Criança atualizada com sucesso!";
@@ -49,13 +45,21 @@ if (!$id){
 }
 
 if ($acao == "DELETAR"){
+
+  $select = "select id_crianca from criancatrecho where deletado = 'N' and id_crianca=".$id."";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) { 
       
-  $deletesql = "delete from crianca where id = ".$id;
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Criança deletada com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar a Criança!";
+    $deletesql = "update crianca set deletado = 'S' where id = ".$id;
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Criança deletada com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar a Criança!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar a Criança! Criança já associada a transportes";
   }
 }
 
@@ -69,8 +73,6 @@ if ($acao == "DELETAR"){
   $nome                = $row["nome"];
   $data_nascimento     = DBtoDT($row["data_nascimento"]);
   $n_ident_escola      = $row["id_escola"];
-  $serie               = $row["serie"];
-  $dia_inicio          = $row["dia_iniciotransporte"];
   $nome_professor      = $row["nome_professor"];
   }
 
@@ -82,10 +84,10 @@ if ($acao == "DELETAR"){
     $enablecampos = "readonly";
   }
 
-  $respsql = "select cpf,nome from responsavel";
+  $respsql = "select cpf,nome from responsavel where deletado = 'N' ";
   $respresult = $conexao->query($respsql);
 
-  $escolasql = "select id,nome from escola";
+  $escolasql = "select id,nome from escola where deletado = 'N' ";
   $escolaresult = $conexao->query($escolasql);
 
 if ($mensagem){
@@ -108,7 +110,7 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">CPF Responsável</p>
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="cpf_responsavel" maxlength="14">
+                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="cpf_responsavel" id="cpf_responsavel">
                   <?php while ($resprow = @mysqli_fetch_array($respresult)){ ?>
                       <option <?php if ($cpf_responsavel == $resprow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $resprow['cpf'];?>"><?php print $resprow['cpf']." - ".$resprow['nome'];?></option>
                   <?php } ?>
@@ -116,17 +118,17 @@ if ($mensagem){
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Nome</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="nome" maxlength="100" value="<?php print $nome; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">Nome do Professor</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="nome_professor" maxlength="100" value="<?php print $nome_professor; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="nome_professor" id="nome_professor" maxlength="100" value="<?php print $nome_professor; ?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Escola</p>
-                   <select <?php print $enablecampos ?> class="input-formu" type="text" name="n_ident_escola" maxlength="11">
+                   <select <?php print $enablecampos ?> class="input-formu" type="text" name="n_ident_escola" id="n_ident_escola">
                    <?php while ($escolarow = @mysqli_fetch_array($escolaresult)){ ?>
                       <option <?php if ($n_ident_escola == $escolarow['id']) { echo 'selected="true"'; } ?> value="<?php print $escolarow['id'];?>"><?php print $escolarow['id']." - ".$escolarow['nome'];?></option>
                   <?php } ?>
@@ -134,19 +136,10 @@ if ($mensagem){
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-6">
-                  <p class="formu-letra">Série</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="serie" maxlength="20" value="<?php print $serie; ?>"/>
-                </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Data Nascimento</p>
-                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_nascimento" maxlength="10" value="<?php print $data_nascimento; ?>"/>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Dia Inicio</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="dia_inicio" maxlength="2" value="<?php print $dia_inicio; ?>"/>
-                </div>
-                
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_nascimento" id="data_nascimento" value="<?php print $data_nascimento; ?>"/>
+                </div>               
               </div>              
           
               <div class="row">
@@ -168,20 +161,3 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
-
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#crianca-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#crianca" ).submit();
-      });
-    });
-
-  </script>

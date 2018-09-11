@@ -4,7 +4,8 @@ include './inc/conexao.php';
     inner join crianca c on c.id = ct.id_crianca
     inner join condutor o on o.cpf = ct.cpf_condutor
     inner join veiculo v on v.placa = ct.placa_veiculo
-    inner join trecho t on t.id = ct.id_trecho";
+    inner join trecho t on t.id = ct.id_trecho
+    where cv.deletado ='N' ";
     
     $result = $conexao->query($sql);
 ?>

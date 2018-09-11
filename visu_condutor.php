@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select nome,cpf,pgu from condutor";
+    $sql = "select nome,cpf,pgu from condutor where deletado = 'N' ";
     $result = $conexao->query($sql);
 ?>
           

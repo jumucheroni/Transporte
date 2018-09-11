@@ -23,6 +23,7 @@ if (!$acao){
 if ($acao=="SALVARCADASTRO"){
 
     $insertsql = "insert into gastos (placa_veiculo,data_gasto,valor_gasto,tipo,observacao) values ('".$placa_veiculo."','".$data_gasto."',".$valor_gasto.",'".$tipo."','".$observacao."')";
+    print_r($insertsql);
     $insertresult = $conexao->query($insertsql);
     if ($insertresult){
         $mensagem = "Despesa cadastrada com sucesso!";
@@ -47,7 +48,7 @@ if (!$id){
 
 if ($acao == "DELETAR"){
       
-  $deletesql = "delete from gastos where id = ".$id;
+  $deletesql = "update gastos set deletado = 'S' where id = ".$id;
   $deleteresult = $conexao->query($deletesql);
   if ($deleteresult){
       $mensagem = "Despesa deletada com sucesso!";
@@ -101,7 +102,7 @@ if ($mensagem){
                 <div class="col-md-4">
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Veiculo</p>
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="placa_veiculo" maxlength="14">
+                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="placa_veiculo" id="placa_veiculo">
                   <?php while ($veicrow = @mysqli_fetch_array($veicresult)){ ?>
                       <option <?php if ($placa_veiculo == $veicrow['placa']) { echo 'selected="true"'; } ?> value="<?php print $veicrow['placa'];?>"><?php print $veicrow['placa'];?></option>
                   <?php } ?>
@@ -109,17 +110,17 @@ if ($mensagem){
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Data da Despesa</p>
-                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_gasto" maxlength="60" value="<?php print $data_gasto; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_gasto" id="data_gasto" value="<?php print $data_gasto; ?>"/>
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Valor da Despesa</p>
-                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_gasto" maxlength="20" value="<?php print $valor_gasto; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_gasto" id="valor_gasto" value="<?php print $valor_gasto; ?>"/>
                 </div>
               </div>   
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Tipo</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" >
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" id="tipo" >
                     <option value="c"<?php if ($tipo == 'c') { echo 'selected="true"'; } ?> id="c">Combustível</option>
                     <option value="i"<?php if ($tipo == 'i') { echo 'selected="true"'; } ?> id="i">IPVA</option>
                     <option value="o"<?php if ($tipo == 'o') { echo 'selected="true"'; } ?> id="o">Oficina</option>
@@ -127,7 +128,7 @@ if ($mensagem){
                 </div>
                 <div class="col-md-9">
                   <p class="formu-letra">Observação</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="observacao" maxlength="20" value="<?php print $observacao; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="observacao" id="observacao" maxlength="255" value="<?php print $observacao; ?>"/>
                 </div>
               </div>       
               <div class="row">

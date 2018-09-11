@@ -73,12 +73,12 @@ if (!$id){
   $id = @$_GET["id"];
 }
 
-if ($acao == "DELETAR"){
-   // quando deletar o contrato apagar os pagamentos posteriores e alterar a data final do contrato    
-  $deletesql = "delete from contrato where id = ".$id;
+if ($acao == "DELETAR"){ 
+  $hoje = date('Y-m-d');
+  $deletesql = "update contrato set data_fim_contrato = '".$hoje."', deletado = 'S' where id = ".$id;
   $deleteresult = $conexao->query($deletesql);
   if ($deleteresult){
-      $mensagem = "Contrato deletada com sucesso!";
+      $mensagem = "Contrato deletado com sucesso!";
   }else{
       $mensagem = "Erro ao deletar o Contrato!";
   }
@@ -105,7 +105,7 @@ if ($acao == "DELETAR"){
     $enablecampos = "disabled";
   }
 
-  $criansql = "select id,nome from crianca";
+  $criansql = "select id,nome from crianca where deletado = 'N' ";
   $crianresult = $conexao->query($criansql);
   $rowcrianca = @mysqli_fetch_all($crianresult,MYSQLI_ASSOC);
 
@@ -150,7 +150,7 @@ if ($mensagem){
                 <div class="col-md-3">
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Criança</p>
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="id_crianca" maxlength="14">
+                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="id_crianca" id="id_crianca">
                   <?php foreach ($rowcrianca as $value) { ?>
                       <option <?php if ($id_crianca == $value['id']) { echo 'selected="true"'; } ?> value="<?php print $value['id'];?>"><?php print $value['id']." - ".$value['nome'];?></option>
                   <?php } ?>
@@ -158,29 +158,29 @@ if ($mensagem){
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Data Inicio do Contrato</p>
-                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_inicio_contrato" maxlength="60" value="<?php print $data_inicio_contrato; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_inicio_contrato" id="data_inicio_contrato" value="<?php print $data_inicio_contrato; ?>"/>
                 </div>
                 <div class="col-md-3">
                 <!-- data fim não pode ser maior que data começo -->
                   <p class="formu-letra">Data Final do Contrato</p>
-                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_fim_contrato" maxlength="20" value="<?php print $data_fim_contrato; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_fim_contrato" id="data_fim_contrato" value="<?php print $data_fim_contrato; ?>"/>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Dia Vencimento</p>
-                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="dia_vencimento_mensalidade" maxlength="20" value="<?php print $dia_vencimento_mensalidade; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu" type="text" name="dia_vencimento_mensalidade" id="dia_vencimento_mensalidade" value="<?php print $dia_vencimento_mensalidade; ?>"/>
                 </div>
               </div>  
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Mensalidade</p>
-                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="mensalidade" maxlength="20" value="<?php print $mensalidade; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="mensalidade" id="mensalidade" value="<?php print $mensalidade; ?>"/>
                 </div>
                 <div class="col-md-6">
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Transportes</p>
                   <!-- ver qual crianca ta selecionada e mostrar os trechos diponiveis dela -->
                   <!-- ao selecionar um trecho de um tipo não deixar selecionar mais de um desse tipo -->
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="trecho[]" maxlength="14" multiple>
+                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="trecho[]" id="trecho" multiple>
                   <?php while ($trechorow = @mysqli_fetch_array($trechoresult)){ ?>
                       <option <?php if ($id_trecho == $trechorow['id']) { echo 'selected="true"'; } ?> value="<?php print $trechorow['id'];?>"><?php print $trechorow['cep_origem']." - ".$trechorow['cep_destino']." - ".$trechorow["periodo_conducao"];?></option>
                   <?php } ?>
@@ -206,20 +206,3 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
-
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#contrato-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#contrato" ).submit();
-      });
-    });
-
-  </script>

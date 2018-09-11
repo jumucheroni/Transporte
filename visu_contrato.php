@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select c.id,a.nome,c.mensalidade,c.dia_vencimento_mensalidade from contrato c, crianca a where c.id_crianca = a.id";
+    $sql = "select c.id,a.nome,c.mensalidade,c.dia_vencimento_mensalidade from contrato c, crianca a where c.id_crianca = a.id and c.deletado = 'N' ";
     $result = $conexao->query($sql);
 
 ?>

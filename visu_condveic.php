@@ -2,7 +2,8 @@
 include './inc/conexao.php';
     $sql = "select c.nome,v.placa,cv.* from condutorveiculo cv
             inner join condutor c on c.cpf = cv.cpf_condutor
-            inner join veiculo v on v.placa = cv.placa_veiculo";
+            inner join veiculo v on v.placa = cv.placa_veiculo
+            where cv.deletado = 'N' ";
     $result = $conexao->query($sql);
 ?>
           
@@ -40,10 +41,7 @@ include './inc/conexao.php';
                       <p class="letra-fi "><?php print $row["placa"];?></p>
                     </div>
                     <div class="col-md-2">
-                      <p class="letra-fi "><?php 
-                        if ($row["periodo"] == 'm') print "Manhã";
-                        if ($row["periodo"] == 'a') print "Almoço";
-                        if ($row["periodo"] == 't') print "Tarde";?></p>
+                      <p class="letra-fi "><?php if($row["periodo"]=='im') print "Ida-Manhã"; if($row["periodo"]=='vm') print "Volta-Manhã"; if($row["periodo"]=='it') print "Ida-Tarde"; if($row["periodo"]=='vt') print "Volta-Tarde"; ?></p>
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">

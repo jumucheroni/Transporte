@@ -16,7 +16,7 @@ if (!$acao){
   $cpf         = str_replace("-", "", @$_POST["cpf"]);
   $nome        = @$_POST["nome"];
   $rg          = str_replace("-", "", @$_POST["rg"]);
-  $salario     = @$_POST["salario"];
+  $salario     = str_replace(",",".",@$_POST["salario"]);
   $email       = @$_POST["email"];
   $cep         = str_replace("-", "", @$_POST["cep"]);
   $logradouro  = @$_POST["logradouro"];
@@ -31,6 +31,7 @@ if (!$acao){
 if ($acao=="SALVARCADASTRO"){
 
     $insertsql = "insert into ajudante (cpf,nome,rg,email,salario,logradouro,cep,numero,bairro,complemento,cidade,estado) values ('".$cpf."','".$nome."','".$rg."','".$email."',".$salario.",'".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
+
     $insertresult = $conexao->query($insertsql);
     if ($insertresult){
         $mensagem = "Ajudante cadastrado com sucesso!";
@@ -47,20 +48,28 @@ if ($acao=="SALVARCADASTRO"){
       }else{
           $mensagem = "Erro ao atualizar o Ajudante!";
       }
-    } 
+} 
 
 if (!$cpf){
   $cpf = @$_GET["id"]; 
 }
 
 if ($acao == "DELETAR"){
+
+  $select = "select cpf_ajudante from veiculo where deletado = 'N' and cpf_ajudante = '".$cpf."'";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) {
       
-  $deletesql = "delete from ajudante where cpf = '".$cpf."'";
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Ajudante deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Ajudante!";
+    $deletesql = "update ajudante set deletado = 'S' where cpf = '".$cpf."'";
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Ajudante deletado com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar o Ajudante!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar o Ajudante! Ajudante já vinculado a um veículo";
   }
 }
 
@@ -110,11 +119,11 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">Nome</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" maxlength="100" value="<?php print $nome; ?>" />
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome; ?>" />
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">E-mail</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="email" name="email" maxlength="100" value="<?php print $email; ?>" />
+                  <input <?php print $enablecampos; ?> class="input-formu" type="email" name="email" id="email" maxlength="100" value="<?php print $email; ?>" />
                 </div>
               </div>
               <div class="row">
@@ -128,13 +137,13 @@ if ($mensagem){
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Salario</p>
-                  <input <?php print $enablecampos; ?> class="input-formu money" type="text" name="salario" value="<?php print $salario; ?>" />
+                  <input <?php print $enablecampos; ?> class="input-formu money" type="text" name="salario" id="salario" value="<?php print $salario; ?>" />
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="8" value="<?php print $cep; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="9" value="<?php print $cep; ?>"/>
                 </div>
                 <div class="col-md-7">
                   <p class="formu-letra">Logradouro</p>
@@ -155,11 +164,13 @@ if ($mensagem){
                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="complemento" id="complemento" maxlength="60" value="<?php print $complemento; ?>"/>
                 </div>
                 <div class="col-md-3">
+                  <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" /> 
                   <p class="formu-letra">Estado</p>
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
                   </select>
                 </div>
                 <div class="col-md-3">
+                  <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" /> 
                   <p class="formu-letra">Cidade</p>
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
                    </select>
@@ -187,3 +198,15 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
+
+<script>
+  $(document).ready(function(){
+    var cep = $("#cep").val();
+    if (cep) {
+      cep = cep.replace("-","");
+      var estado = $("#uf").val();
+      var cidade = $("#cid").val();
+      carregaestadocidade(cep,estado,cidade);
+    }
+  });
+</script>

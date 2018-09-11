@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select placa,lotacao,ano from veiculo";
+    $sql = "select placa,lotacao,ano from veiculo where deletado = 'N' ";
     $result = $conexao->query($sql);
 ?>
 
@@ -43,9 +43,9 @@ include './inc/conexao.php';
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                        <a href="cad_ajudante.php?acao=ALTERAR&id=<?php print $row["placa"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-veiculo"></button></a>
-                        <a href="cad_ajudante.php?acao=DELETAR&id=<?php print $row["placa"];?>"><button  id="dele-veiculo" class="btn-deletar glyphicon glyphicon-trash" ></button></a>
-                        <a href="cad_ajudante.php?acao=DETALHES&id=<?php print $row["placa"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-veiculo"></button></a>
+                        <a href="cad_veiculo.php?acao=ALTERAR&id=<?php print $row["placa"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-veiculo"></button></a>
+                        <a href="cad_veiculo.php?acao=DELETAR&id=<?php print $row["placa"];?>"><button  id="dele-veiculo" class="btn-deletar glyphicon glyphicon-trash" ></button></a>
+                        <a href="cad_veiculo.php?acao=DETALHES&id=<?php print $row["placa"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-veiculo"></button></a>
                       </p>
                     </div>
                   </div>

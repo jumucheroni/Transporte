@@ -13,7 +13,7 @@ if (!$acao){
   $acao = @$_POST["acao"];
 }
 
-  $placa         = @$_POST["placa"];
+  $placa         = str_replace("-", "", @$_POST["placa"]);
   $marca         = @$_POST["marca"];
   $modelo        = @$_POST["modelo"];
   $ano           = @$_POST["ano"];
@@ -46,13 +46,20 @@ if (!$placa){
 }
 
 if ($acao == "DELETAR"){
-      
-  $deletesql = "delete from veiculo where placa = '".$placa."'";
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Veículo deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Veículo!";
+  $select = "select placa_veiculo from condutorveiculo where deletado = 'N' and placa_veiculo = '".$placa."'";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) {
+            
+    $deletesql = "update veiculo set deletado = 'S' where placa = '".$placa."'";
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Veículo deletado com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar o Veículo!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar o Veículo! Veículo já associado a uma condução!";
   }
 }
 
@@ -101,29 +108,29 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-4">
                   <p class="formu-letra">Placa</p>
-                  <input <?php print $enablechave; ?> class="input-formu" type="text" name="placa" maxlength="8" value="<?php print $placa; ?>"/>
+                  <input <?php print $enablechave; ?> class="input-formu placa" type="text" name="placa" id="placa" maxlength="8" value="<?php print $placa; ?>"/>
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Marca</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="marca" maxlength="20" value="<?php print $marca; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="marca" id="marca" maxlength="30" value="<?php print $marca; ?>"/>
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Modelo</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="modelo" maxlength="20" value="<?php print $modelo; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="modelo" id="modelo" maxlength="30" value="<?php print $modelo; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Lotação</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="lotacao" maxlength="11" value="<?php print $lotacao; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="lotacao" id="lotacao" value="<?php print $lotacao; ?>"/>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Ano</p>
-                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="ano" maxlength="4" value="<?php print $ano; ?>"/>
+                   <input <?php print $enablecampos; ?> class="input-formu" type="text" name="ano" id="ano" maxlength="4" value="<?php print $ano; ?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">CPF do Ajudante</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cpf_ajudante" maxlength="14">
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cpf_ajudante" id="cpf_ajudante">
                     <?php while ($ajudrow = @mysqli_fetch_array($ajudresult)){ ?>
                       <option <?php if ($cpf_ajudante == $ajudrow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $ajudrow['cpf'];?>"><?php print $ajudrow['cpf']." - ".$ajudrow['nome'];?></option>
                   <?php } ?>
@@ -148,20 +155,3 @@ if ($mensagem){
 <?php } ?>
 
 <?php include './inc/footer.php'; ?>
-
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#veiculo-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#veiculo" ).submit();
-      });
-    });
-
-  </script>

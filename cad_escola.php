@@ -52,13 +52,20 @@ if (!$n_ident){
 }
 
 if ($acao == "DELETAR"){
-      
-  $deletesql = "delete from escola where id = '".$n_ident."'";
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Escola deletada com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar a Escola!";
+  $select = "select id_escola from crianca where deletado = 'N' and id_escola=".$n_ident."";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) {         
+  
+    $deletesql = "update escola set deletado = 'S' where id = '".$n_ident."'";
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Escola deletada com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar a Escola!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar a Escola! Escola já possui crianças";
   }
 }
 
@@ -108,13 +115,13 @@ if ($mensagem){
                 <div class="col-md-12">
                 <input type="hidden" name="n_ident" value="<?php echo $n_ident; ?>" />
                   <p class="formu-letra">Nome</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" maxlength="100"  value="<?php print $nome;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" id="nome" maxlength="100"  value="<?php print $nome;?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">Tipo</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" >
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="tipo" id="tipo" >
                     <option value="E"<?php if ($tipo == 'E') { echo 'selected="true"'; } ?> id="e">Estadual</option>
                     <option value="M"<?php if ($tipo == 'M') { echo 'selected="true"'; } ?> id="m">Municipal</option>
                     <option value="P"<?php if ($tipo == 'P') { echo 'selected="true"'; } ?> id="p">Particular</option>
@@ -146,11 +153,13 @@ if ($mensagem){
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Estado</p>
+                  <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" />
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
                   </select>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Cidade</p>
+                    <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" />
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
                    </select>
                 </div>
@@ -175,20 +184,15 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
+<script>
+  $(document).ready(function(){
+    var cep = $("#cep").val();
+    if (cep) {
+      cep = cep.replace("-","");
+      var estado = $("#uf").val();
+      var cidade = $("#cid").val();
+      carregaestadocidade(cep,estado,cidade);
+    }
+  });
+</script>
 
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#escola-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#escola" ).submit();
-      });
-    });
-
-  </script>

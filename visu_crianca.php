@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select c.id as id,c.nome as Crianca,r.nome as Responsavel,e.nome as Escola from crianca c, responsavel r, escola e where c.cpf_responsavel=r.cpf and c.id_escola=e.id";
+    $sql = "select c.id as id,c.nome as Crianca,r.nome as Responsavel,e.nome as Escola from crianca c, responsavel r, escola e where c.cpf_responsavel=r.cpf and c.id_escola=e.id and c.deletado = 'N' ";
     $result = $conexao->query($sql);
 
 ?>

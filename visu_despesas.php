@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select g.id,g.data_gasto,g.valor_gasto,v.placa from gastos g, veiculo v where v.placa = g.placa_veiculo";
+    $sql = "select g.id,g.data_gasto,g.valor_gasto,v.placa from gastos g, veiculo v where v.placa = g.placa_veiculo and g.deletado = 'N' ";
     $result = $conexao->query($sql);
 
 ?>

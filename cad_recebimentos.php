@@ -65,16 +65,16 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Data do Pagamento</p>
-                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_pgto" maxlength="20" value="<?php print $data_pgto; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_pgto" value="<?php print $data_pgto; ?>"/>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Valor pago</p>
-                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_pago" maxlength="20" value="<?php print $valor_pago; ?>"/>
+                  <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_pago" value="<?php print $valor_pago; ?>"/>
                 </div>
                 <div class="col-md-3">
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Status</p>
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="status" maxlength="14">
+                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="status" >
                       <option <?php if ($status == "N") { echo 'selected="true"'; } ?>  value="N">Em aberto</option>
                       <option <?php if ($status == "A") { echo 'selected="true"'; } ?>  value="A">Em atraso</option>
                       <option <?php if ($status == "F") { echo 'selected="true"'; } ?>  value="F">Falta valor</option>
@@ -87,7 +87,7 @@ if ($mensagem){
                 <?php if ($acao!="DETALHES"){ ?>
                   <button class="btn-salvar" id="recebimento-salvar" type="button">Salvar</button>  
                 <?php }?>
-                  <a href="visu_recebimento.php" class="btn-cancelar" type="button">Cancelar</a>                  
+                  <a href="visu_recebimentos.php" class="btn-cancelar" type="button">Cancelar</a>                  
                 </div>
               </div>
 

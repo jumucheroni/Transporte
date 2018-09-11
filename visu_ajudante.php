@@ -1,6 +1,6 @@
 <?php include './inc/header.php';
 include './inc/conexao.php';
-    $sql = "select nome,cpf,rg from ajudante";
+    $sql = "select nome,cpf,rg from ajudante where deletado = 'N'";
     $result = $conexao->query($sql);
 ?>
 

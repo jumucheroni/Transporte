@@ -19,12 +19,19 @@ if (!$acao){
 
 if ($acao=="SALVARCADASTRO"){
 
-    $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
-    $insertresult = $conexao->query($insertsql);
-    if ($insertresult){
-        $mensagem = "Condução cadastrada com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar a Condução!";
+    $selectsql = "select placa_veiculo,cpf_condutor,periodo from condutorveiculo where placa_veiculo = '".$veiculo."' and cpf_condutor = '".$condutor."' and periodo ='".$periodo."' and deletado = 'N' ";
+    $selectsqlresult = $conexao->query($selectsql);
+
+    if ($selectsqlresult->num_rows > 0) {
+       $mensagem = "Condução já está cadastrada!";
+    } else {
+      $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
+      $insertresult = $conexao->query($insertsql);
+      if ($insertresult){
+          $mensagem = "Condução cadastrada com sucesso!";
+      }else{
+          $mensagem = "Erro ao cadastrar a Condução!";
+      }
     }
 
 }else if ($acao =="SALVARUPDATE"){
@@ -44,16 +51,25 @@ if (!$veiculo && !$condutor) {
   	$conducao = explode("-", $conducao);
   	$veiculo = $conducao[1];
   	$condutor = $conducao[0]; 
+    $periodo = $conducao[2];
   }
 }
 
 if ($acao == "DELETAR"){
-      
-  $deletesql = "delete from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
-  if ($deleteresult){
-      $mensagem = "Condução deletada com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar a Condução!";
+  
+  $select = "select cpf_condutor,placa_veiculo,periodo_conducao from criancatrecho where deletado = 'N' and placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo_conducao='".$periodo."'";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) { 
+    $deletesql = "update condutorveiculo set deletado = 'S' where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Condução deletada com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar a Condução!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar a Condução! Condução já associada a transportes";
   }
 }
 
@@ -75,10 +91,10 @@ if ($acao == "DELETAR"){
     $enablecampos = "disabled";
   }
 
-  $condsql = "select cpf,nome from condutor";
+  $condsql = "select cpf,nome from condutor where deletado = 'N' ";
   $condresult = $conexao->query($condsql);
 
-  $veicsql = "select placa from veiculo";
+  $veicsql = "select placa from veiculo where deletado = 'N' ";
   $veicresult = $conexao->query($veicsql);
 
 if ($mensagem){
@@ -102,7 +118,7 @@ if ($mensagem){
               <div class="row">
                 <div class="col-md-4">
                   <p class="formu-letra">Veículo</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="veiculo" maxlength="14">
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="veiculo" id="veiculo" maxlength="14">
                     <?php while ($veicrow = @mysqli_fetch_array($veicresult)){ ?>
                       <option <?php if ($veiculo == $veicrow['placa']) { echo 'selected="true"'; } ?> value="<?php print $veicrow['placa'];?>"><?php print $veicrow['placa'];?></option>
                   <?php } ?>
@@ -110,7 +126,7 @@ if ($mensagem){
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Condutor</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="condutor" maxlength="14">
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="condutor" id="condutor" maxlength="14">
                     <?php while ($condrow = @mysqli_fetch_array($condresult)){ ?>
                       <option <?php if ($condutor == $condrow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $condrow['cpf'];?>"><?php print $condrow['cpf']." - ".$condrow['nome'];?></option>
                   <?php } ?>
@@ -118,10 +134,11 @@ if ($mensagem){
                 </div>
                 <div class="col-md-4">
                   <p class="formu-letra">Periodo</p>
-                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="periodo" maxlength="14">
-              			<option id="m" value='m'>Manhã</option>
-                    <option id="a" value='a'>Almoço</option>
-              			<option id="t" value='t'>Tarde</option>
+                  <select <?php print $enablecampos; ?> class="input-formu" type="text" name="periodo" id="periodo" maxlength="1">
+                      <option value="im" <?php if ($periodo == 'im') { echo 'selected="true"'; } ?> id="im">Ida-Manhã</option>
+                      <option value="it" <?php if ($periodo == 'it') { echo 'selected="true"'; } ?> id="it">Ida-Tarde</option>
+                      <option value="vm" <?php if ($periodo == 'vm') { echo 'selected="true"'; } ?> id="vm">Volta-Manhã</option>
+                      <option value="vt" <?php if ($periodo == 'vt') { echo 'selected="true"'; } ?> id="vt">Volta-Tarde</option>
                   </select>
                 </div>
               </div>                 
@@ -143,21 +160,4 @@ if ($mensagem){
 <?php } ?>
 
 <?php include './inc/footer.php'; ?>
-
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $("#condveic-salvar").click(function(){
-
-          if ($("#acao").val()=="CADASTRAR"){
-              $("#acao").val("SALVARCADASTRO");
-          }
-          if ($("#acao").val()=="ALTERAR"){
-              $("#acao").val("SALVARUPDATE");
-          }
-          $( "#condveic" ).submit();
-      });
-    });
-
-  </script> 
 

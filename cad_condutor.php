@@ -17,7 +17,7 @@ if (!$acao){
   $pgu         = @$_POST["pgu"];
   $nome        = @$_POST["nome"];
   $rg          = str_replace("-", "", @$_POST["rg"]);
-  $salario     = @$_POST["salario"];
+  $salario     = str_replace(",", ".",@$_POST["salario"]);
   $email       = @$_POST["email"];
   $cep         = str_replace("-", "", @$_POST["cep"]);
   $logradouro  = @$_POST["logradouro"];
@@ -55,13 +55,21 @@ if (!$cpf){
 }
 
 if ($acao == "DELETAR"){
+
+  $select = "select cpf_condutor from condutorveiculo where deletado = 'N' and cpf_condutor = '".$cpf."'";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) {
       
-  $deletesql = "delete from condutor where cpf = '".$cpf."'";
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Condutor deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Condutor!";
+    $deletesql = "update condutor set deletado = 'S' where cpf = '".$cpf."'";
+    $deleteresult = $conexao->query($deletesql);
+    if ($deleteresult){
+        $mensagem = "Condutor deletado com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar o Condutor!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar o Condutor! Condutor já vinculado a uma condução";
   }
 }
 
@@ -117,33 +125,33 @@ if ($mensagem){
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">PGU</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="pgu" maxlength="14" value="<?php print $pgu; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="pgu" id="pgu" maxlength="14" value="<?php print $pgu; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">Nome</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" maxlength="100" value="<?php print $nome; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome; ?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">RG</p>
-                  <input <?php print $enablecampos; ?> class="input-formu rg" type="text" name="rg" maxlength="9" value="<?php print $rg; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu rg" type="text" name="rg" id="rg" maxlength="10" value="<?php print $rg; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
                   <p class="formu-letra">E-mail</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="email"  maxlength="100" value="<?php print $email; ?>" />
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="email" id="email" maxlength="100" value="<?php print $email; ?>" />
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Salario</p>
-                  <input <?php print $enablecampos; ?> class="input-formu money" type="text" name="salario" value="<?php print $salario; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu money" type="text" name="salario" id="salario" value="<?php print $salario; ?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">Cep</p>
-                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="8" value="<?php print $cep; ?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu cep" type="text" name="cep" id="cep" maxlength="9" value="<?php print $cep; ?>"/>
                 </div>
                 <div class="col-md-7">
                   <p class="formu-letra">Logradouro</p>
@@ -165,11 +173,13 @@ if ($mensagem){
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Estado</p>
+                  <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" /> 
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
                   </select>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Cidade</p>
+                  <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" /> 
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
                    </select>
                 </div>
@@ -192,3 +202,15 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
+
+<script>
+  $(document).ready(function(){
+    var cep = $("#cep").val();
+    if (cep) {
+      cep = cep.replace("-","");
+      var estado = $("#uf").val();
+      var cidade = $("#cid").val();
+      carregaestadocidade(cep,estado,cidade);
+    }
+  });
+</script>

@@ -71,17 +71,24 @@ if (!$cpf){
 }
 
 if ($acao == "DELETAR"){
+  $select = "select cpf_responsavel from crianca where deletado = 'N' and cpf_responsavel=".$cpf."";
+  $selectresult = $conexao->query($select);
+
+  if ($selectresult->num_rows == 0) {       
       
-  $deletesql = "delete from responsavel where cpf = '".$cpf."'";
-  $deleteresult = $conexao->query($deletesql);
+    $deletesql = "update responsavel set deletado = 'S' where cpf = '".$cpf."'";
+    $deleteresult = $conexao->query($deletesql);
 
-  $deletetelefone = "delete from telefone where cpf_respreadonlyonsavel = '".$cpf."'";
-  $telefonedelete = $conexao->query($deletetelefone);
+    $deletetelefone = "update telefone set deletado = 'S' where cpf_responsavel = '".$cpf."'";
+    $telefonedelete = $conexao->query($deletetelefone);
 
-  if ($deleteresult){
-      $mensagem = "Responsável deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Responsável!";
+    if ($deleteresult){
+        $mensagem = "Responsável deletado com sucesso!";
+    }else{
+        $mensagem = "Erro ao deletar o Responsável!";
+    }
+  } else {
+    $mensagem = "Erro ao deletar o Responsável! Responsável já possui crianças";
   }
 }
 
@@ -141,21 +148,21 @@ if ($mensagem){
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Nome</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" maxlength="100" value="<?php print $nome;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome;?>"/>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-3">
                   <p class="formu-letra">RG</p>
-                  <input <?php print $enablecampos; ?> class="input-formu rg" type="text" name="rg" maxlength="10" value="<?php print $rg;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu rg" type="text" name="rg" id="rg" maxlength="10" value="<?php print $rg;?>"/>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Parentesco</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="parentesco" maxlength="60" value="<?php print $parentesco;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="parentesco" id="parentesco" maxlength="60" value="<?php print $parentesco;?>"/>
                 </div>
                 <div class="col-md-6">
                   <p class="formu-letra">Telefone</p>
-                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="telefone" maxlength="100" value="<?php print $telefone;?>"/>
+                  <input <?php print $enablecampos; ?> class="input-formu" type="text" name="telefone" id="telefone" maxlength="255" value="<?php print $telefone;?>"/>
                 </div>
               </div>
               <div class="row">
@@ -184,10 +191,12 @@ if ($mensagem){
                 <div class="col-md-3">
                   <p class="formu-letra">Estado</p>
                   <select <?php print $enablecampos; ?> class="input-formu" type="text" name="estado" id="estado">
+                  <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" />
                   </select>
                 </div>
                 <div class="col-md-3">
                   <p class="formu-letra">Cidade</p>
+                  <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" />
                    <select <?php print $enablecampos; ?> class="input-formu" type="text" name="cidade" id="cidade">
                    </select>
                 </div>
@@ -212,3 +221,15 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
+
+<script>
+  $(document).ready(function(){
+    var cep = $("#cep").val();
+    if (cep) {
+      cep = cep.replace("-","");
+      var estado = $("#uf").val();
+      var cidade = $("#cid").val();
+      carregaestadocidade(cep,estado,cidade);
+    }
+  });
+</script>

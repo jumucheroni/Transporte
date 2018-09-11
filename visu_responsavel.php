@@ -1,6 +1,6 @@
 <?php include './inc/header.php'; 
 include './inc/conexao.php';
-    $sql = "select cpf,nome,parentesco from responsavel";
+    $sql = "select cpf,nome,parentesco from responsavel where deletado = 'N' ";
     $result = $conexao->query($sql);
 ?>
 
