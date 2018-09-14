@@ -31,9 +31,10 @@
                   <p class="letra-fi">CPF do Responsável</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
                   <select multiple hidden class="input-formu" id="select" name="valor" >
-                    <option id="m" value='m'>Manhã</option>
-                    <option id="a" value='a'>Almoço</option>
-                    <option id="t" value='t'>Tarde</option>
+                        <option value="im" id="im">Ida-Manhã</option>
+                        <option value="it" id="it">Ida-Tarde</option>
+                        <option value="vm" id="vm">Volta-Manhã</option>
+                        <option value="vt" id="vt">Volta-Tarde</option>
                   </select>
                 </div>
               </div>        

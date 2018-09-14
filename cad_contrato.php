@@ -22,7 +22,7 @@ if (!$acao){
   $data_inicio_contrato       = DtToDb(@$_POST["data_inicio_contrato"]);
   $data_fim_contrato          = DtToDb(@$_POST["data_fim_contrato"]);
   $dia_vencimento_mensalidade = @$_POST["dia_vencimento_mensalidade"];
-  $mensalidade                = @$_POST["mensalidade"];
+  $mensalidade                = str_replace(",",".",@$_POST["mensalidade"]);
   $id_trecho                  = @$_POST['trecho'];
 
 if ($acao=="SALVARCADASTRO"){
@@ -34,6 +34,7 @@ if ($acao=="SALVARCADASTRO"){
     $meses =  $intervalo->m + ($intervalo->y * 12);
 
     $insertsql = "insert into contrato (id_crianca,data_inicio_contrato,data_fim_contrato,dia_vencimento_mensalidade, mensalidade) values (".$id_crianca.",'".$data_inicio_contrato."','".$data_fim_contrato."',".$dia_vencimento_mensalidade.",".$mensalidade.")";
+    print_r($insertsql);
 
     $insertresult = $conexao->query($insertsql); 
 
@@ -47,7 +48,8 @@ if ($acao=="SALVARCADASTRO"){
     }
 
     foreach ($id_trecho as $value) {
-      $updatetrechosql = "update criancatrecho set id_contrato = ".$id_contrato." where id_crianca = ".$id_crianca." and id_trecho = ".$value;
+      $trecho = explode("-", $value);
+      $updatetrechosql = "update criancatrecho set id_contrato = ".$id_contrato." where id_crianca = ".$id_crianca." and id_trecho = ".$trecho[0];
       $updatetrechoresult = $conexao->query($updatetrechosql);
     }
 
@@ -151,6 +153,7 @@ if ($mensagem){
                   <input type="hidden" name="id" value="<?php echo $id;?>"/>
                   <p class="formu-letra">Criança</p>
                   <select <?php print $enablecampos ?> class="input-formu" type="text" name="id_crianca" id="id_crianca">
+                      <option></option>
                   <?php foreach ($rowcrianca as $value) { ?>
                       <option <?php if ($id_crianca == $value['id']) { echo 'selected="true"'; } ?> value="<?php print $value['id'];?>"><?php print $value['id']." - ".$value['nome'];?></option>
                   <?php } ?>
@@ -182,7 +185,7 @@ if ($mensagem){
                   <!-- ao selecionar um trecho de um tipo não deixar selecionar mais de um desse tipo -->
                   <select <?php print $enablecampos ?> class="input-formu" type="text" name="trecho[]" id="trecho" multiple>
                   <?php while ($trechorow = @mysqli_fetch_array($trechoresult)){ ?>
-                      <option <?php if ($id_trecho == $trechorow['id']) { echo 'selected="true"'; } ?> value="<?php print $trechorow['id'];?>"><?php print $trechorow['cep_origem']." - ".$trechorow['cep_destino']." - ".$trechorow["periodo_conducao"];?></option>
+                      <option hidden <?php if ($id_trecho == $trechorow['id']) { echo 'selected="true"'; } ?> value="<?php print $trechorow['id'].'-'.$trechorow['id_crianca'].'-'.$trechorow['periodo_conducao'];?>"><?php print $trechorow['cep_origem']." - ".$trechorow['cep_destino']." - ".$trechorow["periodo_conducao"];?></option>
                   <?php } ?>
                   </select>
                 </div>

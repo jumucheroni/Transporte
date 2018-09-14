@@ -43,7 +43,7 @@ include './inc/conexao.php';
                       <p class="letra-fi "><?php print $row["mensalidade"];?></p>
                     </div>
                     <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["data_pagamento"];?></p>
+                      <p class="letra-fi "><?php print DbtoDt($row["data_pagamento"]);?></p>
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi "><?php $row["status"] == "N" ? print "Em aberto" : print "Pagamento recebido";?></p>

@@ -7,37 +7,39 @@ $valor = @$_POST["valor"];
 if ($tipo == "D"){
   $valorbanco = DtToDB($valor);
   $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf 
-  inner join contrato as t on t.id_crianca = c.id
-  inner join pagamentos as p on p.id_contrato = t.id 
-  where p.data_realizada_pgto = '".$valorbanco."'";
+  inner join responsavel as r on c.cpf_responsavel=r.cpf  and r.deletado='N'
+  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+  where p.data_realizada_pgto = '".$valorbanco."' and c.deletado='N'";
   $result = $conexao->query($sql);
 }
 if ($tipo == "V"){
   $valorbanco = DtToDB($valor);
   $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf 
-  inner join contrato as t on t.id_crianca = c.id
-  inner join pagamentos as p on p.id_contrato = t.id 
-  where p.data_prevista_pgto = '".$valorbanco."'";
+  inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+  where p.data_prevista_pgto = '".$valorbanco."' and c.deletado='N'";
   $result = $conexao->query($sql);
 }
 if ($tipo == "S"){
   $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf 
-  inner join contrato as t on t.id_crianca = c.id
-  inner join pagamentos as p on p.id_contrato = t.id 
-  where p.status = '".$valor."'";
+  inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+  where p.status = '".$valor."' and c.deletado='N'";
   $result = $conexao->query($sql);
 }
 if ($tipo == "C"){
   $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf 
-  inner join contrato as t on t.id_crianca = c.id
-  inner join pagamentos as p on p.id_contrato = t.id 
-  where c.nome like '%".$valor."%'";
+  inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+  where c.nome like '%".$valor."%' and c.deletado='N'";
   $result = $conexao->query($sql);
 }
+
+$total = 0;
 
 ?>
          <div id="p1" class="row">
@@ -73,14 +75,24 @@ if ($tipo == "C"){
                       <p class="letra-fi "><?php print $row["Crianca"];?></p>
                     </td>
                     <td width="20%">
-                      <p class="letra-fi "><?php print $row["Valor"];?></p>
+                      <p class="letra-fi "><?php print $row["Valor"]; $total += $row["Valor"];?></p>
                     </td>
                     <td width="20%">
                       <p class="letra-fi "><?php if ($row["Status"] == 'N') print "Em Aberto"; if ($row["Status"] == 'A') print "Em Atraso"; if ($row["Status"] == 'F') print "Falta valor"; if ($row["Status"] == 'P') print "Pago";?></p>
                     </td>
                   </tr>
                 <?php } ?>
-              </table>              
+              </table>    
+              <table  width="10%">
+                  <tr>
+                    <td width="5%">
+                      <p class="formu-letra">Total</p>
+                    </td>
+                    <td width="5%">
+                      <p class="formu-letra"><?php print $total;?></p>
+                    </td>
+                  </tr>
+              </table>          
             </div>         
           </div>
 

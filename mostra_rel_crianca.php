@@ -5,29 +5,32 @@ $tipo = @$_POST["relatorio"];
 $valor = @$_POST["valor"];
 
 if ($tipo=='R'){
-  $sql = "select id,nome as Crianca from crianca where cpf_responsavel = '".$valor."'";
+  $sql = "select id,nome as Crianca from crianca where cpf_responsavel = '".$valor."' and deletado='N'";
   $rel_tipo = "Responsável ".$valor;
 }
 if ($tipo=='E'){
   $sql = "select c.id,c.nome as Crianca from crianca as c
-  inner join escola e on c.id_escola=e.id and e.nome like '%".$valor."%'";
+  inner join escola e on c.id_escola=e.id and e.nome like '%".$valor."%' and e.deletado='N' where c.deletado='N'";
   $rel_tipo = "Escola ".$valor;
 }
 if ($tipo=='P'){
   $sql = "select c.id,c.nome as Crianca from crianca as c
-  inner join criancatrecho ct on c.id = ct.id_crianca 
-  where ct.periodo_conducao = '".$valor."'";
-  if ($valor == 'm')
-    $rel_tipo = "Periodo da Manhã";
-  if ($valor == 'a')
-    $rel_tipo = "Periodo do Almoço";
-  if ($valor == 'm')
-    $rel_tipo = "Periodo da Tarde";
+  inner join criancatrecho ct on c.id = ct.id_crianca and and ct.deletado='N'
+  where ct.periodo_conducao = '".$valor."' and and c.deletado='N' ";
+  if ($valor == 'im')
+    $rel_tipo = "Periodo da Ida-Manhã";
+  if ($valor == 'it')
+    $rel_tipo = "Periodo da Ida-Tarde";
+  if ($valor == 'vm')
+    $rel_tipo = "Periodo da Volta-Manhã";
+  if ($valor == 'vt')
+    $rel_tipo = "Periodo da Volta-Tarde";
 }
+
 if ($tipo=='V'){
   $sql = "select c.id,c.nome as Crianca from crianca c
-  inner join criancatrecho ct on c.id = ct.id_crianca
-  where ct.placa_veiculo like '%".$valor."%'";
+  inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
+  where ct.placa_veiculo like '%".$valor."%' and c.deletado='N'";
   $rel_tipo = "Veículo ".$valor;
 }
 

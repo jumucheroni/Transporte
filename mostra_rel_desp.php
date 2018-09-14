@@ -7,20 +7,20 @@ $valor = @$_POST["valor"];
 if ($tipo == "D"){
   $valorbanco = DtToDB($valor);
   $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.data_gasto = '".$valorbanco."'";
+  where g.data_gasto = '".$valorbanco."' and g.deletado='N'";
   $result = $conexao->query($sql);
 }
 if ($tipo == "T"){
   $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.tipo = '".$valor."'";
+  where g.tipo = '".$valor."' and g.deletado='N'";
   $result = $conexao->query($sql);
 }
 if ($tipo == "V"){
   $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.placa_veiculo = '".$valor."'";
+  where g.placa_veiculo = '".$valor."' and g.deletado='N'";
   $result = $conexao->query($sql);
 }
-
+$total = 0;
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -49,10 +49,10 @@ if ($tipo == "V"){
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
                   <tr>
                     <td width="30%">
-                      <p class="letra-fi "><?php print $row["data_gasto"];?></p>
+                      <p class="letra-fi "><?php print DbtoDt($row["data_gasto"]);?></p>
                     </td>
                     <td width="20%">
-                      <p class="letra-fi "><?php print $row["valor_gasto"];?></p>
+                      <p class="letra-fi "><?php print $row["valor_gasto"];  $total += $row["valor_gasto"];?></p>
                     </td>
                     <td width="20%">
                       <p class="letra-fi "><?php if ($row["tipo"] == 'c') print "Combustível"; if ($row["tipo"] == 'i') print "IPVA"; if ($row["tipo"] == 'o') print "Oficina";?></p>
@@ -62,7 +62,17 @@ if ($tipo == "V"){
                     </td>
                   </tr>
                 <?php } ?>
-              </table>              
+              </table> 
+              <table  width="10%">
+                  <tr>
+                    <td width="5%">
+                      <p class="formu-letra">Total</p>
+                    </td>
+                    <td width="5%">
+                      <p class="formu-letra"><?php print $total;?></p>
+                    </td>
+                  </tr>
+              </table>                    
             </div>         
           </div>
 

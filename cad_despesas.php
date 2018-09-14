@@ -16,14 +16,13 @@ if (!$acao){
   $id             = @$_POST["id"];
   $placa_veiculo  = @$_POST["placa_veiculo"];
   $data_gasto     = DtToDb(@$_POST["data_gasto"]);
-  $valor_gasto    = @$_POST["valor_gasto"];
+  $valor_gasto    = str_replace(",", ".", @$_POST["valor_gasto"]);
   $tipo           = @$_POST["tipo"];
   $observacao     = @$_POST["observacao"];
 
 if ($acao=="SALVARCADASTRO"){
 
     $insertsql = "insert into gastos (placa_veiculo,data_gasto,valor_gasto,tipo,observacao) values ('".$placa_veiculo."','".$data_gasto."',".$valor_gasto.",'".$tipo."','".$observacao."')";
-    print_r($insertsql);
     $insertresult = $conexao->query($insertsql);
     if ($insertresult){
         $mensagem = "Despesa cadastrada com sucesso!";
@@ -64,7 +63,7 @@ if ($acao == "DELETAR"){
 
   $id             = $row["id"];
   $placa_veiculo  = $row["placa_veiculo"];
-  $data_gasto     = DbToDt($row["data_gasto"]);
+  $data_gasto     = DbtoDt($row["data_gasto"]);
   $valor_gasto    = $row["valor_gasto"];
   $tipo           = $row["tipo"];
   $observacao     = $row["observacao"];

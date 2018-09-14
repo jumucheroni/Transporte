@@ -41,7 +41,7 @@ include './inc/conexao.php';
 
   $valor_pago = $row["valor_pago"];
   $status = $row["status"];
-  $data_pgto = $row["data_realizada_pgto"];
+  $data_pgto = DbtoDt($row["data_realizada_pgto"]);
   }
 
 if ($mensagem){

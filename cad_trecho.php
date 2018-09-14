@@ -68,7 +68,7 @@ if ($acao=="SALVARCADASTRO"){
       if ($insertresult) {
         $id_trecho = $conexao->insert_id;
 
-        $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."')";
+        $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao,id_contrato) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."',null)";
 
         $insertcritrechoresult = $conexao->query($insertcritrechosql);
       }

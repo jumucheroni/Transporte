@@ -33,7 +33,7 @@ include './inc/conexao.php';
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
                   <div class="caixa-fl">
                     <div class="col-md-4">
-                      <p class="letra-fi "><?php print $row["data_gasto"];?></p>
+                      <p class="letra-fi "><?php print DbtoDt($row["data_gasto"]);?></p>
                     </div>
                     <div class="col-md-4">
                       <p class="letra-fi "><?php print $row["valor_gasto"];?></p>

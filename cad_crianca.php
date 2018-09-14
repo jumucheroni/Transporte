@@ -71,7 +71,7 @@ if ($acao == "DELETAR"){
   $id                  = $row["id"];
   $cpf_responsavel     = $row["cpf_responsavel"];
   $nome                = $row["nome"];
-  $data_nascimento     = DBtoDT($row["data_nascimento"]);
+  $data_nascimento     = DbtoDt($row["data_nascimento"]);
   $n_ident_escola      = $row["id_escola"];
   $nome_professor      = $row["nome_professor"];
   }
