@@ -30,7 +30,8 @@
                 <div class="col-md-6">
                   <p class="letra-fi">CPF do Responsável</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
-                  <select multiple hidden class="input-formu" id="select" name="valor" >
+                  <select hidden class="input-formu" id="select" name="valor" >
+                        <option value="" id="todos">Todos</option>
                         <option value="im" id="im">Ida-Manhã</option>
                         <option value="it" id="it">Ida-Tarde</option>
                         <option value="vm" id="vm">Volta-Manhã</option>

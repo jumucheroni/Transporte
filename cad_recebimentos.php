@@ -18,20 +18,30 @@ include './inc/conexao.php';
    $id = @$_GET["id"]; 
   }
 
-  $valor_pago  = @$_POST["valor_pago"];
-  $status      = @$_POST["status"];
+  $valor_pago  = str_replace(",", ".", @$_POST["valor_pago"]);
   $datahoje    = DtToDb(@$_POST["data_pgto"]);
 
  if ($acao =="SALVARPAGAMENTO"){
 
-      $updatesql = "update pagamentos set data_realizada_pgto = '".$datahoje."' and valor_pago = ".$valor_pago." and status =  '".$status."' where id = ".$id;
-      $updateresult = $conexao->query($updatesql);
+    $selectsql = "select c.mensalidade from contrato c 
+                  inner join pagamentos p on p.id_contrato = c.id and p.id=".$id;
+    $result = $conexao->query($selectsql);
+    $row = @mysqli_fetch_array($result);
 
-      if ($updateresult){
-          $mensagem = "Recebimento realizado com sucesso!";
-      }else{
+    if ($valor_pago < $row["mensalidade"]) {
+      $status = "F";
+    } else {
+      $status = "P";
+    }
+
+    $updatesql = "update pagamentos set data_realizada_pgto = '".$datahoje."', valor_pago = ".$valor_pago.", status =  '".$status."' where id = ".$id;
+    $updateresult = $conexao->query($updatesql);
+
+    if ($updateresult){
+        $mensagem = "Recebimento realizado com sucesso!";
+    }else{
           $mensagem = "Erro ao realizar o recebimento!";
-      }
+    }
     } 
 
   if ($acao == "PAGAR"){
@@ -71,16 +81,16 @@ if ($mensagem){
                   <p class="formu-letra">Valor pago</p>
                   <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_pago" value="<?php print $valor_pago; ?>"/>
                 </div>
-                <div class="col-md-3">
-                  <input type="hidden" name="id" value="<?php echo $id;?>"/>
+                <!--<div class="col-md-3">
+                  <input type="hidden" name="id" value="<?php //echo $id;?>"/>
                   <p class="formu-letra">Status</p>
-                  <select <?php print $enablecampos ?> class="input-formu" type="text" name="status" >
-                      <option <?php if ($status == "N") { echo 'selected="true"'; } ?>  value="N">Em aberto</option>
-                      <option <?php if ($status == "A") { echo 'selected="true"'; } ?>  value="A">Em atraso</option>
-                      <option <?php if ($status == "F") { echo 'selected="true"'; } ?>  value="F">Falta valor</option>
-                      <option <?php if ($status == "P") { echo 'selected="true"'; } ?>  value="P">Pago</option>
+                  <select <?php //print $enablecampos ?> class="input-formu" type="text" name="status" >
+                      <option <?php //if ($status == "N") { echo 'selected="true"'; } ?>  value="N">Em aberto</option>
+                      <option <?php //if ($status == "A") { echo 'selected="true"'; } ?>  value="A">Em atraso</option>
+                      <option <?php //if ($status == "F") { echo 'selected="true"'; } ?>  value="F">Falta valor</option>
+                      <option <?php //if ($status == "P") { echo 'selected="true"'; } ?>  value="P">Pago</option>
                   </select>
-                </div>
+                </div>-->
               </div>        
               <div class="row">
                 <div class="col-md-12">

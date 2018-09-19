@@ -9,23 +9,40 @@ if ($tipo == "D"){
   $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
   where g.data_gasto = '".$valorbanco."' and g.deletado='N'";
   $result = $conexao->query($sql);
+  $rel_tipo = "pagas em ".$valor;
 }
 if ($tipo == "T"){
-  $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.tipo = '".$valor."' and g.deletado='N'";
+  if ($valor){
+    $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+    where g.tipo = '".$valor."' and g.deletado='N'";
+  } else {
+    $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+    where g.deletado='N'";
+  }
   $result = $conexao->query($sql);
+
+  if ($valor == 'c')
+    $rel_tipo = "de Combustível";
+  if ($valor == 'i')
+    $rel_tipo = "de IPVA";
+  if ($valor == 'o')
+    $rel_tipo = "de Oficina";
+  if ($valor == "") 
+    $rel_tipo = " de todos os tipos";
+
 }
 if ($tipo == "V"){
   $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
   where g.placa_veiculo = '".$valor."' and g.deletado='N'";
   $result = $conexao->query($sql);
+  $rel_tipo = "do veículo ".$valor;
 }
 $total = 0;
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <p class="titulo-formu imprime">Pagamentos de <?php print $valor;?>
+              <p class="titulo-formu imprime">Despesas <?php print $rel_tipo;?>
                <button class="btn-criar nao-imprime" id="print">Imprimir</button>
 
               </p>

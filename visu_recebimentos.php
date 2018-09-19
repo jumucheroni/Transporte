@@ -16,16 +16,16 @@ include './inc/conexao.php';
               
               <div class="row">
                 <div class="caixa-f">
-                <div class="col-md-4">
+                <div class="col-md-2">
                   <p class="formu-letra">Criança</p>
                 </div>
                 <div class="col-md-2">
                   <p class="formu-letra">Mensalidade</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <p class="formu-letra">Data de Vencimento</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <p class="formu-letra">Status</p>
                 </div>
                 <div class="col-md-2">
@@ -36,22 +36,24 @@ include './inc/conexao.php';
               <div id="resultado" class="row">
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
                   <div class="caixa-fl">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                       <p class="letra-fi "><?php print $row["nome"];?></p>
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi "><?php print $row["mensalidade"];?></p>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <p class="letra-fi "><?php print DbtoDt($row["data_pagamento"]);?></p>
                     </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php $row["status"] == "N" ? print "Em aberto" : print "Pagamento recebido";?></p>
+                    <div class="col-md-3">
+                      <p class="letra-fi "><?php if ($row["status"] == "N") print "Em aberto"; if ($row["status"] == "A") print "Em atraso"; if ($row["status"] == "F") print "Falta Valor"; if ($row["status"] == "P") print "Pagamento recebido";?></p>
                     </div>
                     <div class="col-md-2">
-                      <p class="letra-fi">
-                        <a href="cad_recebimentos.php?acao=PAGAR&id=<?php print $row["id"];?>"><button class="btn-pagar glyphicon glyphicon-pencil" id="manu-contrato"></button></a>
-                      </p>
+                      <?php if ($row["status"] != "P") { ?>
+                        <p class="letra-fi">
+                          <a href="cad_recebimentos.php?acao=PAGAR&id=<?php print $row["id"];?>"><button class="btn-pagar glyphicon glyphicon-pencil" id="manu-contrato"></button></a>
+                        </p>
+                      <?php } ?>
                     </div>
                   </div>
                   <?php }?>

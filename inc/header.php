@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -65,6 +64,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="./mapa.php">Mapa</a></li>
                                 </ul>
+                            </li>
+                            <li>
+                                <a href="logout.php">Logout</a>
                             </li>
                         </ul>
                     </div>

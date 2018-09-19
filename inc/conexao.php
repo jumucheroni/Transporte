@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 $servername = "localhost";
 $username   = "root";
@@ -11,7 +12,6 @@ $conexao = new mysqli($servername, $username, $password, $dbname);
 if ($conexao->connect_error) {
     die("Conexão falhou com banco de dados: " . $conn->connect_error);
 } 
-
 
 function DtToDb($arg) {
 

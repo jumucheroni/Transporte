@@ -3,7 +3,7 @@
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <p class="titulo-formu">Relatório de Pagamentos</p>
+              <p class="titulo-formu">Relatório de Despesas</p>
         
               <div class="row">
                 <div class="col-md-12">
@@ -27,7 +27,8 @@
                 <div class="col-md-6">
                   <p class="letra-fi">Data</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
-                  <select multiple hidden class="input-formu" id="select" name="valor" >
+                  <select hidden class="input-formu" id="select" name="valor" >
+                      <option value="" id="todos">Todos</option>
                       <option value="c" id="c">Combustível</option>
                       <option value="i" id="i">IPVA</option>
                       <option value="o" id="o">Oficina</option>
@@ -52,19 +53,22 @@
               $(".letra-fi").html("Data");
               $("#select").hide();
               $("#text").show();
-              $("#text").addClass("nasc");
+              $("#text").addClass("dtrel");
+              $(".dtrel").mask("99/99/9999");
           }
           if (this.value == 'T') {
               $(".letra-fi").html("Tipo");
               $("#select").show();
               $("#text").hide();
-              $("#text").removeClass("nasc");
+              $(".dtrel").unmask();
+              $("#text").removeClass("dtrel");
           }
           if (this.value == 'V') {
               $(".letra-fi").html("Veículo");
               $("#select").hide();
               $("#text").show();
-              $("#text").removeClass("nasc");
+              $(".dtrel").unmask();
+              $("#text").removeClass("dtrel");
           }
       });
     });

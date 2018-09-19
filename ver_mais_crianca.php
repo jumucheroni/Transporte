@@ -9,9 +9,10 @@ if ($crianca) {
   inner join escola e on e.id = c.id_escola
   where c.id = ". $crianca;
 
-  $sqltrechos = "select ct.cpf_condutor,ct.placa_veiculo,ct.periodo_conducao, t.logradouro_origem,t.cep_origem,t.numero_origem,t.bairro_origem,t.complemento_origem,t.cidade_origem,t.estado_origem,t.logradouro_destino,t.cep_destino,t.numero_destino,t.bairro_destino,t.complemento_destino,t.cidade_destino,t.estado_destino from crianca c
+  $sqltrechos = "select ct.cpf_condutor,co.nome as condutor,ct.placa_veiculo,ct.periodo_conducao, t.logradouro_origem,t.cep_origem,t.numero_origem,t.bairro_origem,t.complemento_origem,t.cidade_origem,t.estado_origem,t.logradouro_destino,t.cep_destino,t.numero_destino,t.bairro_destino,t.complemento_destino,t.cidade_destino,t.estado_destino from crianca c
   inner join trecho t
   inner join criancatrecho ct on c.id = ct.id_crianca and ct.id_trecho = t.id
+  inner join condutor co on co.cpf = ct.cpf_condutor
   where c.id = ". $crianca;
 
 }
@@ -70,10 +71,10 @@ $rowcrianca = @mysqli_fetch_array($result);
              <?php while ($row = @mysqli_fetch_array($resultrecho)){ ?>  
                 <hr>
                 <div class="row">
-                    <div class="col-md-3">
-                      <p class="formu-letra"><?php print $row['cpf_condutor']; ?></p>
-                    </div>
                     <div class="col-md-7">
+                      <p class="formu-letra"><?php print $row['cpf_condutor']." - ".$row["condutor"]; ?></p>
+                    </div>
+                    <div class="col-md-3">
                       <p class="formu-letra"><?php print $row['placa_veiculo']; ?></p>
                     </div>
                     <div class="col-md-2">

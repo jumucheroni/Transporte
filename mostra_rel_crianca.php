@@ -14,21 +14,30 @@ if ($tipo=='E'){
   $rel_tipo = "Escola ".$valor;
 }
 if ($tipo=='P'){
-  $sql = "select c.id,c.nome as Crianca from crianca as c
-  inner join criancatrecho ct on c.id = ct.id_crianca and and ct.deletado='N'
-  where ct.periodo_conducao = '".$valor."' and and c.deletado='N' ";
+  if ($valor){
+    $sql = "select distinct c.id,c.nome as Crianca from crianca as c
+    inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
+    where ct.periodo_conducao = '".$valor."' and c.deletado='N' ";
+  } else {
+    $sql = "select distinct c.id,c.nome as Crianca from crianca as c
+    inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
+    where c.deletado='N' ";
+  }
+
   if ($valor == 'im')
-    $rel_tipo = "Periodo da Ida-Manhã";
+    $rel_tipo = "Período da Ida-Manhã";
   if ($valor == 'it')
-    $rel_tipo = "Periodo da Ida-Tarde";
+    $rel_tipo = "Período da Ida-Tarde";
   if ($valor == 'vm')
-    $rel_tipo = "Periodo da Volta-Manhã";
+    $rel_tipo = "Período da Volta-Manhã";
   if ($valor == 'vt')
-    $rel_tipo = "Periodo da Volta-Tarde";
+    $rel_tipo = "Período da Volta-Tarde";
+  if ($valor == "") 
+    $rel_tipo = "Todos os períodos";
 }
 
 if ($tipo=='V'){
-  $sql = "select c.id,c.nome as Crianca from crianca c
+  $sql = "select distinct c.id,c.nome as Crianca from crianca c
   inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
   where ct.placa_veiculo like '%".$valor."%' and c.deletado='N'";
   $rel_tipo = "Veículo ".$valor;

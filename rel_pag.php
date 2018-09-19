@@ -14,7 +14,7 @@
                 <div class="col-md-7">
                   <div style="padding: 20px;" class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
-                      <input checked type="radio" name="relatorio" value="D">Data de pagamento<br>
+                      <input checked="checked" type="radio" name="relatorio" value="D">Data de pagamento<br>
                     </label>
                     <label class="btn btn-default">
                       <input type="radio" name="relatorio" value="V">Data de vencimento<br>
@@ -30,7 +30,8 @@
                 <div class="col-md-5">
                   <p class="letra-fi">Data</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
-                  <select multiple hidden class="input-formu" id="select" name="valor" >
+                  <select hidden class="input-formu" id="select" name="valor" >
+                      <option value="" >Todos</option>
                       <option value="N">Em aberto</option>
                       <option value="A">Em atraso</option>
                       <option value="F">Falta valor</option>
@@ -56,25 +57,29 @@
               $(".letra-fi").html("Data");
               $("#select").hide();
               $("#text").show();
-              $("#text").addClass("nasc");
+              $("#text").addClass("dtrel");
+              $(".dtrel").mask("99/99/9999");
           }
           if (this.value == 'V') {
               $(".letra-fi").html("Data");
               $("#select").hide();
               $("#text").show();
-              $("#text").addClass("nasc");
+              $("#text").addClass("dtrel");
+              $(".dtrel").mask("99/99/9999");
           }
           if (this.value == 'S') {
               $(".letra-fi").html("Status");
               $("#select").show();
               $("#text").hide();
-              $("#text").removeClass("nasc");
+              $(".dtrel").unmask();
+              $("#text").removeClass("dtrel");
           }
           if (this.value == 'C') {
               $(".letra-fi").html("Criança");
               $("#select").hide();
               $("#text").show();
-              $("#text").removeClass("nasc");
+              $(".dtrel").unmask();
+              $("#text").removeClass("dtrel");
           }
       });
     });
