@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select c.nome,v.placa,cv.* from condutorveiculo cv
             inner join condutor c on c.cpf = cv.cpf_condutor
             inner join veiculo v on v.placa = cv.placa_veiculo
@@ -60,3 +63,5 @@ include './inc/conexao.php';
           </div>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/condveic.js"></script>
+<?php }?>

@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select p.id,a.nome,c.mensalidade,COALESCE(p.data_realizada_pgto,p.data_prevista_pgto) as data_pagamento, p.status from contrato c
     inner join crianca a on c.id_crianca = a.id
     inner join pagamentos p on c.id = p.id_contrato";
@@ -65,4 +68,6 @@ include './inc/conexao.php';
           </div>
         </form>
 
-<?php include './inc/footer.php'; ?>
+<?php include './inc/footer.php'; 
+
+}?>

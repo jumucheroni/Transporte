@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select g.id,g.data_gasto,g.valor_gasto,v.placa from gastos g, veiculo v where v.placa = g.placa_veiculo and g.deletado = 'N' ";
     $result = $conexao->query($sql);
 
@@ -58,4 +61,6 @@ include './inc/conexao.php';
           </div>
         </form>
 
-<?php include './inc/footer.php'; ?>
+<?php include './inc/footer.php'; 
+
+}?>

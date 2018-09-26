@@ -1,130 +1,131 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+      $acao = @$_GET["acao"];
 
-  $acao = @$_GET["acao"];
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
-
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
-
-  $cpf           = str_replace("-", "", @$_POST["cpf"]);
-  $nome          = @$_POST["nome"];
-  $rg            = str_replace("-", "", @$_POST["rg"]);
-  $parentesco    = @$_POST["parentesco"];
-  $telefone      = @$_POST["telefone"];
-  if  ($telefone != "") {
-    $telefone      = explode(";", $telefone); 
-  }
-  $logradouro    = @$_POST["logradouro"];
-  $numero        = @$_POST["numero"];
-  $bairro        = @$_POST["bairro"];
-  $cep           = str_replace("-", "", @$_POST["cep"]);
-  $complemento   = @$_POST["complemento"];
-  $cidade        = @$_POST["cidade"];
-  $estado        = @$_POST["estado"];
-
-  $cpf = str_replace(".", "", $cpf);
-
-  if ($acao=="SALVARCADASTRO"){
-
-    $insertsql = "insert into responsavel (cpf,nome,parentesco,rg,logradouro, cep, numero, bairro, complemento,cidade,estado) values ('".$cpf."','".$nome."','".$parentesco."','".$rg."','".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
-    $insertresult = $conexao->query($insertsql);
-
-    for ($i=0;$i<sizeof($telefone); $i++) {
-      $telefonesql = "insert into telefone (telefone,cpf_responsavel) values ('".$telefone[$i]."','".$cpf."')";
-      $telefoneresult = $conexao->query($telefonesql);
-    }
-    if ($insertresult){
-        $mensagem = "Responsável cadastrado com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar o Responsável!";
+    if (!$acao){
+      $acao = @$_POST["acao"];
     }
 
-}else if ($acao =="SALVARUPDATE"){
-      
-      $updatesql = "update responsavel set nome = '".$nome."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."', rg = '".$rg."', parentesco = '".$parentesco."', cidade = '".$cidade."', estado = '".$estado."' where cpf='".$cpf."'";
-      $updateresult = $conexao->query($updatesql);
+      $cpf           = str_replace("-", "", @$_POST["cpf"]);
+      $nome          = @$_POST["nome"];
+      $rg            = str_replace("-", "", @$_POST["rg"]);
+      $parentesco    = @$_POST["parentesco"];
+      $telefone      = @$_POST["telefone"];
+      if  ($telefone != "") {
+        $telefone      = explode(";", $telefone); 
+      }
+      $logradouro    = @$_POST["logradouro"];
+      $numero        = @$_POST["numero"];
+      $bairro        = @$_POST["bairro"];
+      $cep           = str_replace("-", "", @$_POST["cep"]);
+      $complemento   = @$_POST["complemento"];
+      $cidade        = @$_POST["cidade"];
+      $estado        = @$_POST["estado"];
 
-      $deletetelefone = "delete from telefone where cpf_responsavel = '".$cpf."'";
-      $telefonedelete = $conexao->query($deletetelefone);
-      for ( $i=0;$i<sizeof($telefone); $i++) {
-        if ($telefone[$i] != ""){
+      $cpf = str_replace(".", "", $cpf);
+
+      if ($acao=="SALVARCADASTRO"){
+
+        $insertsql = "insert into responsavel (cpf,nome,parentesco,rg,logradouro, cep, numero, bairro, complemento,cidade,estado) values ('".$cpf."','".$nome."','".$parentesco."','".$rg."','".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
+        $insertresult = $conexao->query($insertsql);
+
+        for ($i=0;$i<sizeof($telefone); $i++) {
           $telefonesql = "insert into telefone (telefone,cpf_responsavel) values ('".$telefone[$i]."','".$cpf."')";
           $telefoneresult = $conexao->query($telefonesql);
         }
-      }
-      if ($updateresult){
-          $mensagem = "Responsável atualizado com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar o Responsável!";
-      }
-    } 
+        if ($insertresult){
+            $mensagem = "Responsável cadastrado com sucesso!";
+        }else{
+            $mensagem = "Erro ao cadastrar o Responsável!";
+        }
 
-if (!$cpf){
-  $cpf = @$_GET["id"]; 
-}
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update responsavel set nome = '".$nome."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."', rg = '".$rg."', parentesco = '".$parentesco."', cidade = '".$cidade."', estado = '".$estado."' where cpf='".$cpf."'";
+          $updateresult = $conexao->query($updatesql);
 
-if ($acao == "DELETAR"){
-  $select = "select cpf_responsavel from crianca where deletado = 'N' and cpf_responsavel=".$cpf."";
-  $selectresult = $conexao->query($select);
+          $deletetelefone = "delete from telefone where cpf_responsavel = '".$cpf."'";
+          $telefonedelete = $conexao->query($deletetelefone);
+          for ( $i=0;$i<sizeof($telefone); $i++) {
+            if ($telefone[$i] != ""){
+              $telefonesql = "insert into telefone (telefone,cpf_responsavel) values ('".$telefone[$i]."','".$cpf."')";
+              $telefoneresult = $conexao->query($telefonesql);
+            }
+          }
+          if ($updateresult){
+              $mensagem = "Responsável atualizado com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar o Responsável!";
+          }
+        } 
 
-  if ($selectresult->num_rows == 0) {       
-      
-    $deletesql = "update responsavel set deletado = 'S' where cpf = '".$cpf."'";
-    $deleteresult = $conexao->query($deletesql);
-
-    $deletetelefone = "update telefone set deletado = 'S' where cpf_responsavel = '".$cpf."'";
-    $telefonedelete = $conexao->query($deletetelefone);
-
-    if ($deleteresult){
-        $mensagem = "Responsável deletado com sucesso!";
-    }else{
-        $mensagem = "Erro ao deletar o Responsável!";
+    if (!$cpf){
+      $cpf = @$_GET["id"]; 
     }
-  } else {
-    $mensagem = "Erro ao deletar o Responsável! Responsável já possui crianças";
-  }
-}
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from responsavel where cpf='" . $cpf ."'";
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+    if ($acao == "DELETAR"){
+      $select = "select cpf_responsavel from crianca where deletado = 'N' and cpf_responsavel=".$cpf."";
+      $selectresult = $conexao->query($select);
 
-    $cpf           = $row["cpf"];
-    $nome          = $row["nome"];
-    $rg            = $row["rg"];
-    $parentesco    = $row["parentesco"];
-    $logradouro    = $row["logradouro"];
-    $numero        = $row["numero"];
-    $bairro        = $row["bairro"];
-    $cep           = $row["cep"];
-    $complemento   = $row["complemento"];
-    $cidade        = $row["cidade"];
-    $estado        = $row["estado"];
+      if ($selectresult->num_rows == 0) {       
+          
+        $deletesql = "update responsavel set deletado = 'S' where cpf = '".$cpf."'";
+        $deleteresult = $conexao->query($deletesql);
 
-    $sqltelefone = "select * from telefone where cpf_responsavel='" . $cpf ."'";
-    $resultelefone = $conexao->query($sqltelefone);
-    while ($rowtelefone = @mysqli_fetch_array($resultelefone)) {
-        $telefone .= $rowtelefone["telefone"].";";
+        $deletetelefone = "update telefone set deletado = 'S' where cpf_responsavel = '".$cpf."'";
+        $telefonedelete = $conexao->query($deletetelefone);
+
+        if ($deleteresult){
+            $mensagem = "Responsável deletado com sucesso!";
+        }else{
+            $mensagem = "Erro ao deletar o Responsável!";
+        }
+      } else {
+        $mensagem = "Erro ao deletar o Responsável! Responsável já possui crianças";
+      }
     }
-  }
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "readonly";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "readonly";
-    $enablecampos = "readonly";
-  }
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from responsavel where cpf='" . $cpf ."'";
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-if ($mensagem){
+        $cpf           = $row["cpf"];
+        $nome          = $row["nome"];
+        $rg            = $row["rg"];
+        $parentesco    = $row["parentesco"];
+        $logradouro    = $row["logradouro"];
+        $numero        = $row["numero"];
+        $bairro        = $row["bairro"];
+        $cep           = $row["cep"];
+        $complemento   = $row["complemento"];
+        $cidade        = $row["cidade"];
+        $estado        = $row["estado"];
+
+        $sqltelefone = "select * from telefone where cpf_responsavel='" . $cpf ."'";
+        $resultelefone = $conexao->query($sqltelefone);
+        while ($rowtelefone = @mysqli_fetch_array($resultelefone)) {
+            $telefone .= $rowtelefone["telefone"].";";
+        }
+      }
+
+      if ($acao == "ALTERAR"){
+        $enablechave = "readonly";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "readonly";
+        $enablecampos = "readonly";
+      }
+
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -233,3 +234,5 @@ if ($mensagem){
     }
   });
 </script>
+<script src="js/responsavel.js"></script>
+<?php } ?>

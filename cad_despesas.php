@@ -1,86 +1,87 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+      $acao = @$_GET["acao"];
 
-  $acao = @$_GET["acao"];
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
-
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
-
-  $id             = @$_POST["id"];
-  $placa_veiculo  = @$_POST["placa_veiculo"];
-  $data_gasto     = DtToDb(@$_POST["data_gasto"]);
-  $valor_gasto    = str_replace(",", ".", @$_POST["valor_gasto"]);
-  $tipo           = @$_POST["tipo"];
-  $observacao     = @$_POST["observacao"];
-
-if ($acao=="SALVARCADASTRO"){
-
-    $insertsql = "insert into gastos (placa_veiculo,data_gasto,valor_gasto,tipo,observacao) values ('".$placa_veiculo."','".$data_gasto."',".$valor_gasto.",'".$tipo."','".$observacao."')";
-    $insertresult = $conexao->query($insertsql);
-    if ($insertresult){
-        $mensagem = "Despesa cadastrada com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar a Despesa!";
+    if (!$acao){
+      $acao = @$_POST["acao"];
     }
 
-}else if ($acao =="SALVARUPDATE"){
-      
-      $updatesql = "update gastos set placa_veiculo = '".$placa_veiculo."',data_gasto = '".$data_gasto."',valor_gasto = ".$valor_gasto.",tipo = '".$tipo."',observacao = '".$observacao."' where id = ".$id;
-      $updateresult = $conexao->query($updatesql);
-      if ($updateresult){
-          $mensagem = "Despesa atualizada com sucesso!";
+      $id             = @$_POST["id"];
+      $placa_veiculo  = @$_POST["placa_veiculo"];
+      $data_gasto     = DtToDb(@$_POST["data_gasto"]);
+      $valor_gasto    = str_replace(",", ".", @$_POST["valor_gasto"]);
+      $tipo           = @$_POST["tipo"];
+      $observacao     = @$_POST["observacao"];
+
+    if ($acao=="SALVARCADASTRO"){
+
+        $insertsql = "insert into gastos (placa_veiculo,data_gasto,valor_gasto,tipo,observacao) values ('".$placa_veiculo."','".$data_gasto."',".$valor_gasto.",'".$tipo."','".$observacao."')";
+        $insertresult = $conexao->query($insertsql);
+        if ($insertresult){
+            $mensagem = "Despesa cadastrada com sucesso!";
+        }else{
+            $mensagem = "Erro ao cadastrar a Despesa!";
+        }
+
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update gastos set placa_veiculo = '".$placa_veiculo."',data_gasto = '".$data_gasto."',valor_gasto = ".$valor_gasto.",tipo = '".$tipo."',observacao = '".$observacao."' where id = ".$id;
+          $updateresult = $conexao->query($updatesql);
+          if ($updateresult){
+              $mensagem = "Despesa atualizada com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar a Despesa!";
+          }
+        } 
+
+    if (!$id){
+      $id = @$_GET["id"];
+    }
+
+    if ($acao == "DELETAR"){
+          
+      $deletesql = "update gastos set deletado = 'S' where id = ".$id;
+      $deleteresult = $conexao->query($deletesql);
+      if ($deleteresult){
+          $mensagem = "Despesa deletada com sucesso!";
       }else{
-          $mensagem = "Erro ao atualizar a Despesa!";
+          $mensagem = "Erro ao deletar a Despesa!";
       }
-    } 
+    }
 
-if (!$id){
-  $id = @$_GET["id"];
-}
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from gastos where id=".$id;
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-if ($acao == "DELETAR"){
-      
-  $deletesql = "update gastos set deletado = 'S' where id = ".$id;
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Despesa deletada com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar a Despesa!";
-  }
-}
+      $id             = $row["id"];
+      $placa_veiculo  = $row["placa_veiculo"];
+      $data_gasto     = DbtoDt($row["data_gasto"]);
+      $valor_gasto    = $row["valor_gasto"];
+      $tipo           = $row["tipo"];
+      $observacao     = $row["observacao"];
+      }
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from gastos where id=".$id;
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+      if ($acao == "ALTERAR"){
+        $enablechave = "disabled";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "disabled";
+        $enablecampos = "disabled";
+      }
 
-  $id             = $row["id"];
-  $placa_veiculo  = $row["placa_veiculo"];
-  $data_gasto     = DbtoDt($row["data_gasto"]);
-  $valor_gasto    = $row["valor_gasto"];
-  $tipo           = $row["tipo"];
-  $observacao     = $row["observacao"];
-  }
+      $veicsql = "select placa from veiculo";
+      $veicresult = $conexao->query($veicsql);
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "disabled";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "disabled";
-    $enablecampos = "disabled";
-  }
-
-  $veicsql = "select placa from veiculo";
-  $veicresult = $conexao->query($veicsql);
-
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -166,3 +167,5 @@ if ($mensagem){
     });
 
   </script>
+
+<?php } ?>

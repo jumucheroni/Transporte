@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; ?>
-<form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+  include './inc/header.php'; ?>
+      <form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
@@ -79,3 +82,5 @@
     });
 
   </script>
+
+<?php } ?>

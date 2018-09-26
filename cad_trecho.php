@@ -1,178 +1,180 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-  $acao = @$_GET["acao"];
+      $acao = @$_GET["acao"];
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
-  $cpf_responsavel = "";
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
+      $cpf_responsavel = "";
 
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
+    if (!$acao){
+      $acao = @$_POST["acao"];
+    }
 
-  $id_crianca       = @$_POST["crianca"];
-  if (!$id_crianca) {
-   $id_crianca       = @$_GET["id_crianca"]; 
-  }
-
-  $id_trecho        = @$_POST["id_trecho"];
-  if (!$id_trecho) {
-   $id_trecho       = @$_GET["id_trecho"]; 
-  }
-
-  $tipo             = @$_POST["tipo"];
-
-  $conducao = @$_POST["conducao"];
-  if (!empty($conducao)) {
-    $conducao = explode(";", $conducao);
-    $cpf_condutor = $conducao[0];
-    $placa_veiculo = $conducao[1];
-    $periodo = $conducao[2];    
-  } else {
-    $cpf_condutor = "";
-    $placa_veiculo = "";
-    $periodo = "";
-  }
-
-  $cep_origem         = str_replace("-", "", @$_POST["cep_origem"]);
-  $logradouro_origem  = @$_POST["logradouro_origem"];
-  $numero_origem      = @$_POST["numero_origem"];
-  $complemento_origem = @$_POST["complemento_origem"];
-  $bairro_origem      = @$_POST["bairro_origem"];
-  $cidade_origem      = @$_POST["cidade_origem"];
-  $estado_origem      = @$_POST["estado_origem"];
-
-  $cep_destino         = str_replace("-", "", @$_POST["cep_destino"]);
-  $logradouro_destino  = @$_POST["logradouro_destino"];
-  $numero_destino      = @$_POST["numero_destino"];
-  $complemento_destino = @$_POST["complemento_destino"];
-  $bairro_destino      = @$_POST["bairro_destino"];
-  $cidade_destino      = @$_POST["cidade_destino"];
-  $estado_destino      = @$_POST["estado_destino"];
-
-if ($acao=="SALVARCADASTRO"){
-    $selectsql = "select periodo_conducao,id_crianca from criancatrecho where periodo_conducao= '".$periodo."' and id_crianca = ".$id_crianca;
-    $selectsqlresult = $conexao->query($selectsql);
-
-    if ($selectsqlresult->num_rows > 0) {
-        $mensagem = "Transporte já cadastrado para essa criança!";
-    } else {
-      $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,cidade_origem,estado_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino,cidade_destino,estado_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$cidade_origem."','".$estado_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."','".$cidade_destino."','".$estado_destino."')";
-
-      $insertresult = $conexao->query($insertsql);
-
-      if ($insertresult) {
-        $id_trecho = $conexao->insert_id;
-
-        $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao,id_contrato) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."',null)";
-
-        $insertcritrechoresult = $conexao->query($insertcritrechosql);
+      $id_crianca       = @$_POST["crianca"];
+      if (!$id_crianca) {
+       $id_crianca       = @$_GET["id_crianca"]; 
       }
 
-      if ($insertresult && $insertcritrechoresult){
-          $mensagem = "Transporte cadastrado com sucesso!";
-      }else{
-          $mensagem = "Erro ao cadastrar o Transporte!";
+      $id_trecho        = @$_POST["id_trecho"];
+      if (!$id_trecho) {
+       $id_trecho       = @$_GET["id_trecho"]; 
+      }
+
+      $tipo             = @$_POST["tipo"];
+
+      $conducao = @$_POST["conducao"];
+      if (!empty($conducao)) {
+        $conducao = explode(";", $conducao);
+        $cpf_condutor = $conducao[0];
+        $placa_veiculo = $conducao[1];
+        $periodo = $conducao[2];    
+      } else {
+        $cpf_condutor = "";
+        $placa_veiculo = "";
+        $periodo = "";
+      }
+
+      $cep_origem         = str_replace("-", "", @$_POST["cep_origem"]);
+      $logradouro_origem  = @$_POST["logradouro_origem"];
+      $numero_origem      = @$_POST["numero_origem"];
+      $complemento_origem = @$_POST["complemento_origem"];
+      $bairro_origem      = @$_POST["bairro_origem"];
+      $cidade_origem      = @$_POST["cidade_origem"];
+      $estado_origem      = @$_POST["estado_origem"];
+
+      $cep_destino         = str_replace("-", "", @$_POST["cep_destino"]);
+      $logradouro_destino  = @$_POST["logradouro_destino"];
+      $numero_destino      = @$_POST["numero_destino"];
+      $complemento_destino = @$_POST["complemento_destino"];
+      $bairro_destino      = @$_POST["bairro_destino"];
+      $cidade_destino      = @$_POST["cidade_destino"];
+      $estado_destino      = @$_POST["estado_destino"];
+
+    if ($acao=="SALVARCADASTRO"){
+        $selectsql = "select periodo_conducao,id_crianca from criancatrecho where periodo_conducao= '".$periodo."' and id_crianca = ".$id_crianca;
+        $selectsqlresult = $conexao->query($selectsql);
+
+        if ($selectsqlresult->num_rows > 0) {
+            $mensagem = "Transporte já cadastrado para essa criança!";
+        } else {
+          $insertsql = "insert into trecho (tipo,logradouro_origem,cep_origem,numero_origem,bairro_origem,complemento_origem,cidade_origem,estado_origem,logradouro_destino,cep_destino,numero_destino,bairro_destino,complemento_destino,cidade_destino,estado_destino) values ('".$tipo."','".$logradouro_origem."','".$cep_origem."','".$numero_origem."','".$bairro_origem."','".$complemento_origem."','".$cidade_origem."','".$estado_origem."','".$logradouro_destino."','".$cep_destino."','".$numero_destino."','".$bairro_destino."','".$complemento_destino."','".$cidade_destino."','".$estado_destino."')";
+
+          $insertresult = $conexao->query($insertsql);
+
+          if ($insertresult) {
+            $id_trecho = $conexao->insert_id;
+
+            $insertcritrechosql = "insert into criancatrecho (id_trecho,id_crianca,cpf_condutor,placa_veiculo,periodo_conducao,id_contrato) values (".$id_trecho.",".$id_crianca.",'".$cpf_condutor."','".$placa_veiculo."','".$periodo."',null)";
+
+            $insertcritrechoresult = $conexao->query($insertcritrechosql);
+          }
+
+          if ($insertresult && $insertcritrechoresult){
+              $mensagem = "Transporte cadastrado com sucesso!";
+          }else{
+              $mensagem = "Erro ao cadastrar o Transporte!";
+          }
+        }
+
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update trecho set tipo = '".$tipo."', cep_origem = '".$cep_origem."', logradouro_origem = '".$logradouro_origem."', numero_origem = '".$numero_origem."', bairro_origem = '".$bairro_origem."', complemento_origem = '".$complemento_origem."', cidade_origem = '".$cidade_origem."', estado_origem = '".$estado_origem."', cep_destino = '".$cep_destino."', logradouro_destino = '".$logradouro_destino."', numero_destino = '".$numero_destino."', bairro_destino = '".$bairro_destino."', complemento_destino = '".$complemento_destino."', cidade_destino = '".$cidade_destino."', estado_destino = '".$estado_destino."' where id=".$id_trecho;
+
+          $updatecritrechosql = "update criancatrecho set cpf_condutor = '".$cpf_condutor."', placa_veiculo = '".$placa_veiculo."', periodo_conducao = '".$periodo."' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+
+          $updateresult = $conexao->query($updatesql);
+          $updatecritrechoresult = $conexao->query($updatecritrechosql);
+
+          if ($updateresult && $updatecritrechoresult){
+              $mensagem = "Transporte atualizado com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar o Transporte!";
+          }
+        } 
+
+    if (!$id_trecho && $id_crianca){
+      $id_trecho = @$_GET["id_trecho"]; 
+      $id_crianca = @$_GET["id_crianca"];
+    }
+
+    if ($acao == "DELETAR"){
+      $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca." where c.deletado = 'N'";
+      $selectresult = $conexao->query($select);
+
+      if ($selectresult->num_rows == 0) {      
+          
+        $deletesql = "update criancatrecho set deletado = 'S' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+        $deletesql2 = "update trecho set deletado = 'S' where id = ".$id_trecho;
+
+        $deleteresult = $conexao->query($deletesql);
+        $deleteresult2 = $conexao->query($deletesql2);
+        
+        if ($deleteresult and $deleteresult2){
+            $mensagem = "Transporte deletado com sucesso!";
+        }else{
+            $mensagem = "Erro ao deletar o Transporte!";
+        }
+      } else {
+        $mensagem = "Erro ao deletar o Transporte! Transporte já associado a um contrato ";
       }
     }
 
-}else if ($acao =="SALVARUPDATE"){
-      
-      $updatesql = "update trecho set tipo = '".$tipo."', cep_origem = '".$cep_origem."', logradouro_origem = '".$logradouro_origem."', numero_origem = '".$numero_origem."', bairro_origem = '".$bairro_origem."', complemento_origem = '".$complemento_origem."', cidade_origem = '".$cidade_origem."', estado_origem = '".$estado_origem."', cep_destino = '".$cep_destino."', logradouro_destino = '".$logradouro_destino."', numero_destino = '".$numero_destino."', bairro_destino = '".$bairro_destino."', complemento_destino = '".$complemento_destino."', cidade_destino = '".$cidade_destino."', estado_destino = '".$estado_destino."' where id=".$id_trecho;
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select t.*,ct.* from criancatrecho ct
+        inner join crianca c on c.id = ct.id_crianca
+        inner join condutor o on o.cpf = ct.cpf_condutor
+        inner join veiculo v on v.placa = ct.placa_veiculo
+        inner join trecho t on t.id = ct.id_trecho 
+        where ct.id_trecho = ".$id_trecho." and ct.id_crianca = ".$id_crianca;
 
-      $updatecritrechosql = "update criancatrecho set cpf_condutor = '".$cpf_condutor."', placa_veiculo = '".$placa_veiculo."', periodo_conducao = '".$periodo."' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-      $updateresult = $conexao->query($updatesql);
-      $updatecritrechoresult = $conexao->query($updatecritrechosql);
+        $id_crianca       = $row["id_crianca"];
+        $id_trecho        = $row["id_trecho"];
+        $tipo             = $row["tipo"];
+        $cpf_condutor     = $row["cpf_condutor"];
+        $placa_veiculo    = $row["placa_veiculo"];
+        $periodo          = $row["periodo_conducao"];
 
-      if ($updateresult && $updatecritrechoresult){
-          $mensagem = "Transporte atualizado com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar o Transporte!";
+        $cep_origem         = $row["cep_origem"];
+        $logradouro_origem  = $row["logradouro_origem"];
+        $numero_origem      = $row["numero_origem"];
+        $complemento_origem = $row["complemento_origem"];
+        $bairro_origem      = $row["bairro_origem"];
+        $cidade_origem      = $row["cidade_origem"];
+        $estado_origem      = $row["estado_origem"];
+
+        $cep_destino         = $row["cep_destino"];
+        $logradouro_destino  = $row["logradouro_destino"];
+        $numero_destino      = $row["numero_destino"];
+        $complemento_destino = $row["complemento_destino"];
+        $bairro_destino      = $row["bairro_destino"];
+        $cidade_destino      = $row["cidade_destino"];
+        $estado_destino      = $row["estado_destino"];
       }
-    } 
 
-if (!$id_trecho && $id_crianca){
-  $id_trecho = @$_GET["id_trecho"]; 
-  $id_crianca = @$_GET["id_crianca"];
-}
+      if ($acao == "ALTERAR"){
+        $enablechave = "readonly";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "readonly";
+        $enablecampos = "readonly";
+      }
 
-if ($acao == "DELETAR"){
-  $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca." where c.deletado = 'N'";
-  $selectresult = $conexao->query($select);
+      $criancasql = "select id,nome from crianca where deletado = 'N' ";
+      $criancaresult = $conexao->query($criancasql);
 
-  if ($selectresult->num_rows == 0) {      
-      
-    $deletesql = "update criancatrecho set deletado = 'S' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
-    $deletesql2 = "update trecho set deletado = 'S' where id = ".$id_trecho;
+      $conducaosql = "select * from condutorveiculo where deletado = 'N' ";
+      $conducaoresult = $conexao->query($conducaosql);
 
-    $deleteresult = $conexao->query($deletesql);
-    $deleteresult2 = $conexao->query($deletesql2);
-    
-    if ($deleteresult and $deleteresult2){
-        $mensagem = "Transporte deletado com sucesso!";
-    }else{
-        $mensagem = "Erro ao deletar o Transporte!";
-    }
-  } else {
-    $mensagem = "Erro ao deletar o Transporte! Transporte já associado a um contrato ";
-  }
-}
-
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select t.*,ct.* from criancatrecho ct
-    inner join crianca c on c.id = ct.id_crianca
-    inner join condutor o on o.cpf = ct.cpf_condutor
-    inner join veiculo v on v.placa = ct.placa_veiculo
-    inner join trecho t on t.id = ct.id_trecho 
-    where ct.id_trecho = ".$id_trecho." and ct.id_crianca = ".$id_crianca;
-
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
-
-    $id_crianca       = $row["id_crianca"];
-    $id_trecho        = $row["id_trecho"];
-    $tipo             = $row["tipo"];
-    $cpf_condutor     = $row["cpf_condutor"];
-    $placa_veiculo    = $row["placa_veiculo"];
-    $periodo          = $row["periodo_conducao"];
-
-    $cep_origem         = $row["cep_origem"];
-    $logradouro_origem  = $row["logradouro_origem"];
-    $numero_origem      = $row["numero_origem"];
-    $complemento_origem = $row["complemento_origem"];
-    $bairro_origem      = $row["bairro_origem"];
-    $cidade_origem      = $row["cidade_origem"];
-    $estado_origem      = $row["estado_origem"];
-
-    $cep_destino         = $row["cep_destino"];
-    $logradouro_destino  = $row["logradouro_destino"];
-    $numero_destino      = $row["numero_destino"];
-    $complemento_destino = $row["complemento_destino"];
-    $bairro_destino      = $row["bairro_destino"];
-    $cidade_destino      = $row["cidade_destino"];
-    $estado_destino      = $row["estado_destino"];
-  }
-
-  if ($acao == "ALTERAR"){
-    $enablechave = "readonly";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "readonly";
-    $enablecampos = "readonly";
-  }
-
-  $criancasql = "select id,nome from crianca where deletado = 'N' ";
-  $criancaresult = $conexao->query($criancasql);
-
-  $conducaosql = "select * from condutorveiculo where deletado = 'N' ";
-  $conducaoresult = $conexao->query($conducaosql);
-
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -317,7 +319,7 @@ if ($mensagem){
 <?php include './inc/footer.php'; ?>
 
 <script>
-  $(document).ready(function(){
+  /*$(document).ready(function(){
     var cep_origem = $("#cep_origem").val();
     if (cep_origem) {
       cep_origem = cep_origem.replace("-","");
@@ -333,5 +335,7 @@ if ($mensagem){
       var cidade_destino = $("#cid_destino").val();
       carregaestadocidade_destino(cep_destino,estado_destino,cidade_destino);
     }
-  });
+  });*/
 </script>
+<script src="js/trecho.js"></script>
+<?php } ?>

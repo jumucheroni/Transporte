@@ -9,21 +9,25 @@ $(document).ready(function(){
 			success: function(result){
 				switch (result.erro) {
 					case 0: {
-						alert("Login Efetuado com sucesso. Você será redirecionado");
+						$("#alert").html('<div class="alert bg-success" role="alert"> Login Efetuado com sucesso. Você será redirecionado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
 						window.location = result.url;
+						$("#alert").show();
 						break;
 					}
 					case 1: {
-						alert("Você já está logado. Você será redirecionado");
+						$("#alert").html('<div class="alert bg-warning" role="alert"> Você já está logado. Você será redirecionado <a id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
 						window.location = result.url;
+						$("#alert").show();
 						break;
 					}
 					case 2: {
-						alert("Usuario ou senha inválida");
+						$("#alert").html('<div class="alert bg-danger" role="alert"> Usuario ou senha inválida <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+						$("#alert").show();
 						break;
 					}
 					case 3: {
-						alert("Campos preenchidos incorretamente");
+						$("#alert").html('<div class="alert bg-danger" role="alert"> Campos preenchidos incorretamente <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+						$("#alert").show();
 						break;
 					}
 				}
@@ -31,9 +35,20 @@ $(document).ready(function(){
 		});
 		return false;
 	});
+
+	$("#close-alert").on('click' , function(){
+		console.log("TESTE");
+		$("#alert").hide();
+	});
+	
 	$("#cadastrar").click(function(){
 		$("#cadastro").show();
 		$("#logar").hide();
+	});
+
+	$("#voltar").click(function(){
+		$("#cadastro").hide();
+		$("#logar").show();
 	});
 
 	$("#salvar").click(function(){

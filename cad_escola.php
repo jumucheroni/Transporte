@@ -1,100 +1,102 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-  $acao = @$_GET["acao"];
+      $acao = @$_GET["acao"];
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
-
-  $n_ident       = @$_POST["n_ident"];
-  $nome          = @$_POST["nome"];
-  $tipo          = @$_POST["tipo"];
-  $logradouro    = @$_POST["logradouro"];
-  $numero        = @$_POST["numero"];
-  $bairro        = @$_POST["bairro"];
-  $cep           =  str_replace("-", "", @$_POST["cep"]);
-  $complemento   = @$_POST["complemento"];
-  $estado        = @$_POST["estado"];
-  $cidade        = @$_POST["cidade"];
-
-if ($acao=="SALVARCADASTRO"){
-
-    $insertsql = "insert into escola (nome,tipo,logradouro, numero, bairro, cep, complemento,cidade,estado) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."','".$cidade."','".$estado."')";
-    $insertresult = $conexao->query($insertsql);
-
-    if ($insertresult){
-        $mensagem = "Escola cadastrada com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar a Escola!";
+    if (!$acao){
+      $acao = @$_POST["acao"];
     }
 
-}else if ($acao =="SALVARUPDATE"){
+      $n_ident       = @$_POST["n_ident"];
+      $nome          = @$_POST["nome"];
+      $tipo          = @$_POST["tipo"];
+      $logradouro    = @$_POST["logradouro"];
+      $numero        = @$_POST["numero"];
+      $bairro        = @$_POST["bairro"];
+      $cep           =  str_replace("-", "", @$_POST["cep"]);
+      $complemento   = @$_POST["complemento"];
+      $estado        = @$_POST["estado"];
+      $cidade        = @$_POST["cidade"];
+
+    if ($acao=="SALVARCADASTRO"){
+
+        $insertsql = "insert into escola (nome,tipo,logradouro, numero, bairro, cep, complemento,cidade,estado) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."','".$cidade."','".$estado."')";
+        $insertresult = $conexao->query($insertsql);
+
+        if ($insertresult){
+            $mensagem = "Escola cadastrada com sucesso!";
+        }else{
+            $mensagem = "Erro ao cadastrar a Escola!";
+        }
+
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' , estado = '".$estado."' , cidade = '".$cidade."' where id='".$n_ident."'";
+          $updateresult = $conexao->query($updatesql);
+
+          if ($updateresult){
+              $mensagem = "Escola atualizada com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar a Escola!";
+          }
+        } 
+
+    if (!$n_ident){
+      $n_ident = @$_GET["id"]; 
+    }
+
+    if ($acao == "DELETAR"){
+      $select = "select id_escola from crianca where deletado = 'N' and id_escola=".$n_ident."";
+      $selectresult = $conexao->query($select);
+
+      if ($selectresult->num_rows == 0) {         
       
-      $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' , estado = '".$estado."' , cidade = '".$cidade."' where id='".$n_ident."'";
-      $updateresult = $conexao->query($updatesql);
-
-      if ($updateresult){
-          $mensagem = "Escola atualizada com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar a Escola!";
+        $deletesql = "update escola set deletado = 'S' where id = '".$n_ident."'";
+        $deleteresult = $conexao->query($deletesql);
+        if ($deleteresult){
+            $mensagem = "Escola deletada com sucesso!";
+        }else{
+            $mensagem = "Erro ao deletar a Escola!";
+        }
+      } else {
+        $mensagem = "Erro ao deletar a Escola! Escola já possui crianças";
       }
-    } 
-
-if (!$n_ident){
-  $n_ident = @$_GET["id"]; 
-}
-
-if ($acao == "DELETAR"){
-  $select = "select id_escola from crianca where deletado = 'N' and id_escola=".$n_ident."";
-  $selectresult = $conexao->query($select);
-
-  if ($selectresult->num_rows == 0) {         
-  
-    $deletesql = "update escola set deletado = 'S' where id = '".$n_ident."'";
-    $deleteresult = $conexao->query($deletesql);
-    if ($deleteresult){
-        $mensagem = "Escola deletada com sucesso!";
-    }else{
-        $mensagem = "Erro ao deletar a Escola!";
     }
-  } else {
-    $mensagem = "Erro ao deletar a Escola! Escola já possui crianças";
-  }
-}
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from escola where id='" . $n_ident ."'";
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from escola where id='" . $n_ident ."'";
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-    $n_ident       = $row["id"];
-    $nome          = $row["nome"];
-    $tipo          = $row["tipo"];
-    $logradouro    = $row["logradouro"];
-    $numero        = $row["numero"];
-    $bairro        = $row["bairro"];
-    $cep           = $row["cep"];
-    $complemento   = $row["complemento"];
-    $cidade        = $row["cidade"];    
-    $estado        = $row["estado"];
-  }
+        $n_ident       = $row["id"];
+        $nome          = $row["nome"];
+        $tipo          = $row["tipo"];
+        $logradouro    = $row["logradouro"];
+        $numero        = $row["numero"];
+        $bairro        = $row["bairro"];
+        $cep           = $row["cep"];
+        $complemento   = $row["complemento"];
+        $cidade        = $row["cidade"];    
+        $estado        = $row["estado"];
+      }
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "readonly";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "readonly";
-    $enablecampos = "readonly";
-  }
+      if ($acao == "ALTERAR"){
+        $enablechave = "readonly";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "readonly";
+        $enablecampos = "readonly";
+      }
 
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -195,4 +197,6 @@ if ($mensagem){
     }
   });
 </script>
+<script src="js/escola.js"></script>
+<?php } ?>
 

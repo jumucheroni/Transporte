@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select c.id,a.nome,c.mensalidade,c.dia_vencimento_mensalidade from contrato c, crianca a where c.id_crianca = a.id and c.deletado = 'N' ";
     $result = $conexao->query($sql);
 
@@ -59,3 +62,6 @@ include './inc/conexao.php';
         </form>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/contrato.js"></script>
+
+<?php }?>

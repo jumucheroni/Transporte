@@ -1,6 +1,6 @@
 
 body { 
-	overflow-x: hidden; 
+	 
 }
 
 .dropdown-menu-principal {
@@ -79,23 +79,6 @@ body {
 	font-size: 18px;
 	font-weight: 300;
 	padding-left: 5px;
-}
-
-.btn-criar {
-	background-color: #dfe0df;
-	color:#737373;
-	font-size: 15px;
-	font-weight: bold;
-	float: right;
-	padding: 8px 20px 8px 20px;
-	border-radius: 5px;
-	margin-right: 5px;
-	outline: 0;
-	border: none;	
-}
-
-.btn-criar:hover {
-	background-color: #c4c4c4;
 }
 
 .btn-cancelar {
@@ -218,18 +201,7 @@ body {
       background-color: #515151;
 } 
 
-@media print {
-  body {
-    visibility: hidden;
-  }
-  .imprime {
-    visibility: visible;
 
-  }
-  .nao-imprime {
-    visibility: hidden;
-  }
-}
 
 .divisor-menu {
 	width: 100%;

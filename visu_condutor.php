@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select nome,cpf,pgu from condutor where deletado = 'N' ";
     $result = $conexao->query($sql);
 ?>
@@ -57,3 +60,5 @@ include './inc/conexao.php';
           </div>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/condutor.js"></script>
+<?php }?>

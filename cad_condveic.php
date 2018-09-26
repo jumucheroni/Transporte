@@ -1,103 +1,104 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+      $acao = @$_GET["acao"];
 
-  $acao = @$_GET["acao"];
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
+    if (!$acao){
+      $acao = @$_POST["acao"];
+    }
 
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
+      $veiculo        = @$_POST["veiculo"];
+      $condutor       = @$_POST["condutor"];
+      $periodo        = @$_POST["periodo"];
 
-  $veiculo        = @$_POST["veiculo"];
-  $condutor       = @$_POST["condutor"];
-  $periodo        = @$_POST["periodo"];
+    if ($acao=="SALVARCADASTRO"){
 
-if ($acao=="SALVARCADASTRO"){
+        $selectsql = "select placa_veiculo,cpf_condutor,periodo from condutorveiculo where placa_veiculo = '".$veiculo."' and cpf_condutor = '".$condutor."' and periodo ='".$periodo."' and deletado = 'N' ";
+        $selectsqlresult = $conexao->query($selectsql);
 
-    $selectsql = "select placa_veiculo,cpf_condutor,periodo from condutorveiculo where placa_veiculo = '".$veiculo."' and cpf_condutor = '".$condutor."' and periodo ='".$periodo."' and deletado = 'N' ";
-    $selectsqlresult = $conexao->query($selectsql);
+        if ($selectsqlresult->num_rows > 0) {
+           $mensagem = "Condução já está cadastrada!";
+        } else {
+          $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
+          $insertresult = $conexao->query($insertsql);
+          if ($insertresult){
+              $mensagem = "Condução cadastrada com sucesso!";
+          }else{
+              $mensagem = "Erro ao cadastrar a Condução!";
+          }
+        }
 
-    if ($selectsqlresult->num_rows > 0) {
-       $mensagem = "Condução já está cadastrada!";
-    } else {
-      $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
-      $insertresult = $conexao->query($insertsql);
-      if ($insertresult){
-          $mensagem = "Condução cadastrada com sucesso!";
-      }else{
-          $mensagem = "Erro ao cadastrar a Condução!";
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update condutorveiculo set periodo = '".$periodo."' where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."'";
+          $updateresult = $conexao->query($updatesql);
+          if ($updateresult){
+              $mensagem = "Condução atualizado com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar a Condução!";
+          }
+        } 
+
+    if (!$veiculo && !$condutor) {
+      $conducao = @$_GET["id"];
+      if ($conducao){
+      	$conducao = explode("-", $conducao);
+      	$veiculo = $conducao[1];
+      	$condutor = $conducao[0]; 
+        $periodo = $conducao[2];
       }
     }
 
-}else if ($acao =="SALVARUPDATE"){
+    if ($acao == "DELETAR"){
       
-      $updatesql = "update condutorveiculo set periodo = '".$periodo."' where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."'";
-      $updateresult = $conexao->query($updatesql);
-      if ($updateresult){
-          $mensagem = "Condução atualizado com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar a Condução!";
+      $select = "select cpf_condutor,placa_veiculo,periodo_conducao from criancatrecho where deletado = 'N' and placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo_conducao='".$periodo."'";
+      $selectresult = $conexao->query($select);
+
+      if ($selectresult->num_rows == 0) { 
+        $deletesql = "update condutorveiculo set deletado = 'S' where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
+        $deleteresult = $conexao->query($deletesql);
+        if ($deleteresult){
+            $mensagem = "Condução deletada com sucesso!";
+        }else{
+            $mensagem = "Erro ao deletar a Condução!";
+        }
+      } else {
+        $mensagem = "Erro ao deletar a Condução! Condução já associada a transportes";
       }
-    } 
-
-if (!$veiculo && !$condutor) {
-  $conducao = @$_GET["id"];
-  if ($conducao){
-  	$conducao = explode("-", $conducao);
-  	$veiculo = $conducao[1];
-  	$condutor = $conducao[0]; 
-    $periodo = $conducao[2];
-  }
-}
-
-if ($acao == "DELETAR"){
-  
-  $select = "select cpf_condutor,placa_veiculo,periodo_conducao from criancatrecho where deletado = 'N' and placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo_conducao='".$periodo."'";
-  $selectresult = $conexao->query($select);
-
-  if ($selectresult->num_rows == 0) { 
-    $deletesql = "update condutorveiculo set deletado = 'S' where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
-    $deleteresult = $conexao->query($deletesql);
-    if ($deleteresult){
-        $mensagem = "Condução deletada com sucesso!";
-    }else{
-        $mensagem = "Erro ao deletar a Condução!";
     }
-  } else {
-    $mensagem = "Erro ao deletar a Condução! Condução já associada a transportes";
-  }
-}
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from condutorveiculo where placa_veiculo='".$veiculo."' and cpf_condutor='".$condutor."' and periodo='".$periodo."'";
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-  $veiculo        = @$row["placa_veiculo"];
-  $condutor       = @$row["cpf_condutor"];
-  $periodo        = @$row["periodo"];
-}
+      $veiculo        = @$row["placa_veiculo"];
+      $condutor       = @$row["cpf_condutor"];
+      $periodo        = @$row["periodo"];
+    }
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "disabled";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "disabled";
-    $enablecampos = "disabled";
-  }
+      if ($acao == "ALTERAR"){
+        $enablechave = "disabled";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "disabled";
+        $enablecampos = "disabled";
+      }
 
-  $condsql = "select cpf,nome from condutor where deletado = 'N' ";
-  $condresult = $conexao->query($condsql);
+      $condsql = "select cpf,nome from condutor where deletado = 'N' ";
+      $condresult = $conexao->query($condsql);
 
-  $veicsql = "select placa from veiculo where deletado = 'N' ";
-  $veicresult = $conexao->query($veicsql);
+      $veicsql = "select placa from veiculo where deletado = 'N' ";
+      $veicresult = $conexao->query($veicsql);
 
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -160,4 +161,6 @@ if ($mensagem){
 <?php } ?>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/condveic.js"></script>
+<?php } ?>
 

@@ -1,5 +1,7 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo from criancatrecho ct
     inner join crianca c on c.id = ct.id_crianca
     inner join condutor o on o.cpf = ct.cpf_condutor
@@ -71,3 +73,5 @@ include './inc/conexao.php';
             </div>         
           </div>
 <?php include './inc/footer.php'; ?>
+<script src="js/trecho.js"></script>
+<?php }?>

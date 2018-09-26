@@ -1,60 +1,62 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-  $acao = @$_GET["acao"];
+      $acao = @$_GET["acao"];
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  if (!$acao){
-    $acao = @$_POST["acao"];
-  }
+      if (!$acao){
+        $acao = @$_POST["acao"];
+      }
 
-  $id = @$_POST["id"];
-  if (!$id) {
-   $id = @$_GET["id"]; 
-  }
+      $id = @$_POST["id"];
+      if (!$id) {
+       $id = @$_GET["id"]; 
+      }
 
-  $valor_pago  = str_replace(",", ".", @$_POST["valor_pago"]);
-  $datahoje    = DtToDb(@$_POST["data_pgto"]);
+      $valor_pago  = str_replace(",", ".", @$_POST["valor_pago"]);
+      $datahoje    = DtToDb(@$_POST["data_pgto"]);
 
- if ($acao =="SALVARPAGAMENTO"){
+     if ($acao =="SALVARPAGAMENTO"){
 
-    $selectsql = "select c.mensalidade from contrato c 
-                  inner join pagamentos p on p.id_contrato = c.id and p.id=".$id;
-    $result = $conexao->query($selectsql);
-    $row = @mysqli_fetch_array($result);
+        $selectsql = "select c.mensalidade from contrato c 
+                      inner join pagamentos p on p.id_contrato = c.id and p.id=".$id;
+        $result = $conexao->query($selectsql);
+        $row = @mysqli_fetch_array($result);
 
-    if ($valor_pago < $row["mensalidade"]) {
-      $status = "F";
-    } else {
-      $status = "P";
-    }
+        if ($valor_pago < $row["mensalidade"]) {
+          $status = "F";
+        } else {
+          $status = "P";
+        }
 
-    $updatesql = "update pagamentos set data_realizada_pgto = '".$datahoje."', valor_pago = ".$valor_pago.", status =  '".$status."' where id = ".$id;
-    $updateresult = $conexao->query($updatesql);
+        $updatesql = "update pagamentos set data_realizada_pgto = '".$datahoje."', valor_pago = ".$valor_pago.", status =  '".$status."' where id = ".$id;
+        $updateresult = $conexao->query($updatesql);
 
-    if ($updateresult){
-        $mensagem = "Recebimento realizado com sucesso!";
-    }else{
-          $mensagem = "Erro ao realizar o recebimento!";
-    }
-    } 
+        if ($updateresult){
+            $mensagem = "Recebimento realizado com sucesso!";
+        }else{
+              $mensagem = "Erro ao realizar o recebimento!";
+        }
+        } 
 
-  if ($acao == "PAGAR"){
-    $sql = "select * from pagamentos where id=".$id;
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+      if ($acao == "PAGAR"){
+        $sql = "select * from pagamentos where id=".$id;
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-  $valor_pago = $row["valor_pago"];
-  $status = $row["status"];
-  $data_pgto = DbtoDt($row["data_realizada_pgto"]);
-  }
+      $valor_pago = $row["valor_pago"];
+      $status = $row["status"];
+      $data_pgto = DbtoDt($row["data_realizada_pgto"]);
+      }
 
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -126,3 +128,5 @@ if ($mensagem){
     });
 
   </script>
+
+<?php } ?>

@@ -1,25 +1,27 @@
-<?php include './inc/header.php';
-include './inc/conexao.php'; 
+<?php session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php';
+    include './inc/conexao.php'; 
 
-$crianca = @$_GET["id"];
+    $crianca = @$_GET["id"];
 
-if ($crianca) {
-  $sql = "select c.nome as crianca,c.cpf_responsavel,c.data_nascimento,r.nome as responsavel,e.nome as escola from crianca c
-  inner join responsavel r on r.cpf = c.cpf_responsavel
-  inner join escola e on e.id = c.id_escola
-  where c.id = ". $crianca;
+    if ($crianca) {
+      $sql = "select c.nome as crianca,c.cpf_responsavel,c.data_nascimento,r.nome as responsavel,e.nome as escola from crianca c
+      inner join responsavel r on r.cpf = c.cpf_responsavel
+      inner join escola e on e.id = c.id_escola
+      where c.id = ". $crianca;
 
-  $sqltrechos = "select ct.cpf_condutor,co.nome as condutor,ct.placa_veiculo,ct.periodo_conducao, t.logradouro_origem,t.cep_origem,t.numero_origem,t.bairro_origem,t.complemento_origem,t.cidade_origem,t.estado_origem,t.logradouro_destino,t.cep_destino,t.numero_destino,t.bairro_destino,t.complemento_destino,t.cidade_destino,t.estado_destino from crianca c
-  inner join trecho t
-  inner join criancatrecho ct on c.id = ct.id_crianca and ct.id_trecho = t.id
-  inner join condutor co on co.cpf = ct.cpf_condutor
-  where c.id = ". $crianca;
+      $sqltrechos = "select ct.cpf_condutor,co.nome as condutor,ct.placa_veiculo,ct.periodo_conducao, t.logradouro_origem,t.cep_origem,t.numero_origem,t.bairro_origem,t.complemento_origem,t.cidade_origem,t.estado_origem,t.logradouro_destino,t.cep_destino,t.numero_destino,t.bairro_destino,t.complemento_destino,t.cidade_destino,t.estado_destino from crianca c
+      inner join trecho t
+      inner join criancatrecho ct on c.id = ct.id_crianca and ct.id_trecho = t.id
+      inner join condutor co on co.cpf = ct.cpf_condutor
+      where c.id = ". $crianca;
 
-}
+    }
 
-$result = $conexao->query($sql);
-$resultrecho = $conexao->query($sqltrechos);
-$rowcrianca = @mysqli_fetch_array($result);
+    $result = $conexao->query($sql);
+    $resultrecho = $conexao->query($sqltrechos);
+    $rowcrianca = @mysqli_fetch_array($result);
 
 ?>
          <div id="p1" class="row">
@@ -148,3 +150,4 @@ $rowcrianca = @mysqli_fetch_array($result);
     });
 
   </script>
+ <?php } ?>

@@ -1,136 +1,137 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+      $acao = @$_GET["acao"];
 
-  $acao = @$_GET["acao"];
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
-
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
-
-  $id = @$_POST["id"];
-  if (!$id) {
-   $id = @$_GET["id"]; 
-  }
-
-  $id_crianca                 = @$_POST["id_crianca"];
-  $data_inicio_contrato       = DtToDb(@$_POST["data_inicio_contrato"]);
-  $data_fim_contrato          = DtToDb(@$_POST["data_fim_contrato"]);
-  $dia_vencimento_mensalidade = @$_POST["dia_vencimento_mensalidade"];
-  $mensalidade                = str_replace(",",".",@$_POST["mensalidade"]);
-  $id_trecho                  = @$_POST['trecho'];
-
-if ($acao=="SALVARCADASTRO"){
-
-    $dtfim = new DateTime($data_fim_contrato);
-    $dtini = new DateTime($data_inicio_contrato);
-
-    $intervalo = $dtfim->diff($dtini);
-    $meses =  $intervalo->m + ($intervalo->y * 12);
-
-    $insertsql = "insert into contrato (id_crianca,data_inicio_contrato,data_fim_contrato,dia_vencimento_mensalidade, mensalidade) values (".$id_crianca.",'".$data_inicio_contrato."','".$data_fim_contrato."',".$dia_vencimento_mensalidade.",".$mensalidade.")";
-    print_r($insertsql);
-
-    $insertresult = $conexao->query($insertsql); 
-
-    $id_contrato = $conexao->insert_id;
-    $data = $dtini;
-    for ($i = 1 ; $i <= $meses; $i++) {
-      $insertpagamentosql = "insert into pagamentos (data_prevista_pgto,status,id_contrato) values ('".$data_inicio_contrato."','N',".$id_contrato.")";
-      $insertpagamentosresult = $conexao->query($insertpagamentosql);
-      $data = date('Y-m-d', strtotime("+1 month", strtotime($data_inicio_contrato)));
-      $data_inicio_contrato = $data;
+    if (!$acao){
+      $acao = @$_POST["acao"];
     }
 
-    foreach ($id_trecho as $value) {
-      $trecho = explode("-", $value);
-      $updatetrechosql = "update criancatrecho set id_contrato = ".$id_contrato." where id_crianca = ".$id_crianca." and id_trecho = ".$trecho[0];
-      $updatetrechoresult = $conexao->query($updatetrechosql);
-    }
-
-    if ($insertresult){
-        $mensagem = "Contrato cadastrado com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar o Contrato!";
-    }
-
-}else if ($acao =="SALVARUPDATE"){
-
-      $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade.", mensalidade = ".$mensalidade." where id = ".$id;
-      $updateresult = $conexao->query($updatesql);
-
-      if ($updateresult){
-          $mensagem = "Contrato atualizada com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar o Contrato!";
+      $id = @$_POST["id"];
+      if (!$id) {
+       $id = @$_GET["id"]; 
       }
-    } 
 
-if (!$id){
-  $id = @$_GET["id"];
-}
+      $id_crianca                 = @$_POST["id_crianca"];
+      $data_inicio_contrato       = DtToDb(@$_POST["data_inicio_contrato"]);
+      $data_fim_contrato          = DtToDb(@$_POST["data_fim_contrato"]);
+      $dia_vencimento_mensalidade = @$_POST["dia_vencimento_mensalidade"];
+      $mensalidade                = str_replace(",",".",@$_POST["mensalidade"]);
+      $id_trecho                  = @$_POST['trecho'];
 
-if ($acao == "DELETAR"){ 
-  $hoje = date('Y-m-d');
-  $deletesql = "update contrato set data_fim_contrato = '".$hoje."', deletado = 'S' where id = ".$id;
-  $deleteresult = $conexao->query($deletesql);
-  if ($deleteresult){
-      $mensagem = "Contrato deletado com sucesso!";
-  }else{
-      $mensagem = "Erro ao deletar o Contrato!";
-  }
-}
+    if ($acao=="SALVARCADASTRO"){
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from contrato where id=".$id;
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+        $dtfim = new DateTime($data_fim_contrato);
+        $dtini = new DateTime($data_inicio_contrato);
 
-  $id                         = $row["id"];
-  $id_crianca                 = $row["id_crianca"];
-  $data_inicio_contrato       = DbToDt($row["data_inicio_contrato"]);
-  $data_fim_contrato          = DbToDt($row["data_fim_contrato"]);
-  $dia_vencimento_mensalidade = $row["dia_vencimento_mensalidade"];
-  $mensalidade                = $row["mensalidade"];
-  }
+        $intervalo = $dtfim->diff($dtini);
+        $meses =  $intervalo->m + ($intervalo->y * 12);
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "disabled";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "disabled";
-    $enablecampos = "disabled";
-  }
+        $insertsql = "insert into contrato (id_crianca,data_inicio_contrato,data_fim_contrato,dia_vencimento_mensalidade, mensalidade) values (".$id_crianca.",'".$data_inicio_contrato."','".$data_fim_contrato."',".$dia_vencimento_mensalidade.",".$mensalidade.")";
+        print_r($insertsql);
 
-  $criansql = "select id,nome from crianca where deletado = 'N' ";
-  $crianresult = $conexao->query($criansql);
-  $rowcrianca = @mysqli_fetch_all($crianresult,MYSQLI_ASSOC);
+        $insertresult = $conexao->query($insertsql); 
 
-  $criancas = "";
-  foreach ($rowcrianca as $value) {
-    $criancas .= $value["id"];
-    $criancas .= ",";
-  }
-  $criancas = substr_replace($criancas, '', -1);
+        $id_contrato = $conexao->insert_id;
+        $data = $dtini;
+        for ($i = 1 ; $i <= $meses; $i++) {
+          $insertpagamentosql = "insert into pagamentos (data_prevista_pgto,status,id_contrato) values ('".$data_inicio_contrato."','N',".$id_contrato.")";
+          $insertpagamentosresult = $conexao->query($insertpagamentosql);
+          $data = date('Y-m-d', strtotime("+1 month", strtotime($data_inicio_contrato)));
+          $data_inicio_contrato = $data;
+        }
 
-  //carregar as crianças com trechos 
+        foreach ($id_trecho as $value) {
+          $trecho = explode("-", $value);
+          $updatetrechosql = "update criancatrecho set id_contrato = ".$id_contrato." where id_crianca = ".$id_crianca." and id_trecho = ".$trecho[0];
+          $updatetrechoresult = $conexao->query($updatetrechosql);
+        }
 
-  $trechosql = "select t.*,ct.* from criancatrecho ct
-    inner join crianca c on c.id = ct.id_crianca
-    inner join condutor o on o.cpf = ct.cpf_condutor
-    inner join veiculo v on v.placa = ct.placa_veiculo
-    inner join trecho t on t.id = ct.id_trecho 
-    left join contrato co on co.id = ct.id_contrato
-    where ct.id_crianca in (".$criancas.") and iSNULL(ct.id_contrato)";
+        if ($insertresult){
+            $mensagem = "Contrato cadastrado com sucesso!";
+        }else{
+            $mensagem = "Erro ao cadastrar o Contrato!";
+        }
 
-  $trechoresult = $conexao->query($trechosql);
+    }else if ($acao =="SALVARUPDATE"){
 
-if ($mensagem){
+          $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade.", mensalidade = ".$mensalidade." where id = ".$id;
+          $updateresult = $conexao->query($updatesql);
+
+          if ($updateresult){
+              $mensagem = "Contrato atualizada com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar o Contrato!";
+          }
+        } 
+
+    if (!$id){
+      $id = @$_GET["id"];
+    }
+
+    if ($acao == "DELETAR"){ 
+      $hoje = date('Y-m-d');
+      $deletesql = "update contrato set data_fim_contrato = '".$hoje."', deletado = 'S' where id = ".$id;
+      $deleteresult = $conexao->query($deletesql);
+      if ($deleteresult){
+          $mensagem = "Contrato deletado com sucesso!";
+      }else{
+          $mensagem = "Erro ao deletar o Contrato!";
+      }
+    }
+
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from contrato where id=".$id;
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
+
+      $id                         = $row["id"];
+      $id_crianca                 = $row["id_crianca"];
+      $data_inicio_contrato       = DbToDt($row["data_inicio_contrato"]);
+      $data_fim_contrato          = DbToDt($row["data_fim_contrato"]);
+      $dia_vencimento_mensalidade = $row["dia_vencimento_mensalidade"];
+      $mensalidade                = $row["mensalidade"];
+      }
+
+      if ($acao == "ALTERAR"){
+        $enablechave = "disabled";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "disabled";
+        $enablecampos = "disabled";
+      }
+
+      $criansql = "select id,nome from crianca where deletado = 'N' ";
+      $crianresult = $conexao->query($criansql);
+      $rowcrianca = @mysqli_fetch_all($crianresult,MYSQLI_ASSOC);
+
+      $criancas = "";
+      foreach ($rowcrianca as $value) {
+        $criancas .= $value["id"];
+        $criancas .= ",";
+      }
+      $criancas = substr_replace($criancas, '', -1);
+
+      //carregar as crianças com trechos 
+
+      $trechosql = "select t.*,ct.* from criancatrecho ct
+        inner join crianca c on c.id = ct.id_crianca
+        inner join condutor o on o.cpf = ct.cpf_condutor
+        inner join veiculo v on v.placa = ct.placa_veiculo
+        inner join trecho t on t.id = ct.id_trecho 
+        left join contrato co on co.id = ct.id_contrato
+        where ct.id_crianca in (".$criancas.") and iSNULL(ct.id_contrato)";
+
+      $trechoresult = $conexao->query($trechosql);
+
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -209,3 +210,5 @@ if ($mensagem){
 
 
 <?php include './inc/footer.php'; ?>
+<script src="js/contrato.js"></script>
+<?php } ?>

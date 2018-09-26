@@ -1,106 +1,107 @@
 <?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
 
-include './inc/header.php'; 
-include './inc/conexao.php';
+      $acao = @$_GET["acao"];
 
-  $acao = @$_GET["acao"];
+      $mensagem = "";
+      $enablechave = "";
+      $enablecampos = "";
 
-  $mensagem = "";
-  $enablechave = "";
-  $enablecampos = "";
-
-if (!$acao){
-  $acao = @$_POST["acao"];
-}
-
-  $cpf         = str_replace("-", "", @$_POST["cpf"]);
-  $pgu         = @$_POST["pgu"];
-  $nome        = @$_POST["nome"];
-  $rg          = str_replace("-", "", @$_POST["rg"]);
-  $salario     = str_replace(",", ".",@$_POST["salario"]);
-  $email       = @$_POST["email"];
-  $cep         = str_replace("-", "", @$_POST["cep"]);
-  $logradouro  = @$_POST["logradouro"];
-  $numero      = @$_POST["numero"];
-  $complemento = @$_POST["complemento"];
-  $bairro      = @$_POST["bairro"];
-  $cidade      = @$_POST["cidade"];
-  $estado      = @$_POST["estado"];
-
-  $cpf = str_replace(".", "", $cpf);
-
-if ($acao=="SALVARCADASTRO"){
-
-    $insertsql = "insert into condutor  (cpf,pgu,nome,rg,email,salario,logradouro,cep,numero,bairro,complemento,cidade,estado) values ('".$cpf."','".$pgu."','".$nome."','".$rg."','".$email."',".$salario.",'".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
-    $insertresult = $conexao->query($insertsql);
-    if ($insertresult){
-        $mensagem = "Condutor cadastrado com sucesso!";
-    }else{
-        $mensagem = "Erro ao cadastrar o Condutor!";
+    if (!$acao){
+      $acao = @$_POST["acao"];
     }
 
-}else if ($acao =="SALVARUPDATE"){
-      
-      $updatesql = "update condutor set pgu = '".$pgu."', nome = '".$nome."', rg = '".$rg."', salario = ".$salario.", email = '".$email."', cep = '".$cep."', logradouro = '".$logradouro."', numero = '".$numero."', complemento = '".$complemento."', bairro = '".$bairro."', cidade = '".$cidade."', estado = '".$estado."' where cpf='".$cpf."'";
-      $updateresult = $conexao->query($updatesql);
-      if ($updateresult){
-          $mensagem = "Condutor atualizado com sucesso!";
-      }else{
-          $mensagem = "Erro ao atualizar o Condutor!";
+      $cpf         = str_replace("-", "", @$_POST["cpf"]);
+      $pgu         = @$_POST["pgu"];
+      $nome        = @$_POST["nome"];
+      $rg          = str_replace("-", "", @$_POST["rg"]);
+      $salario     = str_replace(",", ".",@$_POST["salario"]);
+      $email       = @$_POST["email"];
+      $cep         = str_replace("-", "", @$_POST["cep"]);
+      $logradouro  = @$_POST["logradouro"];
+      $numero      = @$_POST["numero"];
+      $complemento = @$_POST["complemento"];
+      $bairro      = @$_POST["bairro"];
+      $cidade      = @$_POST["cidade"];
+      $estado      = @$_POST["estado"];
+
+      $cpf = str_replace(".", "", $cpf);
+
+    if ($acao=="SALVARCADASTRO"){
+
+        $insertsql = "insert into condutor  (cpf,pgu,nome,rg,email,salario,logradouro,cep,numero,bairro,complemento,cidade,estado) values ('".$cpf."','".$pgu."','".$nome."','".$rg."','".$email."',".$salario.",'".$logradouro."','".$cep."','".$numero."','".$bairro."','".$complemento."','".$cidade."','".$estado."')";
+        $insertresult = $conexao->query($insertsql);
+        if ($insertresult){
+            $mensagem = "Condutor cadastrado com sucesso!";
+        }else{
+            $mensagem = "Erro ao cadastrar o Condutor!";
+        }
+
+    }else if ($acao =="SALVARUPDATE"){
+          
+          $updatesql = "update condutor set pgu = '".$pgu."', nome = '".$nome."', rg = '".$rg."', salario = ".$salario.", email = '".$email."', cep = '".$cep."', logradouro = '".$logradouro."', numero = '".$numero."', complemento = '".$complemento."', bairro = '".$bairro."', cidade = '".$cidade."', estado = '".$estado."' where cpf='".$cpf."'";
+          $updateresult = $conexao->query($updatesql);
+          if ($updateresult){
+              $mensagem = "Condutor atualizado com sucesso!";
+          }else{
+              $mensagem = "Erro ao atualizar o Condutor!";
+          }
+        } 
+
+    if (!$cpf){
+      $cpf = @$_GET["id"]; 
+    }
+
+    if ($acao == "DELETAR"){
+
+      $select = "select cpf_condutor from condutorveiculo where deletado = 'N' and cpf_condutor = '".$cpf."'";
+      $selectresult = $conexao->query($select);
+
+      if ($selectresult->num_rows == 0) {
+          
+        $deletesql = "update condutor set deletado = 'S' where cpf = '".$cpf."'";
+        $deleteresult = $conexao->query($deletesql);
+        if ($deleteresult){
+            $mensagem = "Condutor deletado com sucesso!";
+        }else{
+            $mensagem = "Erro ao deletar o Condutor!";
+        }
+      } else {
+        $mensagem = "Erro ao deletar o Condutor! Condutor já vinculado a uma condução";
       }
-    } 
-
-if (!$cpf){
-  $cpf = @$_GET["id"]; 
-}
-
-if ($acao == "DELETAR"){
-
-  $select = "select cpf_condutor from condutorveiculo where deletado = 'N' and cpf_condutor = '".$cpf."'";
-  $selectresult = $conexao->query($select);
-
-  if ($selectresult->num_rows == 0) {
-      
-    $deletesql = "update condutor set deletado = 'S' where cpf = '".$cpf."'";
-    $deleteresult = $conexao->query($deletesql);
-    if ($deleteresult){
-        $mensagem = "Condutor deletado com sucesso!";
-    }else{
-        $mensagem = "Erro ao deletar o Condutor!";
     }
-  } else {
-    $mensagem = "Erro ao deletar o Condutor! Condutor já vinculado a uma condução";
-  }
-}
 
-  if ($acao == "ALTERAR" or $acao == "DETALHES"){
-    $sql = "select * from condutor where cpf='" . $cpf ."'";
-    $result = $conexao->query($sql);
-    $row = @mysqli_fetch_array($result);
+      if ($acao == "ALTERAR" or $acao == "DETALHES"){
+        $sql = "select * from condutor where cpf='" . $cpf ."'";
+        $result = $conexao->query($sql);
+        $row = @mysqli_fetch_array($result);
 
-    $pgu         = $row["pgu"];
-    $nome        = $row["nome"];
-    $rg          = $row["rg"];
-    $salario     = $row["salario"];
-    $email       = $row["email"];
-    $cep         = $row["cep"];
-    $logradouro  = $row["logradouro"];
-    $numero      = $row["numero"];
-    $complemento = $row["complemento"];
-    $bairro      = $row["bairro"];
-    $cidade      = $row["cidade"];
-    $estado      = $row["estado"];
-  }
+        $pgu         = $row["pgu"];
+        $nome        = $row["nome"];
+        $rg          = $row["rg"];
+        $salario     = $row["salario"];
+        $email       = $row["email"];
+        $cep         = $row["cep"];
+        $logradouro  = $row["logradouro"];
+        $numero      = $row["numero"];
+        $complemento = $row["complemento"];
+        $bairro      = $row["bairro"];
+        $cidade      = $row["cidade"];
+        $estado      = $row["estado"];
+      }
 
-  if ($acao == "ALTERAR"){
-    $enablechave = "readonly";
-  }
-  if ($acao == "DETALHES"){
-    $enablechave = "readonly";
-    $enablecampos = "readonly";
-  }
+      if ($acao == "ALTERAR"){
+        $enablechave = "readonly";
+      }
+      if ($acao == "DETALHES"){
+        $enablechave = "readonly";
+        $enablecampos = "readonly";
+      }
 
-if ($mensagem){
+    if ($mensagem){
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -214,3 +215,7 @@ if ($mensagem){
     }
   });
 </script>
+
+<script src="js/condutor.js"></script>
+
+<?php } ?>

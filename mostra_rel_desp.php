@@ -1,43 +1,46 @@
-<?php include './inc/header.php';
-include './inc/conexao.php'; 
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php';
+    include './inc/conexao.php'; 
 
-$tipo = @$_POST["relatorio"];
-$valor = @$_POST["valor"];
+    $tipo = @$_POST["relatorio"];
+    $valor = @$_POST["valor"];
 
-if ($tipo == "D"){
-  $valorbanco = DtToDB($valor);
-  $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.data_gasto = '".$valorbanco."' and g.deletado='N'";
-  $result = $conexao->query($sql);
-  $rel_tipo = "pagas em ".$valor;
-}
-if ($tipo == "T"){
-  if ($valor){
-    $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-    where g.tipo = '".$valor."' and g.deletado='N'";
-  } else {
-    $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-    where g.deletado='N'";
-  }
-  $result = $conexao->query($sql);
+    if ($tipo == "D"){
+      $valorbanco = DtToDB($valor);
+      $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+      where g.data_gasto = '".$valorbanco."' and g.deletado='N'";
+      $result = $conexao->query($sql);
+      $rel_tipo = "pagas em ".$valor;
+    }
+    if ($tipo == "T"){
+      if ($valor){
+        $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+        where g.tipo = '".$valor."' and g.deletado='N'";
+      } else {
+        $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+        where g.deletado='N'";
+      }
+      $result = $conexao->query($sql);
 
-  if ($valor == 'c')
-    $rel_tipo = "de Combustível";
-  if ($valor == 'i')
-    $rel_tipo = "de IPVA";
-  if ($valor == 'o')
-    $rel_tipo = "de Oficina";
-  if ($valor == "") 
-    $rel_tipo = " de todos os tipos";
+      if ($valor == 'c')
+        $rel_tipo = "de Combustível";
+      if ($valor == 'i')
+        $rel_tipo = "de IPVA";
+      if ($valor == 'o')
+        $rel_tipo = "de Oficina";
+      if ($valor == "") 
+        $rel_tipo = " de todos os tipos";
 
-}
-if ($tipo == "V"){
-  $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-  where g.placa_veiculo = '".$valor."' and g.deletado='N'";
-  $result = $conexao->query($sql);
-  $rel_tipo = "do veículo ".$valor;
-}
-$total = 0;
+    }
+    if ($tipo == "V"){
+      $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+      where g.placa_veiculo = '".$valor."' and g.deletado='N'";
+      $result = $conexao->query($sql);
+      $rel_tipo = "do veículo ".$valor;
+    }
+    $total = 0;
 ?>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -103,3 +106,5 @@ $total = 0;
     });
 
   </script>
+
+<?php } ?>

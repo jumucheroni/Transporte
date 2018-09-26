@@ -1,5 +1,8 @@
-<?php include './inc/header.php'; 
-include './inc/conexao.php';
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php'; 
+    include './inc/conexao.php';
     $sql = "select c.id as id,c.nome as Crianca,r.nome as Responsavel,e.nome as Escola from crianca c, responsavel r, escola e where c.cpf_responsavel=r.cpf and c.id_escola=e.id and c.deletado = 'N' ";
     $result = $conexao->query($sql);
 
@@ -59,3 +62,5 @@ include './inc/conexao.php';
         </form>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/crianca.js"></script>
+<?php }?>

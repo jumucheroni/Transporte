@@ -1,67 +1,70 @@
-<?php include './inc/header.php';
-include './inc/conexao.php'; 
+<?php 
+session_start();
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
+    include './inc/header.php';
+    include './inc/conexao.php'; 
 
-$tipo = @$_POST["relatorio"];
-$valor = @$_POST["valor"];
+    $tipo = @$_POST["relatorio"];
+    $valor = @$_POST["valor"];
 
-if ($tipo == "D"){
-  $valorbanco = DtToDB($valor);
-  $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf  and r.deletado='N'
-  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-  where p.data_realizada_pgto = '".$valorbanco."' and c.deletado='N'";
-  $result = $conexao->query($sql);
-  $rel_tipo = "pagos em ".$valor;
-}
-if ($tipo == "V"){
-  $valorbanco = DtToDB($valor);
-  $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
-  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-  where p.data_prevista_pgto = '".$valorbanco."' and c.deletado='N'";
-  $result = $conexao->query($sql);
-  $rel_tipo = "vencidos em ".$valor;
-}
-if ($tipo == "S"){
-  if ($valor){
-    $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-    inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
-    inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-    inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-    where p.status = '".$valor."' and c.deletado='N'";
-  } else {
-    $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-    inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
-    inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-    inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-    where c.deletado='N'";
-  }
-  $result = $conexao->query($sql);
+    if ($tipo == "D"){
+      $valorbanco = DtToDB($valor);
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      inner join responsavel as r on c.cpf_responsavel=r.cpf  and r.deletado='N'
+      inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+      inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+      where p.data_realizada_pgto = '".$valorbanco."' and c.deletado='N'";
+      $result = $conexao->query($sql);
+      $rel_tipo = "pagos em ".$valor;
+    }
+    if ($tipo == "V"){
+      $valorbanco = DtToDB($valor);
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+      inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+      inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+      where p.data_prevista_pgto = '".$valorbanco."' and c.deletado='N'";
+      $result = $conexao->query($sql);
+      $rel_tipo = "vencidos em ".$valor;
+    }
+    if ($tipo == "S"){
+      if ($valor){
+        $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+        inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+        inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+        inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+        where p.status = '".$valor."' and c.deletado='N'";
+      } else {
+        $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+        inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+        inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+        inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+        where c.deletado='N'";
+      }
+      $result = $conexao->query($sql);
 
-  if ($valor == 'N')
-    $rel_tipo = "em Aberto";
-  if ($valor == 'A')
-    $rel_tipo = "em Atraso";
-  if ($valor == 'F')
-    $rel_tipo = "Falta Valor";
-  if ($valor == 'P')
-    $rel_tipo = "Pago";
-  if ($valor == "") 
-    $rel_tipo = " em todos os status";
-}
-if ($tipo == "C"){
-  $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-  inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
-  inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-  inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-  where c.nome like '%".$valor."%' and c.deletado='N'";
-  $result = $conexao->query($sql);
-  $rel_tipo = "de ".$valor;
-}
+      if ($valor == 'N')
+        $rel_tipo = "em Aberto";
+      if ($valor == 'A')
+        $rel_tipo = "em Atraso";
+      if ($valor == 'F')
+        $rel_tipo = "Falta Valor";
+      if ($valor == 'P')
+        $rel_tipo = "Pago";
+      if ($valor == "") 
+        $rel_tipo = " em todos os status";
+    }
+    if ($tipo == "C"){
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
+      inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
+      inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
+      where c.nome like '%".$valor."%' and c.deletado='N'";
+      $result = $conexao->query($sql);
+      $rel_tipo = "de ".$valor;
+    }
 
-$total = 0;
+    $total = 0;
 
 ?>
          <div id="p1" class="row">
@@ -128,3 +131,4 @@ $total = 0;
     });
 
   </script>
+<?php } ?>

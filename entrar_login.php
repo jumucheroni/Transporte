@@ -1,5 +1,6 @@
 <?php
 include './inc/conexao.php';
+session_start();
 	if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
 		$retorno = [
