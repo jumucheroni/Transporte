@@ -5,7 +5,26 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/header.php'; 
     include './inc/conexao.php';
 
-    $acao="CADASTRAR";
+    $enablechave = "readonly";
+
+    $cpf = $_GET['id'];
+
+    $sql = "select * from condutor where cpf='" . $cpf ."'";
+    $result = $conexao->query($sql);
+    $row = @mysqli_fetch_array($result);
+
+    $nome        = $row["nome"];
+    $pgu         = $row["pgu"];
+    $rg          = $row["rg"];
+    $salario     = $row["salario"];
+    $email       = $row["email"];
+    $cep         = $row["cep"];
+    $logradouro  = $row["logradouro"];
+    $numero      = $row["numero"];
+    $complemento = $row["complemento"];
+    $bairro      = $row["bairro"];
+    $cidade      = $row['cidade'];
+    $estado      = $row['estado'];
 
 ?>
     <div class="row">
@@ -15,52 +34,55 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <em class="fa fa-home"></em>
           </a></li>
           <li class="active">Controle</li>
-          <li class="active">Ajudante</li>
+          <li class="active">Condutor</li>
         </ol>
       </div>
-      
-      <form id="ajudante" method="post" role="form"> 
-        <input type="hidden" name="acao" id="acao" value="<?php print $acao; ?>" />
+
+      <form id="condutor" method="post" role="form"> 
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-              <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
-                <div hidden id="alert"></div>
+
+              <h1 class="page-header">condutor</h1>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div id="cpf-form" class="form-group">
+                    <p class="formu-letra">CPF</p>
+                    <h4><?php print $cpf; ?></h4>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div id="cpf-form" class="form-group">
+                    <p class="formu-letra">PGU</p>
+                    <h4><?php print $pgu; ?></h4>
+                  </div>
+                </div>
               </div>
-              <div class="col-xs-12 col-sm-8 col-md-10 ">
-                <h1 class="page-header">Cadastrar Ajudante</h1>
-              </div>
-        
               <div class="row">
                 <div class="col-md-6">
                   <div id="nome-form" class="form-group">
                     <p class="formu-letra">Nome</p>
-                    <input class="form-control" type="text" name="nome" id="nome" maxlength="100" value="" />
+                    <h4><?php print $nome; ?> </h4>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div id="email-form" class="form-group">
                     <p class="formu-letra">E-mail</p>
-                    <input class="form-control" type="email" name="email" id="email" maxlength="100" value="" />
+                    <h4><?php print $email; ?></h4>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-4">
-                  <div id="cpf-form" class="form-group">
-                    <p class="formu-letra">CPF</p>
-                    <input class="form-control cpf" type="text" name="cpf" id="cpf" maxlength="14" value=""/>
-                  </div>
-                </div>
-                <div class="col-md-4">
                   <div id="rg-form" class="form-group">
                     <p class="formu-letra">RG</p>
-                    <input class="form-control rg" type="text" name="rg" id="rg" maxlength="10" value=""/>
+                    <h4><?php print $rg; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div id="salario-form" class="form-group">
                     <p class="formu-letra">Salario</p>
-                    <input class="form-control money" type="text" name="salario" id="salario" value="" />
+                    <h4><?php print $salario; ?></h4>
                   </div>
                 </div>
               </div>
@@ -68,19 +90,19 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="cep-form" class="form-group">
                     <p class="formu-letra">Cep</p>
-                    <input class="form-control cep" type="text" name="cep" id="cep" maxlength="9" value=""/>
+                    <h4><?php print $cep; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-7">
                   <div id="logradouro-form" class="form-group">
                     <p class="formu-letra">Logradouro</p>
-                    <input class="form-control" type="text" name="logradouro" id="logradouro" maxlength="100" value=""/>
+                    <h4><?php print $logradouro; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-2">
                   <div id="numero-form" class="form-group">
                     <p class="formu-letra">Número</p>
-                    <input class="form-control" type="text" name="numero" id="numero" maxlength="8" value=""/>
+                    <h4><?php print $numero; ?></h4>
                   </div>
                 </div>
               </div>
@@ -88,29 +110,25 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="bairro-form" class="form-group">
                     <p class="formu-letra">Bairro</p>
-                    <input class="form-control" type="text" name="bairro" id="bairro" maxlength="30" value=""/>
+                    <h4><?php print $bairro; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="complemento-form" class="form-group">
                     <p class="formu-letra">Complemento</p>
-                    <input class="form-control" type="text" name="complemento" id="complemento" maxlength="60" value=""/>
+                    <h4><?php print $complemento; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="estado-form" class="form-group">  
-                    <input type="hidden" name="uf" id="uf" value="" /> 
                     <p class="formu-letra">Estado</p>
-                    <select class="form-control" type="text" name="estado" id="estado">
-                    </select>
+                    <h4><?php print $estado; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="cidade-form" class="form-group">
-                    <input type="hidden" name="cid" id="cid" value="" /> 
                     <p class="formu-letra">Cidade</p>
-                     <select class="form-control" type="text" name="cidade" id="cidade">
-                     </select>
+                     <h4><?php print $cidade; ?></h4>
                   </div>
                 </div>
               </div>
@@ -120,8 +138,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-success btn-right" id="ajudante-salvar" type="button">Salvar</button> 
-                  <a href="visu_ajudante.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
+                  <a href="visu_condutor.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
                 </div>
               </div>
 
@@ -133,6 +150,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
 <?php include './inc/footer.php'; ?>
 
-<script src="js/ajudante.js"></script>
+<script src="js/condutor.js"></script>
 
 <?php } ?>

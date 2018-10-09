@@ -7,16 +7,29 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $result = $conexao->query($sql);
 
 ?>
-
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">
-                  Listagem de Contrato
-                  <a href="cad_contrato.php?acao=CADASTRAR"><button class="btn-criar" id="novo-alvara">Novo Contrato</button></a>
-              </p>
-              
-              <div class="row">
+        
+        <div class="row">
+           <div class="row">
+              <ol class="breadcrumb">
+                <li><a href="index.php">
+                  <em class="fa fa-home"></em>
+                </a></li>
+                <li class="active">Financeiro</li>
+                <li class="active">Contrato</li>
+              </ol>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h1 class="page-header">Listagem de Contrato</h1>
+              </div> 
+              <div class="col-lg-6">  
+                <a href="cad_contrato.php"><button class="btn btn-criar" id="novo-contrato">Novo Contrato</button></a>
+              </div>
+            </div>
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+            </div>              
+            <div class="row">
                 <div class="caixa-f">
                 <div class="col-md-4">
                   <p class="formu-letra">Criança</p>
@@ -46,9 +59,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                        <a href="cad_contrato.php?acao=ALTERAR&id=<?php print $row["id"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-contrato"></button></a>
-                        <a href="cad_contrato.php?acao=DELETAR&id=<?php print $row["id"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-contrato"></button></a>
-                        <a href="cad_contrato.php?acao=DETALHES&id=<?php print $row["id"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-contrato"></button></a>
+                        <a href="alt_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-contrato" type="button"></button></a>
+                        <button class="btn btn-sm btn-danger fa fa-trash dele-contrato" id="<?php print $row['id'].'-dele'; ?>" type="button"></button>
+                        <a href="deta_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-contrato" type="button"></button></a>
                       </p>
                     </div>
                   </div>
@@ -58,8 +71,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
               
             </div>         
-          </div>
-        </form>
 
 <?php include './inc/footer.php'; ?>
 <script src="js/contrato.js"></script>

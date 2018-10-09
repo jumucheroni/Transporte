@@ -10,13 +10,27 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $result = $conexao->query($sql);
 ?>
           
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">
-                  Listagem de Condução
-                  <a href="cad_condveic.php?acao=CADASTRAR"><button class="btn-criar" id="novo-condveic">Nova Condução</button></a>
-              </p>
+        <div class="row">
+            <div class="row">
+              <ol class="breadcrumb">
+                <li><a href="index.php">
+                  <em class="fa fa-home"></em>
+                </a></li>
+                <li class="active">Controle</li>
+                <li class="active">Condução</li>
+              </ol>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h1 class="page-header">Listagem de Condução</h1>
+              </div> 
+              <div class="col-lg-6">  
+                <a href="cad_condveic.php"><button class="btn btn-criar" id="novo-ajudante">Nova Condução</button></a>
+              </div>
+            </div>
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+            </div>
               
               <div class="row">
                 <div class="caixa-f">
@@ -36,6 +50,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </div>
               <div id="resultado" class="row">
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                <form id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"]?>" method="POST">
                   <div class="caixa-fl">
                     <div class="col-md-5">
                       <p class="letra-fi "><?php print $row["nome"];?></p>
@@ -48,12 +63,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                         <a href="cad_condveic.php?acao=ALTERAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-condutor"></button></a>
-                         <a href="cad_condveic.php?acao=DELETAR&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-condutor"></button></a>
-                        <a href="cad_condveic.php?acao=DETALHES&id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-condutor"></button></a>
+                        <a href="alt_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-condveic" type="button" ></button></a>
+                        <button class="btn btn-sm btn-danger fa fa-trash dele-condveic" id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"].'-dele'; ?>" type="button"></button>
+                        <a href="deta_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-condveic" type="button"></button></a>
                       </p>
                     </div>
                   </div>
+                </form>
                 <?php }?>
                 </div>
           

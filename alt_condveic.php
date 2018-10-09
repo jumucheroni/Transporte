@@ -5,7 +5,19 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/header.php'; 
     include './inc/conexao.php';
 
-    $acao="CADASTRAR";
+    $acao="ALTERAR";
+
+    $enablechave = "readonly";
+
+    $id = explode("-", $_GET['id']);
+
+    $sql = "select * from condutorveiculo where placa_veiculo='".$id[1]."' and cpf_condutor='".$id[0]."' and periodo='".$id[2]."'";
+    $result = $conexao->query($sql);
+    $row = @mysqli_fetch_array($result);
+
+    $veiculo        = @$row["placa_veiculo"];
+    $condutor       = @$row["cpf_condutor"];
+    $periodo        = @$row["periodo"];
 
     $condsql = "select cpf,nome from condutor where deletado = 'N' ";
     $condresult = $conexao->query($condsql);
@@ -40,9 +52,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-4">
                   <div id="veic-form" class="form-group">
                     <p class="formu-letra">Veículo</p>
-                    <select class="form-control" name="veiculo" id="veiculo">
+                    <select <?php print $enablechave; ?> class="form-control" name="veiculo" id="veiculo">
                       <?php while ($veicrow = @mysqli_fetch_array($veicresult)){ ?>
-                        <option value="<?php print $veicrow['placa'];?>"><?php print $veicrow['placa'];?></option>
+                        <option <?php if ($veiculo == $veicrow['placa']) { echo 'selected="true"'; } ?> value="<?php print $veicrow['placa'];?>"><?php print $veicrow['placa'];?></option>
                   <?php } ?>
                     </select>
                   </div>
@@ -50,9 +62,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-4">
                   <div id="condutor-form" class="form-group">
                     <p class="formu-letra">Condutor</p>
-                    <select class="form-control" name="condutor" id="condutor">
+                    <select <?php print $enablechave; ?> class="form-control" name="condutor" id="condutor">
                       <?php while ($condrow = @mysqli_fetch_array($condresult)){ ?>
-                        <option value="<?php print $condrow['cpf'];?>"><?php print $condrow['cpf']." - ".$condrow['nome'];?></option>
+                        <option <?php if ($condutor == $condrow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $condrow['cpf'];?>"><?php print $condrow['cpf']." - ".$condrow['nome'];?></option>
                       <?php } ?>
                     </select>
                   </div>
@@ -61,10 +73,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <div id="periodo-form" class="form-group">
                     <p class="formu-letra">Periodo</p>
                     <select class="form-control" name="periodo" id="periodo" >
-                      <option value="im" id="im">Ida-Manhã</option>
-                      <option value="it" id="it">Ida-Tarde</option>
-                      <option value="vm" id="vm">Volta-Manhã</option>
-                      <option value="vt" id="vt">Volta-Tarde</option>
+                      <option value="im" <?php if ($periodo == 'im') { echo 'selected="true"'; } ?> id="im">Ida-Manhã</option>
+                      <option value="it" <?php if ($periodo == 'it') { echo 'selected="true"'; } ?> id="it">Ida-Tarde</option>
+                      <option value="vm" <?php if ($periodo == 'vm') { echo 'selected="true"'; } ?> id="vm">Volta-Manhã</option>
+                      <option value="vt" <?php if ($periodo == 'vt') { echo 'selected="true"'; } ?> id="vt">Volta-Tarde</option>
                     </select>
                   </div>
                 </div>

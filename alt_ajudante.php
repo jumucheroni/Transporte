@@ -44,8 +44,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
               </div>
-
-              <h1 class="page-header">Alterar Ajudante</h1>
+              <div class="col-xs-12 col-sm-8 col-md-10">
+                <h1 class="page-header">Alterar Ajudante</h1>
+              </div>
         
               <div class="row">
                 <div class="col-md-6">
