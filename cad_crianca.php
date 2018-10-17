@@ -13,7 +13,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $escolasql = "select id,nome from escola where deletado = 'N' ";
       $escolaresult = $conexao->query($escolasql);
 ?>
-      <div class="row">
+    <div class="row">
       <div class="row">
         <ol class="breadcrumb">
           <li><a href="index.php">

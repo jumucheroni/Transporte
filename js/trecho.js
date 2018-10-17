@@ -1,83 +1,185 @@
 $(document).ready(function(){
 	$("#trecho-salvar").click(function(){
         if (($("#tipo").val() != "") && ($("#crianca").val() != "") && ($("#conducao").val() != "") && ($("#cep_origem").val() != "") && ($("#logradouro_origem").val() != "") && ($("#numero_origem").val() != "") && ($("#bairro_origem").val() != "") && ($("#estado_origem").val() != "") && ($("#cidade_origem").val() != "") && ($("#cep_destino").val() != "") && ($("#logradouro_destino").val() != "") && ($("#numero_destino").val() != "") && ($("#bairro_destino").val() != "") && ($("#estado_destino").val() != "") && ($("#cidade_destino").val() != ""))  {
+            $("#cidade").attr("disabled",false);
+            $("#estado").attr("disabled",false);
+            $("#tipo").attr("disabled",false);
             if ($("#acao").val()=="CADASTRAR"){
-              	$("#acao").val("SALVARCADASTRO");
+                $("#acao").val("SALVARCADASTRO");
+                var dados = $("#ajudante").serialize();
+                $("#modal").show();
+                $.ajax({
+                    url: "salvar_trecho.php",
+                    type: "post",
+                    dataType: "json",
+                    data: dados,
+                    success: function(result){
+                        $("#modal").hide();
+                        if (result.success){
+                            $("#alert").html('<div class="alert bg-success" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                        } else {
+                            $("#alert").html('<div class="alert bg-danger" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');  
+                        }
+                        $("#alert").show();
+                        setTimeout(function(){
+                            $("#alert").hide();
+                            window.location="visu_trecho.php";
+                        },2000);
+                    }
+                });
             }
             if ($("#acao").val()=="ALTERAR"){
-              	$("#acao").val("SALVARUPDATE");
+                $("#acao").val("SALVARUPDATE");
+                var dados = $("#trecho").serialize();
+                $("#modal").show();
+                $.ajax({
+                    url: "salvar_trecho.php",
+                    type: "post",
+                    dataType: "json",
+                    data: dados,
+                    success: function(result){
+                        $("#modal").hide();
+                        if (result.success){
+                            $("#alert").html('<div class="alert bg-success" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                        } else {
+                            $("#alert").html('<div class="alert bg-danger" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');  
+                        }
+                        $("#alert").show();
+                        setTimeout(function(){
+                            $("#alert").hide();
+                            window.location="visu_trecho.php";
+                        },2000);
+                    }
+                });
             }
-	        $("#cidade").attr("disabled",false);
-	        $("#estado").attr("disabled",false);
-            $("#tipo").attr("disabled",false);
-            $( "#trecho" ).submit();
         } else {
         	var erro = 0;
         	if (!($("#tipo").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#tipo-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#tipo-form").removeClass("has-error");
+            }
         	if (!($("#crianca").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#crianca-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#crianca-form").removeClass("has-error");
+            }
             if (!($("#conducao").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#conducao-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#conducao-form").removeClass("has-error");
             }
         	if (!($("#cep_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#cep_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#cep_origem-form").removeClass("has-error");
+            }
         	if (!($("#logradouro_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#logradouro_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#logradouro_origem-form").removeClass("has-error");
+            }
         	if (!($("#numero_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#numero_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#numero_origem-form").removeClass("has-error");
+            }
         	if (!($("#bairro_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#bairro_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#bairro_origem-form").removeClass("has-error");
+            }
         	if (!($("#estado_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#estado_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#estado_origem-form").removeClass("has-error");
+            }
         	if (!($("#cidade_origem").val() != "")) {
-        		//colocar a borda vermelha no campo
+        		$("#cidade_origem-form").addClass("has-error");
 	           erro = 1;
-        	}
+        	} else {
+                $("#cidade_origem-form").removeClass("has-error");
+            }
             if (!($("#cep_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#cep_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#cep_destino-form").removeClass("has-error");
             }
             if (!($("#logradouro_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#logradouro_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#logradouro_destino-form").removeClass("has-error");
             }
             if (!($("#numero_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#numero_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#numero_destino-form").removeClass("has-error");
             }
             if (!($("#bairro_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#bairro_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#bairro_destino-form").removeClass("has-error");
             }
             if (!($("#estado_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#estado_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#estado_destino-form").removeClass("has-error");
             }
             if (!($("#cidade_destino").val() != "")) {
-                //colocar a borda vermelha no campo
+                $("#cidade_destino-form").addClass("has-error");
                erro = 1;
+            } else {
+                $("#cidade_destino-form").removeClass("has-error");
             }
         	if (erro) {
-        		alert("Existem campos obrigatorios preenchidos incorretamente");
-        	}
+                $("#alert").html('<div class="alert bg-danger" role="alert"> Existem campos obrigatorios preenchidos incorretamente <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                },2000);
+            }
         }       
     });
+
+    $(".dele-trecho").click(function(){
+        $("#modal").show();
+        var id = $(this).attr("id");
+        id = id.split("-");
+        $("#acao").val("SALVARDELETE");
+        var dados = $("#"+id[0]).serialize();
+        $.ajax({
+            url: "salvar_trecho.php",
+            type: "post",
+            dataType: "json",
+            data: dados,
+            success: function(result){
+                $("#modal").hide();
+                if (result.success){
+                    $("#alert").html('<div class="alert bg-success" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                } else {
+                    $("#alert").html('<div class="alert bg-danger" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');  
+                }
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                    window.location="visu_trecho.php";
+                },2000);
+            }
+        });
+    }); 
 
     $("#conducao").change(function(){
         var conducao = ($("#conducao").val());
@@ -147,13 +249,21 @@ $(document).ready(function(){
                     } 
                     else {
                         limpa_formulário_cep_origem();
-                        alert("CEP não encontrado.");
+                        $("#alert").html('<div class="alert bg-danger" role="alert"> CEP não encontrado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                        $("#alert").show();
+                        setTimeout(function(){
+                            $("#alert").hide();
+                        },2000);
                     }
                 });
             } 
             else {
                 limpa_formulário_cep_origem();
-                alert("Formato de CEP inválido.");
+                $("#alert").html('<div class="alert bg-danger" role="alert"> Formato de CEP inválido <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                },2000);
             }
         } 
         else {
@@ -223,13 +333,21 @@ $(document).ready(function(){
                     } 
                     else {
                         limpa_formulário_cep_destino();
-                        alert("CEP não encontrado.");
+                        $("#alert").html('<div class="alert bg-danger" role="alert"> CEP não encontrado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                        $("#alert").show();
+                        setTimeout(function(){
+                            $("#alert").hide();
+                        },2000);
                     }
                 });
             } 
             else {
                 limpa_formulário_cep_destino();
-                alert("Formato de CEP inválido.");
+                $("#alert").html('<div class="alert bg-danger" role="alert"> Formato de CEP inválido <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                },2000);
             }
         } 
         else {
@@ -267,7 +385,11 @@ $(document).ready(function(){
             } 
             else {
                 limpa_formulário_cep();
-                alert("CEP não encontrado.");
+                $("#alert").html('<div class="alert bg-danger" role="alert"> CEP não encontrado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                },2000);
             }
         });
     }
@@ -302,7 +424,11 @@ $(document).ready(function(){
             } 
             else {
                 limpa_formulário_cep();
-                alert("CEP não encontrado.");
+                $("#alert").html('<div class="alert bg-danger" role="alert"> CEP não encontrado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                $("#alert").show();
+                setTimeout(function(){
+                    $("#alert").hide();
+                },2000);
             }
         });
     }

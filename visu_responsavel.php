@@ -7,14 +7,28 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $result = $conexao->query($sql);
 ?>
 
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">
-                  Listagem de Responsável
-                  <a href="cad_responsavel.php?acao=CADASTRAR"><button class="btn-criar" id="novo-alvara">Novo Responsável</button></a>
-              </p>
-              
+         <div class="row">
+            <div class="row">
+              <ol class="breadcrumb">
+                <li><a href="index.php">
+                  <em class="fa fa-home"></em>
+                </a></li>
+                <li class="active">Controle</li>
+                <li class="active">Responsável</li>
+              </ol>
+            </div>
+         <div class="row">
+            <div class="row">
+              <div class="col-lg-6">
+                <h1 class="page-header">Listagem de Responsável</h1>
+              </div> 
+              <div class="col-lg-6">  
+                <a href="cad_responsavel.php"><button class="btn btn-criar" id="novo-responsavel">Novo Responsável</button></a>
+              </div>
+            </div>
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+            </div>
               <div class="row">
                 <div class="caixa-f">
                 <div class="col-md-3">
@@ -45,9 +59,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                        <a href="cad_responsavel.php?acao=ALTERAR&id=<?php print $row["cpf"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-responsavel"></button></a>
-                         <a href="cad_responsavel.php?acao=DELETAR&id=<?php print $row["cpf"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-responsavel"></button></a>
-                        <a href="cad_responsavel.php?acao=DETALHES&id=<?php print $row["cpf"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-responsavel"></button></a>
+                        <a href="alt_responsavel.php?id=<?php print $row["cpf"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-responsavel" type="button"></button></a>
+                        <button class="btn btn-sm btn-danger fa fa-trash dele-responsavel" id="<?php print $row['cpf'].'-dele'; ?>" type="button"></button>
+                        <a href="deta_responsavel.php?id=<?php print $row["cpf"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-responsavel" type="button"></button></a>
                       </p>
                     </div>
                   </div>

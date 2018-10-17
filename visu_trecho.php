@@ -12,14 +12,27 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $result = $conexao->query($sql);
 ?>
 
-        <input type="hidden" name="acao" value="" />
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">
-                  Listagem de Transporte
-                  <a href="cad_trecho.php?acao=CADASTRAR"><button class="btn-criar" id="novo-alvara">Novo Transporte</button></a>
-              </p>
+        <div class="row">
+            <div class="row">
+              <ol class="breadcrumb">
+                <li><a href="index.php">
+                  <em class="fa fa-home"></em>
+                </a></li>
+                <li class="active">Controle</li>
+                <li class="active">Transporte</li>
+              </ol>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h1 class="page-header">Listagem de Transportes</h1>
+              </div> 
+              <div class="col-lg-6">  
+                <a href="cad_trecho.php"><button class="btn btn-criar" id="novo-trecho">Novo Transporte</button></a>
+              </div>
+            </div>
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+            </div>
               
               <div class="row">
                 <div class="caixa-f">
@@ -59,9 +72,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <div class="col-md-2">
                       <p class="letra-fi">
                       <!-- não posso alterar nem deletar se tiver em um contrato -->
-                        <a href="cad_trecho.php?acao=ALTERAR&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-alterar glyphicon glyphicon-pencil" id="manu-trecho"></button></a>
-                        <a href="cad_trecho.php?acao=DELETAR&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-deletar glyphicon glyphicon-trash" id="dele-trecho"></button></a>
-                        <a href="cad_trecho.php?acao=DETALHES&id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn-detalhes glyphicon glyphicon-plus" id="deta-trecho"></button></a>
+                        <a href="alt_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-trecho" type="button"></button></a>
+                        <button class="btn btn-sm btn-danger fa fa-trash dele-trecho" id="<?php print $row['id_trecho'].'-dele'; ?>" type="button"></button>
+                        <a href="deta_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-trecho" type="button"></button></a>
                       </p>
                     </div>
                   </div>

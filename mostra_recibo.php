@@ -3,32 +3,51 @@
 include './inc/header.php';
 include './inc/conexao.php'; 
 
-  $cpf_responsavel    = @$_POST["cpf_responsavel"];
   $mes                = @$_POST["mes"];
-  $nome_crianca       = @$_POST["nome"];
+  $id_crianca       = @$_POST["crianca"];
+
+  $primeirodia = date("Y")."-".$mes."-01";
+  $ultimodia = date("Y")."-".$mes."-31";
+
+  $acao               = @$_POST["acao"];
+
+  if ($acao == "GERARRECIBO") {
+
+    $valorpagototal = 0;
  
- $sql = "Select r.Nome as Responsavel,c.Mensalidade,c.Dia_Pagamento,c.Nome as Crianca from crianca as c, responsavel as r where r.CPF=c.CPF_Responsavel and c.CPF_Responsavel='".$cpf_responsavel."' and c.Nome='".$nome_crianca."'";
+     $sql = "Select r.nome as Responsavel,p.valor_pago,co.mensalidade,p.data_realizada_pgto,c.nome as Crianca, ct.periodo_conducao from crianca as c
+     INNER JOIN responsavel r ON c.cpf_responsavel = r.cpf
+     INNER JOIN contrato co ON co.id_crianca = c.id
+     INNER JOIN pagamentos p ON p.id_contrato = p.id 
+     INNER JOIN criancatrecho ct ON ct.id_contrato = co.id
+     where 
+        c.id='".$id_crianca."' and p.data_realizada_pgto between '".$primeirodia."' and '".$ultimodia."' and p.staus in('F','P') 
+      order by ct.periodo_conducao";
 
- $result = $conexao->query($sql);
- $row = @mysqli_fetch_array($result);
+     $result = $conexao->query($sql);
 
- $trecho = "select Tipo from Trecho where CPF_Responsavel='".$cpf_responsavel."' and Nome_Crianca='".$nome_crianca."' order by Tipo";
- $trechoresult = $conexao->query($trecho);
- $tipo = "";
- while( $trechorow = @mysqli_fetch_array($trechoresult)){
- 	if ($trechorow["Tipo"]=="I"){
- 			$tipo.="Ida";
- 	}
- 	if ($trechorow["Tipo"]=="V"){
- 		if ($tipo==""){
- 			$tipo.="Volta";
- 		}else{
- 			$tipo.="/Volta";
- 		}
- 	}
+     while( $row = @mysqli_fetch_array($result)){
+      $valorpagototal += $row["valor_pago"];
+      if ($tipo==""){ 
+       	if (($row["periodo_conducao"]=="im") || ($row["periodo_conducao"]=="it")){
+       			$tipo="Ida";
+       	}
+      }
+      if (($tipo=="") || ($tipo == "Ida")){
+       	if (($row["periodo_conducao"]=="vm") || ($row["periodo_conducao"]=="vt")){
+       		if ($tipo==""){
+       			$tipo="Volta";
+       		}else{
+       			$tipo.="/Volta";
+       		}
+       	}
+      }
+    }
  }
 
  ?>
+
+ <?php if ($result) { ?>
 
          <div id="p1" class="row imprime">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -36,9 +55,9 @@ include './inc/conexao.php';
               <p class="titulo-formu">Recibo</p>
         
               <div class="row">
-              	<p> Valor R$ <?php print $row["Mensalidade"]; ?></p>
-              	<p> Recebemos de <?php print $row["Responsavel"]; ?>, a importancia de <?php print $row["Mensalidade"]; ?> para pagamento de transporte escolar de <?php print $row["Crianca"]; ?>.</p>
-              	<p> O valor acima corresponde à mensalidade com vencimento em <?php print $row["Dia_Pagamento"]."/".$mes."/".date('Y'); ?> no trajeto de <?php print $tipo; ?>.</p>
+              	<p> Valor R$ <?php print $row["mensalidade"]; ?></p>
+              	<p> Recebemos de <?php print $row["Responsavel"]; ?>, a importancia de <?php print $row["mensalidade"]; ?> para pagamento de transporte escolar de <?php print $row["Crianca"]; ?>.</p>
+              	<p> O valor acima corresponde à mensalidade com vencimento em <?php print DbtoDt($row["data_realizada_pgto"]); ?> no trajeto de <?php print $tipo; ?>.</p>
               	<p> Por ser verdade firmo o presente.</p>
               	<p> Bauru, __ de _____________ de _____.</p>
               	<br>
@@ -47,13 +66,14 @@ include './inc/conexao.php';
              </div>
 
              
-<?php include './inc/footer.php'; ?>
+<?php } else { ?>
+    <div id="p1" class="row imprime">
+            <div class="col-xs-12 col-md-10 col-md-offset-1">
+              <p class="titulo-formu">Recibo</p>
+              <h1> Não existe recibo para o período solicitado </h1>
+            </div>
+          </div>
+        
 
-<script type="text/javascript">
-    $(document).ready(function(){
-      $("#print").click(function(){
-        window.print();
-      });
-    });
+<?php  }include './inc/footer.php'; ?>
 
-  </script>

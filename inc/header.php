@@ -46,7 +46,7 @@
                                 <li><a href="./visu_contrato.php">Contratos</a></li>
                                 <li><a href="./visu_recebimentos.php">Recebimentos</a></li>
                                 <li><a href="./visu_despesas.php">Despesas</a></li>
-                                <li><a href="./visu_recibos.php">Recibos</a></li>
+                                <li><a href="./recibo.php">Recibos</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">

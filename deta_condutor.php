@@ -42,7 +42,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <h1 class="page-header">condutor</h1>
+              <h1 class="page-header">Condutor</h1>
               
               <div class="row">
                 <div class="col-md-6">

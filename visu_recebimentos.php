@@ -9,13 +9,24 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $result = $conexao->query($sql);
 
 ?>
-
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">
-                  Listagem de Contrato
-              </p>
+        <div class="row">
+            <div class="row">
+              <ol class="breadcrumb">
+                <li><a href="index.php">
+                  <em class="fa fa-home"></em>
+                </a></li>
+                <li class="active">Financeiro</li>
+                <li class="active">Recebimentos</li>
+              </ol>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h1 class="page-header">Listagem de Recebimentos</h1>
+              </div> 
+            </div>
+            <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+            </div>
               
               <div class="row">
                 <div class="caixa-f">
@@ -54,7 +65,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <div class="col-md-2">
                       <?php if ($row["status"] != "P") { ?>
                         <p class="letra-fi">
-                          <a href="cad_recebimentos.php?acao=PAGAR&id=<?php print $row["id"];?>"><button class="btn-pagar glyphicon glyphicon-pencil" id="manu-contrato"></button></a>
+                          <a href="cad_recebimentos.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-money" id="manu-recebimento" type="button"></button></a>
                         </p>
                       <?php } ?>
                     </div>
@@ -68,6 +79,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           </div>
         </form>
 
-<?php include './inc/footer.php'; 
+<?php include './inc/footer.php'; ?>
 
-}?>
+<script src="js/recebimentos.js"></script>
+
+<?php }?>
