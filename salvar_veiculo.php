@@ -1,7 +1,6 @@
 <?php 
 session_start();
-if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
-    include './inc/header.php'; 
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) { 
     include './inc/conexao.php';
 
     $acao = @$_POST["acao"];
@@ -16,6 +15,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     if ($acao=="SALVARCADASTRO"){
 
         $insertsql = "insert into veiculo (placa,marca,modelo,ano,lotacao,cpf_ajudante) values ('".$placa."','".$marca."','".$modelo."','".$ano."',".$lotacao.",'".$cpf_ajudante."')";
+
         $insertresult = $conexao->query($insertsql);
         if ($insertresult){
           $retorno = [

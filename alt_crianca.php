@@ -9,6 +9,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $enablechave = "readonly";
 
+    $id = @$_GET["id"];
+
     $sql = "select * from crianca where id=".$id;
     $result = $conexao->query($sql);
     $row = @mysqli_fetch_array($result);
@@ -40,16 +42,21 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
        <form id="crianca" method="post" action="cad_crianca.php"> 
         <input type="hidden" name="acao" id="acao" value="<?php print $acao; ?>" />
+        <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
          <div class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">Alterar Criança</p>
+             <div class="col-xs-12 col-md-10 col-md-offset-1">
+              <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+              </div>
+              <div class="col-xs-12 col-sm-8 col-md-10 ">
+                <h1 class="page-header">Alterar Criança</h1>
+              </div>
              
               <div class="row">
                 <div class="col-md-6">
                   <div id="cpf_responsavel-form" class="form-group">
                     <p class="formu-letra">CPF Responsável</p>
-                    <select <?php print $enablecampos ?> class="form-control" type="text" name="cpf_responsavel" id="cpf_responsavel">
+                    <select class="form-control" type="text" name="cpf_responsavel" id="cpf_responsavel">
                     <?php while ($resprow = @mysqli_fetch_array($respresult)){ ?>
                         <option <?php if ($cpf_responsavel == $resprow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $resprow['cpf'];?>"><?php print $resprow['cpf']." - ".$resprow['nome'];?></option>
                     <?php } ?>
@@ -59,7 +66,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="nome-form" class="form-group">
                     <p class="formu-letra">Nome</p>
-                    <input <?php print $enablecampos ?> class="form-control" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome; ?>"/>
+                    <input class="form-control" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome; ?>"/>
                   </div>
                 </div>
               </div>
@@ -67,13 +74,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="nome_professor-form" class="form-group">
                     <p class="formu-letra">Nome do Professor</p>
-                    <input <?php print $enablecampos ?> class="form-control" type="text" name="nome_professor" id="nome_professor" maxlength="100" value="<?php print $nome_professor; ?>"/>
+                    <input class="form-control" type="text" name="nome_professor" id="nome_professor" maxlength="100" value="<?php print $nome_professor; ?>"/>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div id="n_ident_escola-form" class="form-group">
                     <p class="formu-letra">Escola</p>
-                     <select <?php print $enablecampos ?> class="form-control" type="text" name="n_ident_escola" id="n_ident_escola">
+                     <select class="form-control" type="text" name="n_ident_escola" id="n_ident_escola">
                      <?php while ($escolarow = @mysqli_fetch_array($escolaresult)){ ?>
                         <option <?php if ($n_ident_escola == $escolarow['id']) { echo 'selected="true"'; } ?> value="<?php print $escolarow['id'];?>"><?php print $escolarow['id']." - ".$escolarow['nome'];?></option>
                     <?php } ?>
@@ -85,7 +92,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-4">
                   <div id="data_nascimento-form" class="form-group">
                     <p class="formu-letra">Data Nascimento</p>
-                    <input <?php print $enablecampos ?> class="form-control nasc" type="text" name="data_nascimento" id="data_nascimento" value="<?php print $data_nascimento; ?>"/>
+                    <input class="form-control nasc" type="text" name="data_nascimento" id="data_nascimento" value="<?php print $data_nascimento; ?>"/>
                   </div>   
                 </div>            
               </div>              

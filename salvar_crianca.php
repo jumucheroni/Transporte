@@ -2,12 +2,9 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-    include './inc/header.php'; 
     include './inc/conexao.php';
 
-    if (!$acao){
-      $acao = @$_POST["acao"];
-    }
+    $acao = @$_POST["acao"];
 
     $id                  = @$_POST["id"];
     $cpf_responsavel     = @$_POST["cpf_responsavel"];
@@ -26,7 +23,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             ];
         }else{
             $retorno = [
-                'success' => true,
+                'success' => false,
                 'mensagem' => "Erro ao cadastrar a Criança!"
             ];
         }
@@ -35,7 +32,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     if ($acao =="SALVARUPDATE"){
           
-          $updatesql = "update crianca set cpf_responsavel='".$cpf_responsavel."', nome='".$nome."', data_nascimento = '".$data_nascimento."', id_escola= ".$n_ident_escola.", nome_professor = ".$nome_professor." where id = ".$id;
+          $updatesql = "update crianca set cpf_responsavel='".$cpf_responsavel."', nome='".$nome."', data_nascimento = '".$data_nascimento."', id_escola= ".$n_ident_escola.", nome_professor = '".$nome_professor."' where id = ".$id;
+
           $updateresult = $conexao->query($updatesql);
           if ($updateresult){
             $retorno = [
@@ -44,7 +42,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             ];
           }else{
             $retorno = [
-                'success' => true,
+                'success' => false,
                 'mensagem' => "Erro ao atualizar a Criança!"
             ];
           }
@@ -66,7 +64,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             ];
         }else{
           $retorno = [
-              'success' => true,
+              'success' => false,
               'mensagem' => "Erro ao deletar a Criança!"
           ];
         }
@@ -79,10 +77,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
 
    echo json_encode($retorno);
+
  } 
 
 ?>
-
-
-<?php include './inc/footer.php'; ?>
-<script src="js/crianca.js"></script>

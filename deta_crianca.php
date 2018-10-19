@@ -24,7 +24,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $respresult = $conexao->query($respsql);
       $resprow = @mysqli_fetch_array($respresult);
 
-      $escolasql = "select id,nome from escola where deletado = 'N' and id = ".$id_escola;
+      $escolasql = "select id,nome from escola where deletado = 'N' and id = ".$n_ident_escola;
       $escolaresult = $conexao->query($escolasql);
       $escolarow = @mysqli_fetch_array($escolaresult);
 
@@ -62,7 +62,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <div id="nome-form" class="form-group">
                     <p class="formu-letra">Nome</p>
                     <h4><?php print $nome; ?></h4>
-                    <input class="form-control" type="text" name="nome" id="nome" maxlength="100" />
                   </div>
                 </div>
               </div>
@@ -76,8 +75,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="n_ident_escola-form" class="form-group">
                     <p class="formu-letra">Escola</p>
-                     <select class="form-control" type="text" name="n_ident_escola" id="n_ident_escola">
-                     <h4><?php print $escolarow['id']." - ".$escolarow['nome'];?></h4>
+                     <h4><?php print $escolarow['nome'];?></h4>
                   </div>
                 </div>
               </div>
@@ -100,9 +98,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             </div>         
           </div>
         </form>
-
-
-<?php } ?>
 
 
 <?php include './inc/footer.php'; ?>

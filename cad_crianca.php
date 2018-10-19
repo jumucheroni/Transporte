@@ -92,10 +92,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           </div>
         </form>
 
-
-<?php } ?>
-
-
 <?php include './inc/footer.php'; ?>
 <script src="js/crianca.js"></script>
 

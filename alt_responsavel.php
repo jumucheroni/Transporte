@@ -24,8 +24,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $cidade        = $row["cidade"];
     $estado        = $row["estado"];
 
-    $sqltelefone = "select * from telefone where cpf_responsavel='" . $cpf ."'";
+    $sqltelefone = "select * from telefone where cpf_responsavel='" . $cpf ."' and deletado='N'";
     $resultelefone = $conexao->query($sqltelefone);
+    $telefone = "";
     while ($rowtelefone = @mysqli_fetch_array($resultelefone)) {
         $telefone .= $rowtelefone["telefone"].";";
     }

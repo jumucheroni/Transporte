@@ -17,8 +17,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $lotacao       = $row["lotacao"];
     $cpf_ajudante  = $row["cpf_ajudante"];
 
-    $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo)";
+    $ajudsql = "select cpf,nome from ajudante where cpf = ".$cpf_ajudante;
     $ajudresult = $conexao->query($ajudsql);
+    $ajudrow = @mysqli_fetch_array($ajudresult);
 
 ?>
       <div class="row">
@@ -78,13 +79,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                 <div id="cpf_ajudante-form" class="form-group">
                   <p class="formu-letra">CPF do Ajudante</p>
-                  <select class="form-control" type="text" name="cpf_ajudante" id="cpf_ajudante">
-                    <?php while ($ajudrow = @mysqli_fetch_array($ajudresult)){ ?>
-                     <?php if ($cpf_ajudante == $ajudrow['cpf']) { ?>
-                        <option value="<?php print $ajudrow['cpf'];?>"><?php print $ajudrow['cpf']." - ".$ajudrow['nome'];?></option>
-                      <?php } ?>
-                    <?php } ?>
-                  </select>
+                  <h4><?php print $ajudrow['cpf']." - ".$ajudrow['nome'];?></h4>
                 </div>
               </div>                 
           

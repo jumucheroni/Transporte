@@ -37,20 +37,20 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         </ol>
       </div>
        <form id="escola" method="post" role="form"> 
-        <input type="hidden" name="acao" id="acao" value="CADASTRAR" />
+        <input type="hidden" name="acao" id="acao" value="ALTERAR" />
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
               <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
               </div>
               <div class="col-xs-12 col-sm-8 col-md-10 ">
-                <h1 class="page-header">Cadastrar Escola</h1>
+                <h1 class="page-header">Alterar Escola</h1>
               </div>
             
               <div class="row">
                 <div class="col-md-12">
                 <div id="nome-form" class="form-group">
-                  <input type="hidden" name="n_ident" value="<?php echo $n_ident; ?>" />
+                  <input type="hidden" name="id" value="<?php echo $n_ident; ?>" />
                     <p class="formu-letra">Nome</p>
                     <input class="form-control" type="text" name="nome" id="nome" maxlength="100" value="<?php print $nome;?>" />
                   </div>
@@ -104,7 +104,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="estado-form" class="form-group">
                     <p class="formu-letra">Estado</p>
-                     <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" />ss
+                     <input type="hidden" name="uf" id="uf" value="<?php print $estado?>" />
                     <select class="form-control" type="text" name="estado" id="estado">
                     </select>
                   </div>

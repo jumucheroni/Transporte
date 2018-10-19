@@ -2,12 +2,11 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-    include './inc/header.php'; 
     include './inc/conexao.php';
 
       $acao = @$_POST["acao"];
 
-      $n_ident       = @$_POST["n_ident"];
+      $n_ident       = @$_POST["id"];
       $nome          = @$_POST["nome"];
       $tipo          = @$_POST["tipo"];
       $logradouro    = @$_POST["logradouro"];

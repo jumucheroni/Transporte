@@ -6,7 +6,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $acao = "ALTERAR";
 
-    $enablechave = "realonly";
+    $enablechave = "readonly";
 
     $placa = $_GET['id'];
 
@@ -23,6 +23,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo)";
     $ajudresult = $conexao->query($ajudsql);
+
+    $sqlajud = "select cpf,nome from ajudante where cpf = ".$cpf_ajudante;
+    $resultajud = $conexao->query($sqlajud);
+    $rowajud = @mysqli_fetch_array($resultajud);
 
 ?>
       <div class="row">
@@ -43,14 +47,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div hidden id="alert"></div>
               </div>
               <div class="col-xs-12 col-sm-8 col-md-10 ">
-                <h1 class="page-header">Cadastrar Veículo</h1>
+                <h1 class="page-header">Alterar Veículo</h1>
               </div>
           
               <div class="row">
                 <div class="col-md-4">
                   <div id="placa-form" class="form-group">
                     <p class="formu-letra">Placa</p>
-                    <input class="form-control placa" type="text" name="placa" id="placa" maxlength="8" value="<?php print $placa ?>"/>
+                    <input <?php print $enablechave; ?> class="form-control placa" type="text" name="placa" id="placa" maxlength="8" value="<?php print $placa ?>"/>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -83,6 +87,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div id="cpf_ajudante-form" class="form-group">
                   <p class="formu-letra">CPF do Ajudante</p>
                   <select class="form-control" type="text" name="cpf_ajudante" id="cpf_ajudante">
+                    <option selected="true" value="<?php print $rowajud['cpf']; ?>"><?php print $rowajud['cpf']." - ".$rowajud['nome'];?> </option>
                     <?php while ($ajudrow = @mysqli_fetch_array($ajudresult)){ ?>
                       <option <?php if ($cpf_ajudante == $ajudrow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $ajudrow['cpf'];?>"><?php print $ajudrow['cpf']." - ".$ajudrow['nome'];?></option>
                   <?php } ?>

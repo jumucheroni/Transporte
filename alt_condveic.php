@@ -45,7 +45,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div hidden id="alert"></div>
               </div>
               <div class="col-xs-12 col-sm-8 col-md-10 ">
-                <h1 class="page-header">Cadastrar Condução</h1>
+                <h1 class="page-header">Alterar Condução</h1>
               </div>
 
               <div class="row">

@@ -101,16 +101,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="estado-form" class="form-group">
                     <p class="formu-letra">Estado</p>
-                    <select class="form-control" type="text" name="estado" id="estado">
-                    </select>
+                    <h4><?php print $estado; ?></h4>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="cidade-form" class="form-group">
                     <p class="formu-letra">Cidade</p>
-                    <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" />
-                     <select class="form-control" type="text" name="cidade" id="cidade">
-                     </select>
+                    <h4><?php print $cidade; ?></h4>
                   </div>
                 </div>
               </div>
