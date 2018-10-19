@@ -77,7 +77,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         } else {
             $retorno = [
                 'success' => false,
-                'mensagem' => "Erro ao deletar o Condutor! Condutor já vinculado a um veículo"
+                'mensagem' => "Erro ao deletar o Condutor! Condutor já vinculado a uma Condução. "
             ];
         }
     }

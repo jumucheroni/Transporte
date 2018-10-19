@@ -1,12 +1,9 @@
 <?php 
 session_start();
-if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
-    include './inc/header.php'; 
+if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) { 
     include './inc/conexao.php';
 
-    if (!$acao){
-      $acao = @$_POST["acao"];
-    }
+    $acao = @$_POST["acao"];
 
     $veiculo        = @$_POST["veiculo"];
     $condutor       = @$_POST["condutor"];
@@ -23,19 +20,30 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               'mensagem' => "Condução já está cadastrada!"
           ];
         } else {
-          $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
-          $insertresult = $conexao->query($insertsql);
-          if ($insertresult){
-              $retorno = [
-                  'success' => true,
-                  'mensagem' => "Condução cadastrado com sucesso!"
-              ];
-          }else{
+            $select2sql = "select cpf_condutor,periodo from condutorveiculo where cpf_condutor = '".$condutor."' and periodo ='".$periodo."' and deletado = 'N' ";
+            $select2sqlresult = $conexao->query($select2sql);
+
+            if ($select2sqlresult->num_rows > 0) {
               $retorno = [
                   'success' => false,
-                  'mensagem' => "Erro ao cadastrar o Condução!"
+                  'mensagem' => "Condutor já está com este período ocupado em outro veículo!"
               ];
-          }
+            } else {
+
+                $insertsql = "insert into condutorveiculo (placa_veiculo,cpf_condutor,periodo) values ('".$veiculo."','".$condutor."','".$periodo."')";
+                $insertresult = $conexao->query($insertsql);
+                if ($insertresult){
+                    $retorno = [
+                        'success' => true,
+                        'mensagem' => "Condução cadastrado com sucesso!"
+                    ];
+                }else{
+                    $retorno = [
+                        'success' => false,
+                        'mensagem' => "Erro ao cadastrar o Condução!"
+                    ];
+                }
+            }
         }
 
     }
@@ -95,5 +103,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
 
     echo json_encode($retorno);
+
+  }
 
 ?>

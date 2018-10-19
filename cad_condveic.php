@@ -25,7 +25,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         </ol>
       </div>
       
-      <form id="ajudante" method="post" role="form"> 
+      <form id="condveic" method="post" role="form"> 
         <input type="hidden" name="acao" id="acao" value="<?php print $acao; ?>" />
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">

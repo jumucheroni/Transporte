@@ -85,6 +85,7 @@ $(document).ready(function(){
         id = id.split("-");
         $("#acao").val("SALVARDELETE");
         var dados = $("#"+id[0]+"-"+id[1]+"-"+id[2]).serialize();
+        console.log(dados);
         $.ajax({
             url: "salvar_condveic.php",
             type: "post",

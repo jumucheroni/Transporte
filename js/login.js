@@ -10,24 +10,36 @@ $(document).ready(function(){
 				switch (result.erro) {
 					case 0: {
 						$("#alert").html('<div class="alert bg-success" role="alert"> Login Efetuado com sucesso. Você será redirecionado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
-						window.location = result.url;
 						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                        	window.location=result.url;
+                    	},2000);
 						break;
 					}
 					case 1: {
 						$("#alert").html('<div class="alert bg-warning" role="alert"> Você já está logado. Você será redirecionado <a id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
-						window.location = result.url;
 						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                        	window.location=result.url;
+                    	},2000);
 						break;
 					}
 					case 2: {
 						$("#alert").html('<div class="alert bg-danger" role="alert"> Usuario ou senha inválida <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
 						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                    	},2000);
 						break;
 					}
 					case 3: {
 						$("#alert").html('<div class="alert bg-danger" role="alert"> Campos preenchidos incorretamente <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
 						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                    	},2000);
 						break;
 					}
 				}
@@ -36,11 +48,6 @@ $(document).ready(function(){
 		return false;
 	});
 
-	$("#close-alert").on('click' , function(){
-		console.log("TESTE");
-		$("#alert").hide();
-	});
-	
 	$("#cadastrar").click(function(){
 		$("#cadastro").show();
 		$("#logar").hide();
@@ -61,19 +68,31 @@ $(document).ready(function(){
 			success: function(result){
 				switch (result.erro) {
 					case 0: {
-						alert("Cadastro realizado com sucesso. Você será redirecionado");
-						window.location = result.url;
+						$("#alert").html('<div class="alert bg-success" role="alert"> Cadastro realizado com sucesso. Você será redirecionado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                        	window.location=result.url;
+                    	},2000);
 						break;
 					}
 					case 1: {
-						alert("Você já está logado. Você será redirecionado");
-						window.location = result.url;
+						$("#alert").html('<div class="alert bg-success" role="alert"> Você já está logado. Você será redirecionado <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                        	window.location=result.url;
+                    	},2000);
 						break;
 					}
 					case 2: {
-						alert("Erro ao efetuar cadastro");
-						$("#logar").show();
-						$("#cadastro").hide();
+						$("#alert").html('<div class="alert bg-danger" role="alert"> Erro ao efetuar cadastro <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+						$("#alert").show();
+						setTimeout(function(){
+                        	$("#alert").hide();
+                        	$("#logar").show();
+							$("#cadastro").hide();
+                    	},2000);
 						break;
 					}
 				}

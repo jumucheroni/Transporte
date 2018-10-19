@@ -51,6 +51,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <div id="resultado" class="row">
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
                 <form id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"]?>" method="POST">
+                    <input type="hidden" name="veiculo" value ="<?php print $row['placa_veiculo'] ?>" />
+                    <input type="hidden" name="condutor" value ="<?php print $row['cpf_condutor'] ?>" />
+                    <input type="hidden" name="periodo" value ="<?php print $row['periodo'] ?>" />
+                    <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
                   <div class="caixa-fl">
                     <div class="col-md-5">
                       <p class="letra-fi "><?php print $row["nome"];?></p>

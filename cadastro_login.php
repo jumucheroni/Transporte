@@ -21,6 +21,7 @@ include './inc/conexao.php';
     	$insertresult = $conexao->query($insertsql);
     	$id_usuario = $conexao->insert_id;
     	if ($insertresult){
+    		session_start();
     		$_SESSION["usuario"] = $usuario;
     		$_SESSION["senha"] = $senha;
     		$_SESSION["id"] = $id_usuario;
