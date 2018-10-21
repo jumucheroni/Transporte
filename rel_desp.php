@@ -2,11 +2,21 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
   include './inc/header.php'; ?>
+  <div class="row">
+      <div class="row">
+        <ol class="breadcrumb">
+          <li><a href="index.php">
+            <em class="fa fa-home"></em>
+          </a></li>
+          <li class="active">Relatorio</li>
+          <li class="active">Despesas</li>
+        </ol>
+      </div>
    <form id="rel_desp" method="post" action="mostra_rel_desp.php"> 
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu">Relatório de Despesas</p>
+          <div class="col-xs-12 col-md-10 col-md-offset-1">
+              <div class="col-xs-12 col-sm-8 col-md-10 ">
+                <h1 class="page-header">Relatório de Despesas</h1>
+              </div>
         
               <div class="row">
                 <div class="col-md-12">

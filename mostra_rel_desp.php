@@ -42,13 +42,26 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
     $total = 0;
 ?>
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <p class="titulo-formu imprime">Despesas <?php print $rel_tipo;?>
-               <button class="btn-criar nao-imprime" id="print">Imprimir</button>
-
-              </p>
+   <div class="row">
+      <div class="row">
+        <ol class="breadcrumb">
+          <li><a href="index.php">
+            <em class="fa fa-home"></em>
+          </a></li>
+          <li class="active">Relatorio</li>
+          <li class="active">Despesas</li>
+        </ol>
+      </div>
+         <div class="row">
+              <div class="col-xs-12 col-md-10 col-md-offset-1">
+                <div class="row imprime">
+                  <div class="col-lg-6">
+                    <h1 class="page-header imprime">Despesas <?php print $rel_tipo;?></h1>
+                  </div>
+                  <div class="col-lg-6">
+                    <button class="btn-criar nao-imprime" id="print">Imprimir</button>
+                  </div>
+                </div>
         
               <div class="row imprime">
                 <table width="100%" style="border:none;">

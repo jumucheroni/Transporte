@@ -2,11 +2,27 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
   include './inc/header.php'; ?>
-      <form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
-         <div id="p1" class="row">
-            <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <p class="titulo-formu">Relatório de Crianças</p>
+  <div class="row">
+      <div class="row">
+        <ol class="breadcrumb">
+          <li><a href="index.php">
+            <em class="fa fa-home"></em>
+          </a></li>
+          <li class="active">Relatorio</li>
+          <li class="active">Crianca</li>
+        </ol>
+      </div>
+      <form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
+         <div class="row">
+            <div class="col-xs-12 col-md-10 col-md-offset-1">
+              <input type="hidden" name="acao" id="acao" value=""/>
+              <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+              </div>
+              <div class="col-xs-12 col-sm-8 col-md-10 ">
+                <h1 class="page-header">Relatório de Crianças</h1>
+              </div>
         
               <div class="row">
                 <div class="col-md-12">
@@ -32,7 +48,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 </div>
                 <div class="col-md-6">
                   <p class="letra-fi">CPF do Responsável</p>
-                  <input class="input-formu" id="text" type="text" name="valor" />
+                  <input class="form-control" id="text" type="text" name="valor" />
                   <select hidden class="input-formu" id="select" name="valor" >
                         <option value="" id="todos">Todos</option>
                         <option value="im" id="im">Ida-Manhã</option>
