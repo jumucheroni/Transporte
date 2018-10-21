@@ -60,7 +60,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="tipo-form" class="form-group">
                     <p class="formu-letra">Tipo</p>
-                    <select <?php print $enablecampos; ?> class="form-control" type="text" name="tipo" id="tipo" >
+                    <select class="form-control" type="text" name="tipo" id="tipo" >
                       <option value="c" id="c">Combustível</option>
                       <option value="i" id="i">IPVA</option>
                       <option value="o" id="o">Oficina</option>

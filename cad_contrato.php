@@ -66,19 +66,19 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="data_inicio_contrato-form" class="form-group">
                     <p class="formu-letra">Data Inicio do Contrato</p>
-                    <input  class="form-control nasc" type="text" name="data_inicio_contrato" id="data_inicio_contrato" value="<?php print $data_inicio_contrato; ?>"/>
+                    <input  class="form-control nasc" type="text" name="data_inicio_contrato" id="data_inicio_contrato" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="data_fim_contrato-form" class="form-group">
                     <p class="formu-letra">Data Final do Contrato</p>
-                    <input  class="form-control nasc" type="text" name="data_fim_contrato" id="data_fim_contrato" value="<?php print $data_fim_contrato; ?>"/>
+                    <input  class="form-control nasc" type="text" name="data_fim_contrato" id="data_fim_contrato" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="dia_vencimento_mensalidade-form" class="form-group">
                     <p class="formu-letra">Dia Vencimento</p>
-                    <input  class="form-control" type="text" name="dia_vencimento_mensalidade" id="dia_vencimento_mensalidade" value="<?php print $dia_vencimento_mensalidade; ?>"/>
+                    <input  class="form-control" type="text" name="dia_vencimento_mensalidade" id="dia_vencimento_mensalidade" />
                   </div>
                 </div>
               </div>  
@@ -86,7 +86,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="mensalidade-form" class="form-group">
                     <p class="formu-letra">Mensalidade</p>
-                    <input  class="form-control money" type="text" name="mensalidade" id="mensalidade" value="<?php print $mensalidade; ?>"/>
+                    <input  class="form-control money" type="text" name="mensalidade" id="mensalidade" />
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -104,8 +104,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </div>        
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-success btn-right" id="condveic-salvar" type="button">Salvar</button> 
-                  <a href="visu_condveic.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
+                  <button class="btn btn-success btn-right" id="contrato-salvar" type="button">Salvar</button> 
+                  <a href="visu_contrato.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
                 </div>
               </div>
               

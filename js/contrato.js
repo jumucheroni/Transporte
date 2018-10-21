@@ -40,30 +40,6 @@ $(document).ready(function(){
                   }
               });
           }
-            if ($("#acao").val()=="ALTERAR"){
-                $("#acao").val("SALVARUPDATE");
-                var dados = $("#contrato").serialize();
-                $("#modal").show();
-                $.ajax({
-                    url: "salvar_contrato.php",
-                    type: "post",
-                    dataType: "json",
-                    data: dados,
-                    success: function(result){
-                        $("#modal").hide();
-                        if (result.success){
-                            $("#alert").html('<div class="alert bg-success" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
-                        } else {
-                            $("#alert").html('<div class="alert bg-danger" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');  
-                        }
-                        $("#alert").show();
-                        setTimeout(function(){
-                            $("#alert").hide();
-                            window.location="visu_contrato.php";
-                        },2000);
-                    }
-                });
-            }
         } else {
           if (!($("#id_crianca").val() != "")) {
               $("#id_crianca").addClass("has-error");
@@ -111,6 +87,50 @@ $(document).ready(function(){
         }       
     });
 
+    $("#contrato-alterar").click(function(){
+          var erro = 0;     
+          if ($("#dia_vencimento_mensalidade").val() != "") { 
+              if ($("#acao").val()=="ALTERAR"){
+                    $("#acao").val("SALVARUPDATE");
+                    var dados = $("#contrato").serialize();
+                    $("#modal").show();
+                    $.ajax({
+                        url: "salvar_contrato.php",
+                        type: "post",
+                        dataType: "json",
+                        data: dados,
+                        success: function(result){
+                            $("#modal").hide();
+                            if (result.success){
+                                $("#alert").html('<div class="alert bg-success" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                            } else {
+                                $("#alert").html('<div class="alert bg-danger" role="alert">'+result.mensagem+'<a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');  
+                            }
+                            $("#alert").show();
+                            setTimeout(function(){
+                                $("#alert").hide();
+                                window.location="visu_contrato.php";
+                            },2000);
+                        }
+                    });
+                }
+            } else {
+              if (!($("#dia_vencimento_mensalidade").val() != "")) {
+                  $("#dia_vencimento_mensalidade").addClass("has-error");
+                  erro = 1;
+              } else {
+                  $("#dia_vencimento_mensalidade").removeClass("has-error");
+              }
+              if (erro) {
+                  $("#alert").html('<div class="alert bg-danger" role="alert"> Existem campos obrigatorios preenchidos incorretamente <a type="button" id="close-alert" class="pull-right"><em class="fa fa-lg fa-close"></em></a></div>');
+                  $("#alert").show();
+                  setTimeout(function(){
+                      $("#alert").hide();
+                  },2000);
+              }
+            }
+          });
+
   $(".dele-contrato").click(function(){
         $("#modal").show();
         var id = $(this).attr("id");
@@ -144,7 +164,6 @@ $(document).ready(function(){
         if (trecho[1] == $("#id_crianca").val()) {
           $(this).removeAttr("hidden");
         } else {
-          console.log("TESTE");
           $(this).attr("hidden",'hidden');
         }
     });

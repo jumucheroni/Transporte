@@ -2,7 +2,6 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-    include './inc/header.php'; 
     include './inc/conexao.php';
 
       $acao = @$_POST["acao"];
@@ -40,8 +39,5 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         }
       } 
 
- ?>
-
-<script src="js/recebimentos.js"></script>
-
-<?php } ?>
+      echo json_encode($retorno);
+ } ?>

@@ -6,7 +6,7 @@ $(document).ready(function(){
             $("#tipo").attr("disabled",false);
             if ($("#acao").val()=="CADASTRAR"){
                 $("#acao").val("SALVARCADASTRO");
-                var dados = $("#ajudante").serialize();
+                var dados = $("#trecho").serialize();
                 $("#modal").show();
                 $.ajax({
                     url: "salvar_trecho.php",
@@ -431,5 +431,21 @@ $(document).ready(function(){
                 },2000);
             }
         });
+    }
+
+    var cep_origem = $("#cep_origem").val();
+    if (cep_origem) {
+      cep_origem = cep_origem.replace("-","");
+      var estado_origem = $("#uf_origem").val();
+      var cidade_origem = $("#cid_origem").val();
+      carregaestadocidade_origem(cep_origem,estado_origem,cidade_origem);
+    }
+
+    var cep_destino = $("#cep_destino").val();
+    if (cep_destino) {
+      cep_destino = cep_destino.replace("-","");
+      var estado_destino = $("#uf_destino").val();
+      var cidade_destino = $("#cid_destino").val();
+      carregaestadocidade_destino(cep_destino,estado_destino,cidade_destino);
     }
 });

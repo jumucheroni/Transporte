@@ -5,7 +5,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/header.php'; 
     include './inc/conexao.php';
 
-      $acao = "PAGAR"
+      $acao = "PAGAR";
 
       $id = @$_GET["id"]; 
 
@@ -43,13 +43,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <div id="data_pgto-form" class="form-group">
                     <p class="formu-letra">Data do Pagamento</p>
-                    <input <?php print $enablecampos ?> class="input-formu nasc" type="text" name="data_pgto" value="<?php print $data_pgto; ?>"/>
+                    <input class="input-formu nasc" type="text" name="data_pgto" value="<?php print $data_pgto; ?>"/>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div id="valor_pago-form" class="form-group">
                     <p class="formu-letra">Valor pago</p>
-                    <input <?php print $enablecampos ?> class="input-formu money" type="text" name="valor_pago" value="<?php print $valor_pago; ?>"/>
+                    <input class="input-formu money" type="text" name="valor_pago" value="<?php print $valor_pago; ?>"/>
                   </div>
                 </div>
               </div>        

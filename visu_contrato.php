@@ -47,6 +47,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </div>
               <div id="resultado" class="row">
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
+               <form id="<?php print $row['id']?>" method="POST">
+                  <input type="hidden" name="id" value ="<?php print $row['id'] ?>" />
+                  <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
                   <div class="caixa-fl">
                     <div class="col-md-4">
                       <p class="letra-fi "><?php print $row["nome"];?></p>
@@ -65,6 +68,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                       </p>
                     </div>
                   </div>
+                </form>
                   <?php }?>
                 </div>
           

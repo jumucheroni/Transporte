@@ -1103,6 +1103,18 @@ p.back-link {
     animation: spin 2s linear infinite;
 }
 
+.letra-fi-red {
+  color: red;
+}
+
+.letra-fi-yellow {
+  color: #FFD700;
+}
+
+.letra-fi-green {
+  color: green;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

@@ -46,11 +46,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
         $enablechave = "readonly";
 
-      $criancasql = "select id,nome from crianca where deletado = 'N' ";
+      $criancasql = "select id,nome from crianca where deletado = 'N' and id = ".$id_crianca;
       $criancaresult = $conexao->query($criancasql);
+      $criancarow = @mysqli_fetch_array($criancaresult);
 
-      $conducaosql = "select * from condutorveiculo where deletado = 'N' ";
+      $conducaosql = "select * from condutorveiculo where deletado = 'N' and periodo = '".$periodo."' and placa_veiculo = '".$placa_veiculo."' and cpf_condutor = '".$cpf_condutor."'";
       $conducaoresult = $conexao->query($conducaosql);
+      $conducaorow = @mysqli_fetch_array($conducaoresult);
 
  ?>
       <div class="row">
@@ -72,7 +74,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div hidden id="alert"></div>
               </div>
               <div class="col-xs-12 col-sm-8 col-md-10 ">
-                <h1 class="page-header">Cadastrar Transporte</h1>
+                <h1 class="page-header">Transporte</h1>
               </div>
 
               <div class="row">
@@ -85,11 +87,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-8">
                   <div id="crianca-form" class="form-group">
                     <p class="formu-letra">Criança</p>
-                     <select <?php print $enablechave; ?> class="form-control" type="text" name="crianca" id="crianca" >
-                      <?php while ($criancarow = @mysqli_fetch_array($criancaresult)){ ?>
-                        <option <?php if ($id_crianca == $criancarow['id'])  { echo 'selected="true"'; } ?> value="<?php print $criancarow['id'];?>"><?php print $criancarow['nome'];?></option>
-                      <?php } ?>
-                    </select>
+                     <h4><?php print $criancarow['nome'];?></h4>
                   </div>
                 </div>
               </div>
@@ -98,11 +96,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="conducao-form" class="form-group">
                     <p class="formu-letra">Condução</p>
-                     <select class="form-control" type="text" name="conducao" id="conducao" >
-                      <?php while ($conducaorow = @mysqli_fetch_array($conducaoresult)){ ?>
-                        <option <?php if ($cpf_condutor == $conducaorow['cpf_condutor'] && $placa_veiculo == $conducaorow['placa_veiculo'] && $periodo == $conducaorow['periodo'])  { echo 'selected="true"'; } ?> value="<?php print $conducaorow['cpf_condutor'].';'.$conducaorow['placa_veiculo'].';'.$conducaorow['periodo'];?>"><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo']."-".$conducaorow['periodo'];?></option>
-                      <?php } ?>
-                    </select>
+                     <h4><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo'];?></h4>
                   </div>
                 </div>
               </div>

@@ -27,10 +27,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
             </div>
-              
-              <div class="row">
+
+             <div class="row">
                 <div class="caixa-f">
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <p class="formu-letra">Criança</p>
                 </div>
                 <div class="col-md-2">
@@ -39,7 +39,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-3">
                   <p class="formu-letra">Data de Vencimento</p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <p class="formu-letra">Status</p>
                 </div>
                 <div class="col-md-2">
@@ -47,10 +47,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 </div>
               </div>
               </div>
+              
               <div id="resultado" class="row">
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
+              <form id="<?php print $row['id']?>" method="POST">
+                  <input type="hidden" name="id" value ="<?php print $row['id'] ?>" />
+                  <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
                   <div class="caixa-fl">
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <p class="letra-fi "><?php print $row["nome"];?></p>
                     </div>
                     <div class="col-md-2">
@@ -59,8 +63,12 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <div class="col-md-3">
                       <p class="letra-fi "><?php print DbtoDt($row["data_pagamento"]);?></p>
                     </div>
-                    <div class="col-md-3">
-                      <p class="letra-fi "><?php if ($row["status"] == "N") print "Em aberto"; if ($row["status"] == "A") print "Em atraso"; if ($row["status"] == "F") print "Falta Valor"; if ($row["status"] == "P") print "Pagamento recebido";?></p>
+                    <div class="col-md-2">
+                    <?php if ($row["status"] == "N") $class = "letra-fi-yellow";?>
+                    <?php if ($row["status"] == "A") $class = "letra-fi-red";?>
+                    <?php if ($row["status"] == "F") $class = "letra-fi-red";?>
+                    <?php if ($row["status"] == "P") $class = "letra-fi-green";?>
+                      <p class="<?php print $class;?>"><?php if ($row["status"] == "N") print "Em aberto"; if ($row["status"] == "A") print "Em atraso"; if ($row["status"] == "F") print "Falta Valor"; if ($row["status"] == "P") print "Pagamento recebido";?></p>
                     </div>
                     <div class="col-md-2">
                       <?php if ($row["status"] != "P") { ?>

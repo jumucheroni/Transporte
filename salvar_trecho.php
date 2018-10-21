@@ -2,7 +2,6 @@
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
 
-    include './inc/header.php'; 
     include './inc/conexao.php';
 
       $acao = @$_POST["acao"];
@@ -98,7 +97,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         } 
 
     if ($acao == "SALVARDELETE"){
-      $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca." where c.deletado = 'N'";
+      $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and ct.id_crianca = ".$id_crianca." where c.deletado = 'N'";
       $selectresult = $conexao->query($select);
 
       if ($selectresult->num_rows == 0) {      
@@ -128,6 +127,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       }
     }
 
-?>
-<script src="js/trecho.js"></script>
-<?php } ?>
+  echo json_encode($retorno);
+
+} ?>

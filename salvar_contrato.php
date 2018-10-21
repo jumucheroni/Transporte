@@ -1,12 +1,9 @@
 <?php 
 session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
-    include './inc/header.php'; 
     include './inc/conexao.php';
 
-    if (!$acao){
       $acao = @$_POST["acao"];
-    }
 
       $id                         = @$_POST["id"];
       $id_crianca                 = @$_POST["id_crianca"];
@@ -58,7 +55,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
     if ($acao =="SALVARUPDATE"){
 
-          $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade.", mensalidade = ".$mensalidade." where id = ".$id;
+          $updatesql = "update contrato set dia_vencimento_mensalidade = ".$dia_vencimento_mensalidade." where id = ".$id;
           $updateresult = $conexao->query($updatesql);
 
           if ($updateresult){
@@ -73,7 +70,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               ];
           }
         } 
-
     if ($acao == "SALVARDELETE"){ 
       $hoje = date('Y-m-d');
       $deletesql = "update contrato set data_fim_contrato = '".$hoje."', deletado = 'S' where id = ".$id;

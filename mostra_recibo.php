@@ -11,6 +11,8 @@ include './inc/conexao.php';
 
   $acao               = @$_POST["acao"];
 
+  $tipo = "";
+
   if ($acao == "GERARRECIBO") {
 
     $valorpagototal = 0;
@@ -18,15 +20,19 @@ include './inc/conexao.php';
      $sql = "Select r.nome as Responsavel,p.valor_pago,co.mensalidade,p.data_realizada_pgto,c.nome as Crianca, ct.periodo_conducao from crianca as c
      INNER JOIN responsavel r ON c.cpf_responsavel = r.cpf
      INNER JOIN contrato co ON co.id_crianca = c.id
-     INNER JOIN pagamentos p ON p.id_contrato = p.id 
+     INNER JOIN pagamentos p ON p.id_contrato = co.id 
      INNER JOIN criancatrecho ct ON ct.id_contrato = co.id
      where 
-        c.id='".$id_crianca."' and p.data_realizada_pgto between '".$primeirodia."' and '".$ultimodia."' and p.staus in('F','P') 
+        c.id='".$id_crianca."' and p.data_realizada_pgto between '".$primeirodia."' and '".$ultimodia."' and p.status in('F','P') 
       order by ct.periodo_conducao";
 
      $result = $conexao->query($sql);
 
      while( $row = @mysqli_fetch_array($result)){
+      $responsavel = $row["Responsavel"];
+      $mensalidade = $row["mensalidade"];
+      $crianca     = $row["Crianca"];
+      $data_realizada_pgto = $row["data_realizada_pgto"];
       $valorpagototal += $row["valor_pago"];
       if ($tipo==""){ 
        	if (($row["periodo_conducao"]=="im") || ($row["periodo_conducao"]=="it")){
@@ -47,7 +53,7 @@ include './inc/conexao.php';
 
  ?>
 
- <?php if ($result) { ?>
+ <?php if ($valorpagototal) { ?>
 
          <div id="p1" class="row imprime">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
@@ -55,9 +61,9 @@ include './inc/conexao.php';
               <p class="titulo-formu">Recibo</p>
         
               <div class="row">
-              	<p> Valor R$ <?php print $row["mensalidade"]; ?></p>
-              	<p> Recebemos de <?php print $row["Responsavel"]; ?>, a importancia de <?php print $row["mensalidade"]; ?> para pagamento de transporte escolar de <?php print $row["Crianca"]; ?>.</p>
-              	<p> O valor acima corresponde à mensalidade com vencimento em <?php print DbtoDt($row["data_realizada_pgto"]); ?> no trajeto de <?php print $tipo; ?>.</p>
+              	<p> Valor R$ <?php print $valorpagototal; ?></p>
+              	<p> Recebemos de <?php print $responsavel; ?>, a importancia de <?php print $valorpagototal; ?> para pagamento de transporte escolar de <?php print $crianca; ?>.</p>
+              	<p> O valor acima corresponde à mensalidade com vencimento em <?php print DbtoDt($data_realizada_pgto); ?> no trajeto de <?php print $tipo; ?>.</p>
               	<p> Por ser verdade firmo o presente.</p>
               	<p> Bauru, __ de _____________ de _____.</p>
               	<br>

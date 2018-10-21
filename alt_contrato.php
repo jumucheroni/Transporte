@@ -22,6 +22,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $dia_vencimento_mensalidade = $row["dia_vencimento_mensalidade"];
       $mensalidade                = $row["mensalidade"];
 
+    $sqltrecho = "select t.cep_origem,t.cep_destino,ct.periodo_conducao from criancatrecho ct
+    inner join crianca c on c.id = ct.id_crianca
+    inner join condutor o on o.cpf = ct.cpf_condutor
+    inner join veiculo v on v.placa = ct.placa_veiculo
+    inner join trecho t on t.id = ct.id_trecho
+    where ct.deletado ='N' and ct.id_contrato =  ".$id;
+    $resulttrecho = $conexao->query($sqltrecho);
+
 ?>
     <div class="row">
       <div class="row">
@@ -35,10 +43,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       </div>
 
       <form id="contrato" method="post" role="form"> 
+      <input type="hidden" name="acao" id="acao" value="<?php print $acao; ?>" />
+      <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-
-              <h1 class="page-header">Contrato</h1>
+              <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+                <div hidden id="alert"></div>
+              </div>
+              <div class="col-xs-12 col-sm-8 col-md-10 ">
+                <h1 class="page-header">Alterar Contrato</h1>
+              </div>
 
                <div class="row">
                 <div class="col-md-3">
@@ -76,7 +90,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="trecho-form" class="form-group">
                     <p class="formu-letra">Transportes</p>
-                    <!-- carregar os transportes deste contrato -->
+                    <?php while ($rowtrecho = @mysqli_fetch_array($resulttrecho)){ ?>
+                        <h4><?php print $rowtrecho['cep_origem']." - ".$rowtrecho['cep_destino']." - ".$rowtrecho["periodo_conducao"];?></h4>
+                    <?php } ?>
                   </div>
                 </div>
               </div>        
@@ -84,6 +100,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           
               <div class="row">
                 <div class="col-md-12">
+                  <button class="btn btn-success btn-right" id="contrato-alterar" type="button">Salvar</button> 
                   <a href="visu_contrato.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
                 </div>
               </div>

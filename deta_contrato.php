@@ -20,6 +20,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $dia_vencimento_mensalidade = $row["dia_vencimento_mensalidade"];
       $mensalidade                = $row["mensalidade"];
 
+    $sqltrecho = "select t.cep_origem,t.cep_destino,ct.periodo_conducao from criancatrecho ct
+    inner join crianca c on c.id = ct.id_crianca
+    inner join condutor o on o.cpf = ct.cpf_condutor
+    inner join veiculo v on v.placa = ct.placa_veiculo
+    inner join trecho t on t.id = ct.id_trecho
+    where ct.deletado ='N' and ct.id_contrato =  ".$id;
+    $resulttrecho = $conexao->query($sqltrecho);
+
 ?>
     <div class="row">
       <div class="row">
@@ -74,7 +82,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <div id="trecho-form" class="form-group">
                     <p class="formu-letra">Transportes</p>
-                    <!-- carregar os transportes deste contrato -->
+                    <?php while ($rowtrecho = @mysqli_fetch_array($resulttrecho)){ ?>
+                        <h4><?php print $rowtrecho['cep_origem']." - ".$rowtrecho['cep_destino']." - ".$rowtrecho["periodo_conducao"];?></h4>
+                    <?php } ?>
                   </div>
                 </div>
               </div>        

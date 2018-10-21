@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$("#recebimentos-salvar").click(function(){
+	$("#recebimento-salvar").click(function(){
         if (($("#data_pgto").val() != "") && ($("#valor_pago").val() != ""))  {
             if ($("#acao").val()=="PAGAR"){
               	$("#acao").val("SALVARPAGAMENTO");
