@@ -11,6 +11,15 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     inner join trecho t on t.id = ct.id_trecho
     where ct.deletado ='N'";
     $result = $conexao->query($sql);
+
+    $sqlveiculo = "select distinct v.placa as placa_veiculo from escola e
+    inner join crianca c on c.id_escola = e.id
+    inner join criancatrecho ct on ct.id_crianca = c.id
+    inner join condutor o on o.cpf = ct.cpf_condutor
+    inner join veiculo v on v.placa = ct.placa_veiculo
+    inner join trecho t on t.id = ct.id_trecho
+    where ct.deletado ='N'";
+    $resultveiculo = $conexao->query($sqlveiculo);
 ?>
             <div class="row">
               <ol class="breadcrumb">
@@ -42,14 +51,29 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     </label>
                   </div>
                 </div> 
-                <div hidden id="escolas" class="col-md-6">
-                  <p class="letra-fi">Escola</p>
-                  <select class="input-formu" id="select" name="valor" >
-                    <?php while ($row = @mysqli_fetch_array($result)){ ?>
-                      <option value="<?php print $row['id_escola'];?>" id="<?php print $row['id_escola'];?>" ><?php print $row["escola"];?></option>
+                <div class="col-md-6">
+                  <p class="letra-fi">Veículo</p>
+                  <select class="input-formu" id="select" name="veiculo" >
+                    <?php while ($rowveiculo = @mysqli_fetch_array($resultveiculo)){ ?>
+                      <option value="<?php print $rowveiculo['placa_veiculo'];?>" id="<?php print $rowveiculo['placa_veiculo'];?>" ><?php print $rowveiculo["placa_veiculo"];?></option>
                     <?php } ?>
                   </select>
+                  <p class="letra-fi">Periodo</p>
+                  <select class="input-formu" id="select" name="periodo" >
+                        <option value="m" id="m">Manhã</option>
+                        <option value="a" id="a">Almoço</option>
+                        <option value="t" id="t">Tarde</option>
+                  </select>
+                  <div hidden id="escolas" >
+                    <p class="letra-fi">Escola</p>
+                    <select class="input-formu" id="select" name="valor" >
+                      <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                        <option value="<?php print $row['id_escola'];?>" id="<?php print $row['id_escola'];?>" ><?php print $row["escola"];?></option>
+                      <?php } ?>
+                    </select>
+                  </div>
                 </div>  
+
               </div>   
               <div class="row">
                 <div class="col-md-12">

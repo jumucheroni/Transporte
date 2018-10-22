@@ -6,9 +6,21 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/conexao.php';
 
     $tipo = @$_POST["relatorio"];
+    $periodo = @$_POST["periodo"];
+    $veiculo = @$_POST["veiculo"];
+
+    if ($periodo == 'm') {
+      $periodo_conducao = " and ct.periodo_conducao in ('im')"; 
+    } 
+    if ($periodo == "a") {
+      $periodo_conducao = " and ct.periodo_conducao in ('vm','it')"; 
+    }
+    if ($periodo == "t") {
+      $periodo_conducao = " and ct.periodo_conducao in ('vt')"; 
+    }
     if ($tipo == "E") {
         $valor = @$_POST['valor'];
-        $periodo_conducao = "im";
+
         $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo,  
         CONCAT(t.cep_origem,',',t.logradouro_origem,',',t.numero_origem,',',t.cidade_origem,',',t.estado_origem) as origem,
         CONCAT(t.cep_destino,',',t.logradouro_destino,',',t.numero_destino,',',t.cidade_destino,',',t.estado_destino) as destino from criancatrecho ct
@@ -16,30 +28,50 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         inner join condutor o on o.cpf = ct.cpf_condutor
         inner join veiculo v on v.placa = ct.placa_veiculo
         inner join trecho t on t.id = ct.id_trecho
-        where ct.deletado ='N' and ct.periodo_conducao = 'im' and c.id_escola = ".$valor;
+        where ct.deletado ='N'".$periodo_conducao." and c.id_escola = ".$valor." and v.placa = '".$veiculo."'";
         $result = $conexao->query($sql);
 
-        $enderecos = array();
+        $sqlveiculo = "select cpf_ajudante from veiculo where placa = '".$veiculo."'";
+        $resultveiculo = $conexao->query($sqlveiculo);
+        $rowveiculo = @mysqli_fetch_array($resultveiculo);
 
-        $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante from ajudante where cpf = '40666741000'";
-        $resultajudante = $conexao->query($sqlajudante);
+        if ($rowveiculo['cpf_ajudante']) {
+            $enderecos = array();
 
-        $rowajudante = @mysqli_fetch_array($resultajudante);
-        $address_ajudante = urlencode($rowajudante['ajudante']);
-        $request_url_ajudante = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_ajudante."&sensor=false";
-         $status_ajudante = @file_get_contents($request_url_ajudante);
-        $data_ajudante = json_decode($status_ajudante,true);
-        $LatLng_ajudante = "";
-        if ($data_ajudante){
-            $Lat_ajudante = $data_ajudante['results'][0]['geometry']['location']['lat'];
-            $Lon_ajudante = $data_ajudante['results'][0]['geometry']['location']['lng'];
-            $LatLng_ajudante = $Lat_ajudante.",".$Lon_ajudante;
+            $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
+            $resultajudante = $conexao->query($sqlajudante); 
+
+            $rowajudante = @mysqli_fetch_array($resultajudante);
+            $address_ajudante = urlencode($rowajudante['ajudante']);
+            $request_url_ajudante = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_ajudante."&sensor=false";
+             $status_ajudante = @file_get_contents($request_url_ajudante);
+            $data_ajudante = json_decode($status_ajudante,true);
+            $LatLng_ajudante = "";
+            if ($data_ajudante){
+                $Lat_ajudante = $data_ajudante['results'][0]['geometry']['location']['lat'];
+                $Lon_ajudante = $data_ajudante['results'][0]['geometry']['location']['lng'];
+                $LatLng_ajudante = $Lat_ajudante.",".$Lon_ajudante;
+            }
+        } else {
+            $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor from condutor c INNER JOIN condveic cv ON cv.cpf_condutor = c.cpf where cv.placa = '".$veiculo."'".$periodo_condutor;
+            $resultcondutor = $conexao->query($sqlcondutor);
+            $rowcondutor = @mysqli_fetch_array($resultcondutor);
+            $address_condutor = urlencode($rowcondutor['condutor']);
+            $request_url_condutor = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_condutor."&sensor=false";
+             $status_condutor = @file_get_contents($request_url_condutor);
+            $data_condutor = json_decode($status_condutor,true);
+            $LatLng_condutor = "";
+            if ($data_condutor){
+                $Lat_condutor = $data_condutor['results'][0]['geometry']['location']['lat'];
+                $Lon_condutor = $data_condutor['results'][0]['geometry']['location']['lng'];
+                $LatLng_condutor = $Lat_condutor.",".$Lon_condutor;
+            }
         }
 
         $cont = 0;
         
         $enderecos[$cont] = [
-          'origem' => $LatLng_ajudante,
+          'origem' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_ajudante,
           'destino' => ""
         ];
 
@@ -80,6 +112,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             'origem' => "",
             'destino' => $LatLng_destino
         ];
+
+        print_r($enderecos);
 
         $distancias = array();
 
