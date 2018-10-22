@@ -16,10 +16,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       <form id="rel_crianca" method="post" action="mostra_rel_crianca.php"> 
          <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-              <input type="hidden" name="acao" id="acao" value=""/>
-              <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
-                <div hidden id="alert"></div>
-              </div>
               <div class="col-xs-12 col-sm-8 col-md-10 ">
                 <h1 class="page-header">Relatório de Crianças</h1>
               </div>

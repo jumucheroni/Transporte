@@ -74,6 +74,23 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $hoje = date('Y-m-d');
       $deletesql = "update contrato set data_fim_contrato = '".$hoje."', deletado = 'S' where id = ".$id;
       $deleteresult = $conexao->query($deletesql);
+
+      $selectsql = "select id from pagamentos where id_contrato = ".$id." and data_realizada_pgto = NULL";
+      $selectresult = $conexao->query($selectsql);
+
+      while ($row = @mysqli_fetch_array($result)){ 
+        $updatesql = "update pagamentos set deletado = 'S' where id= ".$row["id"];
+        $updateresult = $conexao->query($updatesql);
+      }
+
+      $selectsql = "select id from criancatrecho where id_contrato = ".$id.;
+      $selectresult = $conexao->query($selectsql);
+
+      while ($row = @mysqli_fetch_array($result)){ 
+        $updatesql = "update criancatrecho set id_contrato = NULL where id= ".$row["id"];
+        $updateresult = $conexao->query($updatesql);
+      }
+
       if ($deleteresult){
           $retorno = [
               'success' => true,

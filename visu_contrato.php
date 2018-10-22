@@ -3,7 +3,7 @@ session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
     include './inc/header.php'; 
     include './inc/conexao.php';
-    $sql = "select c.id,a.nome,c.mensalidade,c.dia_vencimento_mensalidade from contrato c, crianca a where c.id_crianca = a.id and c.deletado = 'N' ";
+    $sql = "select c.id,a.nome,c.mensalidade,c.dia_vencimento_mensalidade,c.deletado from contrato c, crianca a where c.id_crianca = a.id and c.deletado = 'N'";
     $result = $conexao->query($sql);
 
 ?>
@@ -50,6 +50,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                <form id="<?php print $row['id']?>" method="POST">
                   <input type="hidden" name="id" value ="<?php print $row['id'] ?>" />
                   <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
+                  <input type="hidden" name="inativo" id="inativo" value="<?php print $row['deletado']; ?>" />
                   <div class="caixa-fl">
                     <div class="col-md-4">
                       <p class="letra-fi "><?php print $row["nome"];?></p>
@@ -62,8 +63,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     </div>
                     <div class="col-md-2">
                       <p class="letra-fi">
-                        <a href="alt_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-contrato" type="button"></button></a>
-                        <button class="btn btn-sm btn-danger fa fa-trash dele-contrato" id="<?php print $row['id'].'-dele'; ?>" type="button"></button>
+                        <!--<a href="alt_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-contrato" type="button"></button></a>-->
+                        <?php if ($row["deletado"] == "N"){ $class="remove";$color="danger"; ?>
+                        <button class="btn btn-sm btn-<?php print $color; ?> fa fa-<?php print $class; ?> dele-contrato" id="<?php print $row['id'].'-dele'; ?>" type="button"></button>
+                        <?php } ?>
                         <a href="deta_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-contrato" type="button"></button></a>
                       </p>
                     </div>

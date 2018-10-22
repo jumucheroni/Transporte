@@ -2,12 +2,11 @@
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
     include './inc/header.php'; 
     include './inc/conexao.php';
-    $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo,ct.id_contrato as Contrato from criancatrecho ct
+    $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo,ct.id_contrato as Contrato,ct.deletado from criancatrecho ct
     inner join crianca c on c.id = ct.id_crianca
     inner join condutor o on o.cpf = ct.cpf_condutor
     inner join veiculo v on v.placa = ct.placa_veiculo
-    inner join trecho t on t.id = ct.id_trecho
-    where ct.deletado ='N' ";
+    inner join trecho t on t.id = ct.id_trecho ";
     
     $result = $conexao->query($sql);
 ?>
@@ -59,6 +58,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <input type="hidden" name="id_trecho" value ="<?php print $row['id_trecho'] ?>" />
                   <input type="hidden" name="crianca" value ="<?php print $row['id_crianca'] ?>" />
                   <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
+                  <input type="hidden" name="inativo" id="inativo" value="<?php print $row['deletado']; ?>" />
                   <div class="caixa-fl">
                     <div class="col-md-3">
                       <p class="letra-fi "><?php print $row["Crianca"];?></p>
@@ -77,7 +77,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                       <p class="letra-fi">
                         <?php if (!$row["Contrato"]) { ?>
                             <a href="alt_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-trecho" type="button"></button></a>
-                            <button class="btn btn-sm btn-danger fa fa-trash dele-trecho" id="<?php print $row['id_trecho'].'-dele'; ?>" type="button"></button>
+                            <?php if ($row["deletado"] == "N"){ $class="remove";$color="danger";} else { $class="check";$color="success"; } ?>
+                              <button class="btn btn-sm btn-<?php print $color; ?> fa fa-<?php print $class; ?> dele-trecho" id="<?php print $row['id_trecho'].'-dele'; ?>" type="button"></button>
                         <?php } ?>
                         <a href="deta_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-trecho" type="button"></button></a>
                       </p>

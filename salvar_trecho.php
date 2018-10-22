@@ -100,25 +100,48 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $select = "select c.id from contrato c inner join criancatrecho ct on ct.id_contrato = c.id and ct.id_trecho = ".$id_trecho." and ct.id_crianca = ".$id_crianca." where c.deletado = 'N'";
       $selectresult = $conexao->query($select);
 
-      if ($selectresult->num_rows == 0) {      
-          
-        $deletesql = "update criancatrecho set deletado = 'S' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
-        $deletesql2 = "update trecho set deletado = 'S' where id = ".$id_trecho;
+      if ($selectresult->num_rows == 0) {   
 
-        $deleteresult = $conexao->query($deletesql);
-        $deleteresult2 = $conexao->query($deletesql2);
-        
-        if ($deleteresult and $deleteresult2){
-            $retorno = [
-              'success' => true,
-              'mensagem' => "Transporte deletado com sucesso!"
-            ];
-        }else{
-           $retorno = [
-              'success' => false,
-              'mensagem' => "Erro ao deletar o Transporte!"
-            ];
-        }
+        $inativo = $_POST['inativo'];
+
+        if ($inativo == "N") {  
+          
+            $deletesql = "update criancatrecho set deletado = 'S' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+            $deletesql2 = "update trecho set deletado = 'S' where id = ".$id_trecho;
+
+            $deleteresult = $conexao->query($deletesql);
+            $deleteresult2 = $conexao->query($deletesql2);
+            
+            if ($deleteresult and $deleteresult2){
+                $retorno = [
+                  'success' => true,
+                  'mensagem' => "Transporte inativado com sucesso!"
+                ];
+            }else{
+               $retorno = [
+                  'success' => false,
+                  'mensagem' => "Erro ao inativado o Transporte!"
+                ];
+            }
+        } else {
+            $deletesql = "update criancatrecho set deletado = 'N' where id_trecho = ".$id_trecho." and id_crianca = ".$id_crianca;
+            $deletesql2 = "update trecho set deletado = 'N' where id = ".$id_trecho;
+
+            $deleteresult = $conexao->query($deletesql);
+            $deleteresult2 = $conexao->query($deletesql2);
+            
+            if ($deleteresult and $deleteresult2){
+                $retorno = [
+                  'success' => true,
+                  'mensagem' => "Transporte ativido com sucesso!"
+                ];
+            }else{
+               $retorno = [
+                  'success' => false,
+                  'mensagem' => "Erro ao ativar o Transporte!"
+                ];
+            }
+        } 
       } else {
         $retorno = [
             'success' => false,
