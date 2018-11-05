@@ -20,6 +20,15 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     inner join trecho t on t.id = ct.id_trecho
     where ct.deletado ='N'";
     $resultveiculo = $conexao->query($sqlveiculo);
+
+    $action = "index.php";
+    $tipo = @$_GET['id'];
+    if ($tipo == 'pontos') {
+      $action = "mapapontos.php";
+    } 
+    if ($tipo == 'roteiro') {
+      $action ="mapa.php";
+    }
 ?>
             <div class="row">
               <ol class="breadcrumb">
@@ -29,7 +38,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <li class="active">Itinerário</li>
               </ol>
             </div>
-        <form id="itinerario" method="post" action="mapa.php"> 
+        <form id="itinerario" method="post" action="<?php print $action; ?>"> 
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
@@ -83,22 +92,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             </div>         
           </div>
         </form>
-        <!-- selecionar o periodo -->
 
 <?php include './inc/footer.php'; ?>
-
-<script type="text/javascript">
-    $(document).ready(function(){
-      $('input[type=radio][name=relatorio]').change(function() {
-          if (this.value == 'T') {
-              $("#escolas").hide();
-          }
-          if (this.value == 'E') {
-              $("#escolas").show();
-          }
-      });
-    });
-
-  </script>
+<script src="js/itinerario.js"></script>
 
   <?php } ?>
