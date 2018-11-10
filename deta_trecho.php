@@ -43,6 +43,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         $cidade_destino      = $row["cidade_destino"];
         $estado_destino      = $row["estado_destino"];
 
+        $escola              = $row["id_escola"];
+
 
         $enablechave = "readonly";
 
@@ -53,6 +55,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $conducaosql = "select * from condutorveiculo where deletado = 'N' and periodo = '".$periodo."' and placa_veiculo = '".$placa_veiculo."' and cpf_condutor = '".$cpf_condutor."'";
       $conducaoresult = $conexao->query($conducaosql);
       $conducaorow = @mysqli_fetch_array($conducaoresult);
+
+      $escolasql = "select * from escola where deletado = 'N' and id = ".$escola;
+      $escolaresult = $conexao->query($escolasql);
+      $escolarow = @mysqli_fetch_array($escolaresult);
 
  ?>
       <div class="row">
@@ -97,6 +103,12 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <div id="conducao-form" class="form-group">
                     <p class="formu-letra">Condução</p>
                      <h4><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo'];?></h4>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div id="escola-form" class="form-group">
+                    <p class="formu-letra">Escola</p>
+                     <h4><?php print $escolarow['nome'];?></h4>
                   </div>
                 </div>
               </div>

@@ -13,6 +13,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $conducaosql = "select * from condutorveiculo where deletado = 'N' ";
       $conducaoresult = $conexao->query($conducaosql);
 
+      $escolasql = "select id,nome from escola where deletado = 'N'";
+      $escolaresult = $conexao->query($escolasql);
+
  ?>
       <div class="row">
         <div class="row">
@@ -69,6 +72,17 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                      <option></option>
                       <?php while ($conducaorow = @mysqli_fetch_array($conducaoresult)){ ?>
                         <option value="<?php print $conducaorow['cpf_condutor'].';'.$conducaorow['placa_veiculo'].';'.$conducaorow['periodo'];?>"><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo']."-".$conducaorow['periodo'];?></option>
+                      <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div id="escola-form" class="form-group">
+                    <p class="formu-letra">Escola</p>
+                     <select class="form-control" type="text" name="escola" id="escola" >
+                     <option></option>
+                      <?php while ($escolarow = @mysqli_fetch_array($escolaresult)){ ?>
+                        <option value="<?php print $escolarow['id'];?>"><?php print $escolarow['nome'];?></option>
                       <?php } ?>
                     </select>
                   </div>

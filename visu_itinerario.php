@@ -4,11 +4,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/header.php'; 
     include './inc/conexao.php';
     $sql = "select distinct e.id as id_escola,e.nome as escola from escola e
-    inner join crianca c on c.id_escola = e.id
+    inner join crianca c 
     inner join criancatrecho ct on ct.id_crianca = c.id
     inner join condutor o on o.cpf = ct.cpf_condutor
     inner join veiculo v on v.placa = ct.placa_veiculo
-    inner join trecho t on t.id = ct.id_trecho
+    inner join trecho t on t.id = ct.id_trecho and e.id = t.id_escola
     where ct.deletado ='N'";
     $result = $conexao->query($sql);
 
@@ -20,6 +20,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     inner join trecho t on t.id = ct.id_trecho
     where ct.deletado ='N'";
     $resultveiculo = $conexao->query($sqlveiculo);
+
+    $sqlescola = "select t.id_escola from trecho t where t.deletado = 'N' group by id_escola";
+    $resultescola = $conexao->query($sqlescola);
+    while ($rowescola = @mysqli_fetch_array($resultescola)) {
+      $escolas[$rowescola['id_escola']] = $rowescola['id_escola'];
+    }
+
+    $escolas = json_encode($escolas);
 
     $action = "index.php";
     $tipo = @$_GET['id'];
@@ -39,6 +47,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </ol>
             </div>
         <form id="itinerario" method="post" action="<?php print $action; ?>"> 
+         <input type="hidden" name="escola" id="escola" value='<?php print $escolas; ?>' />
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
@@ -50,7 +59,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-6">
+                <div id="opcoes" class="col-md-6">
                   <div style="padding: 20px;" class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
                       <input checked type="radio" name="relatorio" value="T">Todos<br>
