@@ -133,6 +133,7 @@ $(document).ready(function(){
 		    if (status == google.maps.DirectionsStatus.OK) {
 		      directionsDisplay.setDirections(result);
 		      var panel = document.getElementById("right-panel");
+		      panel.innerHTML = ""; 
 		      var rotas = result.routes[0].legs.length;
 		      var tempototal = 0;
 		      var distanciatotal = 0;
