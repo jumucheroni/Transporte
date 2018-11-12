@@ -11,12 +11,15 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     if ($periodo == 'm') {
       $periodo_conducao = " and ct.periodo_conducao in ('im')"; 
+      $periodo_condutor = " and cv.periodo in ('im')"; 
     } 
     if ($periodo == "a") {
       $periodo_conducao = " and ct.periodo_conducao in ('vm','it')"; 
+      $periodo_condutor = " and cv.periodo in ('vm','it')"; 
     }
     if ($periodo == "t") {
       $periodo_conducao = " and ct.periodo_conducao in ('vt')"; 
+      $periodo_condutor = " and cv.periodo in ('vt')"; 
     }
     if ($tipo == "E") {
         $valor = @$_POST['valor'];
@@ -28,219 +31,165 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         inner join condutor o on o.cpf = ct.cpf_condutor
         inner join veiculo v on v.placa = ct.placa_veiculo
         inner join trecho t on t.id = ct.id_trecho
-        where ct.deletado ='N'".$periodo_conducao." and c.id_escola = ".$valor." and v.placa = '".$veiculo."'";
+        where ct.deletado ='N'".$periodo_conducao." and t.id_escola = ".$valor." and v.placa = '".$veiculo."'";
         $result = $conexao->query($sql);
 
         $sqlveiculo = "select cpf_ajudante from veiculo where placa = '".$veiculo."'";
         $resultveiculo = $conexao->query($sqlveiculo);
         $rowveiculo = @mysqli_fetch_array($resultveiculo);
 
-        if ($rowveiculo['cpf_ajudante']) {
-            $enderecos = array();
+        if ($result->num_rows){
 
-            $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
-            $resultajudante = $conexao->query($sqlajudante); 
+          if ($rowveiculo['cpf_ajudante']) {
+              $enderecos = array();
 
-            $rowajudante = @mysqli_fetch_array($resultajudante);
-            $address_ajudante = urlencode($rowajudante['ajudante']);
-            $request_url_ajudante = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_ajudante."&sensor=false";
-             $status_ajudante = @file_get_contents($request_url_ajudante);
-            $data_ajudante = json_decode($status_ajudante,true);
-            $LatLng_ajudante = "";
-            if ($data_ajudante){
-                $Lat_ajudante = $data_ajudante['results'][0]['geometry']['location']['lat'];
-                $Lon_ajudante = $data_ajudante['results'][0]['geometry']['location']['lng'];
-                $LatLng_ajudante = $Lat_ajudante.",".$Lon_ajudante;
-            }
-        } else {
-            $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor from condutor c INNER JOIN condveic cv ON cv.cpf_condutor = c.cpf where cv.placa = '".$veiculo."'".$periodo_condutor;
-            $resultcondutor = $conexao->query($sqlcondutor);
-            $rowcondutor = @mysqli_fetch_array($resultcondutor);
-            $address_condutor = urlencode($rowcondutor['condutor']);
-            $request_url_condutor = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_condutor."&sensor=false";
-             $status_condutor = @file_get_contents($request_url_condutor);
-            $data_condutor = json_decode($status_condutor,true);
-            $LatLng_condutor = "";
-            if ($data_condutor){
-                $Lat_condutor = $data_condutor['results'][0]['geometry']['location']['lat'];
-                $Lon_condutor = $data_condutor['results'][0]['geometry']['location']['lng'];
-                $LatLng_condutor = $Lat_condutor.",".$Lon_condutor;
-            }
-        }
+              $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
+              $resultajudante = $conexao->query($sqlajudante); 
 
-        $cont  = 0;
-        $cont2 = 0;
-        
-        if ($periodo == "m" || $periodo == 'a') {
-          $enderecos[$cont] = [
-            'origem' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor,
-            'destino' => ""
-          ];
-        } 
-        if ($periodo == 't' || $periodo == 'a') {
-          $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola from escola e where id = ".$valor;
-          $resultescola = $conexao->query($sqlescola);
-          $rowescola = @mysqli_fetch_array($resultescola);
-          $address_escola = urlencode($rowescola['escola']);
-            $request_url_escola = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_escola."&sensor=false";
-             $status_escola = @file_get_contents($request_url_escola);
-            $data_escola = json_decode($status_escola,true);
-            $LatLng_escola = "";
-            if ($data_escola){
-                $Lat_escola = $data_escola['results'][0]['geometry']['location']['lat'];
-                $Lon_escola = $data_escola['results'][0]['geometry']['location']['lng'];
-                $LatLng_escola = $Lat_escola.",".$Lon_escola;
-            }
-          if ($periodo == 't') {
+              $rowajudante = @mysqli_fetch_array($resultajudante);
+              $address_ajudante = urlencode($rowajudante['ajudante']);
+              $request_url_ajudante = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_ajudante."&sensor=false";
+               $status_ajudante = @file_get_contents($request_url_ajudante);
+              $data_ajudante = json_decode($status_ajudante,true);
+              $LatLng_ajudante = "";
+              if ($data_ajudante){
+                  $Lat_ajudante = $data_ajudante['results'][0]['geometry']['location']['lat'];
+                  $Lon_ajudante = $data_ajudante['results'][0]['geometry']['location']['lng'];
+                  $LatLng_ajudante = $Lat_ajudante.",".$Lon_ajudante;
+              }
+          } 
+
+          $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor,c.nome from condutor c INNER JOIN condutorveiculo cv ON cv.cpf_condutor = c.cpf where cv.placa_veiculo = '".$veiculo."'".$periodo_condutor;
+          $resultcondutor = $conexao->query($sqlcondutor);
+          $rowcondutor = @mysqli_fetch_array($resultcondutor);
+          $address_condutor = urlencode($rowcondutor['condutor']);
+          $request_url_condutor = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_condutor."&sensor=false";
+           $status_condutor = @file_get_contents($request_url_condutor);
+          $data_condutor = json_decode($status_condutor,true);
+          $LatLng_condutor = "";
+          if ($data_condutor){
+              $Lat_condutor = $data_condutor['results'][0]['geometry']['location']['lat'];
+              $Lon_condutor = $data_condutor['results'][0]['geometry']['location']['lng'];
+              $LatLng_condutor = $Lat_condutor.",".$Lon_condutor;
+          }
+
+          $enderecocondutor = array();
+          if ($rowveiculo['cpf_ajudante']) {
+            $enderecocondutor = [
+                'origem' => $LatLng_condutor,
+                'destino' => "",
+                'completo' => $rowcondutor["nome"]." - ".$rowcondutor["condutor"]
+            ];
+          }
+
+          $cont = 0;
+          $cont2 = 0;
+          
+          if ($periodo == "m" || $periodo == 'a') {
             $enderecos[$cont] = [
-              'origem' => $LatLng_escola,
+              'origem' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor,
               'destino' => ""
             ];
           } 
-          if ($periodo == 'a') {
-            $enderecos2[$cont2] = [
-              'origem' => $LatLng_escola,
-              'destino' => ""
-            ];
-            $cont2++;
-          }
-        }
-
-        $cont++;
-
-        while ($row = @mysqli_fetch_array($result)) {
-            $address_origem = urlencode($row['origem']);
-            $request_url_origem = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_origem."&sensor=false";
-             $status_origem = @file_get_contents($request_url_origem);
-            $data_origem = json_decode($status_origem,true);
-            $LatLng_origem = "";
-            if ($data_origem){
-                $Lat_origem = $data_origem['results'][0]['geometry']['location']['lat'];
-                $Lon_origem = $data_origem['results'][0]['geometry']['location']['lng'];
-                $LatLng_origem = $Lat_origem.",".$Lon_origem;
-            }
-
-            $address_destino = urlencode($row['destino']);
-            $request_url_destino = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_destino."&sensor=false";
-             $status_destino = @file_get_contents($request_url_destino);
-            $data_destino = json_decode($status_destino,true);
-            $LatLng_destino = "";
-            if ($data_destino){
-                $Lat_destino = $data_destino['results'][0]['geometry']['location']['lat'];
-                $Lon_destino = $data_destino['results'][0]['geometry']['location']['lng'];
-                $LatLng_destino = $Lat_destino.",".$Lon_destino;
-            }
-
-            if ($periodo == "a" && $row["Tipo"] == 'vm') {
+          if ($periodo == 't' || $periodo == 'a') {
+            $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola from escola e where id = ".$valor;
+            $resultescola = $conexao->query($sqlescola);
+            $rowescola = @mysqli_fetch_array($resultescola);
+            $address_escola = urlencode($rowescola['escola']);
+              $request_url_escola = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_escola."&sensor=false";
+               $status_escola = @file_get_contents($request_url_escola);
+              $data_escola = json_decode($status_escola,true);
+              $LatLng_escola = "";
+              if ($data_escola){
+                  $Lat_escola = $data_escola['results'][0]['geometry']['location']['lat'];
+                  $Lon_escola = $data_escola['results'][0]['geometry']['location']['lng'];
+                  $LatLng_escola = $Lat_escola.",".$Lon_escola;
+              }
+            if ($periodo == 't') {
+              $enderecos[$cont] = [
+                'origem' => $LatLng_escola,
+                'destino' => ""
+              ];
+            } 
+            if ($periodo == 'a') {
               $enderecos2[$cont2] = [
-                'origem' => $LatLng_origem,
-                'destino' => $LatLng_destino,
-                'tipo' => $row["Tipo"]
+                'origem' => $LatLng_escola,
+                'destino' => ""
               ];
               $cont2++;
-            } else {
-              $enderecos[$cont] = [
-                'origem' => $LatLng_origem,
-                'destino' => $LatLng_destino,
-                'tipo' => $row["Tipo"]
-              ];
-              $cont++;
-            }  
-        }
-
-        if ($periodo == 'm') {
-          $enderecos[$cont] = [
-              'origem' => "",
-              'destino' => $LatLng_destino
-          ];
-        }
-        if ($periodo == 'a') {
-          $enderecos[$cont] = [
-              'origem' => "",
-              'destino' => $LatLng_destino
-          ];
-          $enderecos2[$cont2] = [
-              'origem' => "",
-              'destino' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor
-          ];
-        }
-        if ($periodo == 't') {
-          $enderecos[$cont] = [
-              'origem' => "",
-              'destino' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor
-          ];
-        }
-        $distancias = array();
-
-        if ($periodo == 'm') {
-          // calcular a distancia entre o ponto inicial e entre os pontos do caminho
-          for ($i=0; $i < sizeof($enderecos);$i++){
-            for ($j=0;$j < sizeof($enderecos)-1;$j++) {
-              $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
-
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-               $Lng_origem = $LatLng_origem[1];
-
-              $LatLng_destino = explode(",", $enderecos[$j]["origem"]);
-
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
-
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($j == 0) {
-                $d = INFI;
-              }
-              if ($i == (sizeof($enderecos) - 1)) {
-                $d = INFI;
-              }
-              if ($i == $j) {
-                $d = INFI;
-              }
-              $distancias[$i][$j]['distancia'] = $d;
-              $distancias[$i][$j]['origem'] = $enderecos[$i]["origem"];
-              $distancias[$i][$j]['destino'] = $enderecos[$j]["origem"];
             }
           }
-          // calcular a distancia entre os pontos do caminho e o destino
-          for ($i = 0 ;$i < sizeof($enderecos);$i++){
-              $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
 
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
+          $cont++;
 
-              $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
-
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
-
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == sizeof($enderecos)-1){
-                $d = 0;
+          while ($row = @mysqli_fetch_array($result)) {
+              $address_origem = urlencode($row['origem']);
+              $request_url_origem = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_origem."&sensor=false";
+               $status_origem = @file_get_contents($request_url_origem);
+              $data_origem = json_decode($status_origem,true);
+              $LatLng_origem = "";
+              if ($data_origem){
+                  $Lat_origem = $data_origem['results'][0]['geometry']['location']['lat'];
+                  $Lon_origem = $data_origem['results'][0]['geometry']['location']['lng'];
+                  $LatLng_origem = $Lat_origem.",".$Lon_origem;
               }
-              if ($i == 0) {
-                $d = INFI;
+
+              $address_destino = urlencode($row['destino']);
+              $request_url_destino = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&address=".$address_destino."&sensor=false";
+               $status_destino = @file_get_contents($request_url_destino);
+              $data_destino = json_decode($status_destino,true);
+              $LatLng_destino = "";
+              if ($data_destino){
+                  $Lat_destino = $data_destino['results'][0]['geometry']['location']['lat'];
+                  $Lon_destino = $data_destino['results'][0]['geometry']['location']['lng'];
+                  $LatLng_destino = $Lat_destino.",".$Lon_destino;
               }
-              $distancias[$i][sizeof($enderecos)-1]["distancia"] = $d;
-              $distancias[$i][sizeof($enderecos)-1]["origem"] = $enderecos[$i]["origem"];
-              $distancias[$i][sizeof($enderecos)-1]["destino"] = $enderecos[$i]["destino"];
+
+              if ($periodo == "a" && $row["Tipo"] == 'vm') {
+                $enderecos2[$cont2] = [
+                  'origem' => $LatLng_origem,
+                  'destino' => $LatLng_destino,
+                  'tipo' => $row["Tipo"]
+                ];
+                $cont2++;
+              } else {
+                $enderecos[$cont] = [
+                  'origem' => $LatLng_origem,
+                  'destino' => $LatLng_destino,
+                  'tipo' => $row["Tipo"]
+                ];
+                $cont++;
+              }  
           }
-        }
 
+          if ($periodo == 'm') {
+            $enderecos[$cont] = [
+                'origem' => "",
+                'destino' => $LatLng_destino
+            ];
+          }
+          if ($periodo == 'a') {
+            $enderecos[$cont] = [
+                'origem' => "",
+                'destino' => $LatLng_destino
+            ];
+            $enderecos2[$cont2] = [
+                'origem' => "",
+                'destino' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor
+            ];
+          }
+          if ($periodo == 't') {
+            $enderecos[$cont] = [
+                'origem' => "",
+                'destino' => $LatLng_ajudante ? $LatLng_ajudante : $LatLng_condutor
+            ];
+          }
+          $distancias = array();
 
-        if ($periodo == 'a') {
-          // calcular a distancia entre o ponto inicial e entre os pontos do caminho
-          for ($i=0; $i < sizeof($enderecos);$i++){
-            for ($j=0;$j < sizeof($enderecos)-1;$j++) {
+          if ($periodo == 'm') {
+            // calcular a distancia entre o ponto inicial e entre os pontos do caminho
+            for ($i=0; $i < sizeof($enderecos);$i++){
+              for ($j=0;$j < sizeof($enderecos)-1;$j++) {
                 $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
 
                 if (isset($LatLng_origem[0]))
@@ -269,48 +218,199 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 $distancias[$i][$j]['distancia'] = $d;
                 $distancias[$i][$j]['origem'] = $enderecos[$i]["origem"];
                 $distancias[$i][$j]['destino'] = $enderecos[$j]["origem"];
+              }
+            }
+            // calcular a distancia entre os pontos do caminho e o destino
+            for ($i = 0 ;$i < sizeof($enderecos);$i++){
+                $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
+
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
+
+                $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
+
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
+
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == sizeof($enderecos)-1){
+                  $d = 0;
+                }
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias[$i][sizeof($enderecos)-1]["distancia"] = $d;
+                $distancias[$i][sizeof($enderecos)-1]["origem"] = $enderecos[$i]["origem"];
+                $distancias[$i][sizeof($enderecos)-1]["destino"] = $enderecos[$i]["destino"];
             }
           }
-          // calcular a distancia entre os pontos do caminho e o destino
-          for ($i = 0 ;$i < sizeof($enderecos);$i++){
-              $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
 
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
 
-              $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
+          if ($periodo == 'a') {
+            // calcular a distancia entre o ponto inicial e entre os pontos do caminho
+            for ($i=0; $i < sizeof($enderecos);$i++){
+              for ($j=0;$j < sizeof($enderecos)-1;$j++) {
+                  $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
 
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
+                  if (isset($LatLng_origem[0]))
+                    $Lat_origem = $LatLng_origem[0];
+                  if (isset($LatLng_origem[1]))
+                   $Lng_origem = $LatLng_origem[1];
 
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == sizeof($enderecos)-1){
-                $d = 0;
+                  $LatLng_destino = explode(",", $enderecos[$j]["origem"]);
+
+                  if (isset($LatLng_destino[0]))
+                    $Lat_destino = $LatLng_destino[0];
+                  if (isset($LatLng_destino[1]))
+                    $Lng_destino = $LatLng_destino[1];
+
+                  if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                    $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                  if ($j == 0) {
+                    $d = INFI;
+                  }
+                  if ($i == (sizeof($enderecos) - 1)) {
+                    $d = INFI;
+                  }
+                  if ($i == $j) {
+                    $d = INFI;
+                  }
+                  $distancias[$i][$j]['distancia'] = $d;
+                  $distancias[$i][$j]['origem'] = $enderecos[$i]["origem"];
+                  $distancias[$i][$j]['destino'] = $enderecos[$j]["origem"];
               }
-              if ($i == 0) {
-                $d = INFI;
+            }
+            // calcular a distancia entre os pontos do caminho e o destino
+            for ($i = 0 ;$i < sizeof($enderecos);$i++){
+                $LatLng_origem = explode(",", $enderecos[$i]["origem"]);
+
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
+
+                $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
+
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
+
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == sizeof($enderecos)-1){
+                  $d = 0;
+                }
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias[$i][sizeof($enderecos)-1]["distancia"] = $d;
+                $distancias[$i][sizeof($enderecos)-1]["origem"] = $enderecos[$i]["origem"];
+                $distancias[$i][sizeof($enderecos)-1]["destino"] = $enderecos[$i]["destino"];
+            }
+
+            // calcular entre os pontos do caminho
+            for ($i=0; $i < sizeof($enderecos2)-1 ;$i++){
+              for ($j=0;$j < sizeof($enderecos2);$j++) {
+                  $LatLng_origem = explode(",", $enderecos2[$i]["destino"]);
+
+                  if (isset($LatLng_origem[0]))
+                    $Lat_origem = $LatLng_origem[0];
+                  if (isset($LatLng_origem[1]))
+                   $Lng_origem = $LatLng_origem[1];
+
+                  $LatLng_destino = explode(",", $enderecos2[$j]["destino"]);
+
+                  if (isset($LatLng_destino[0]))
+                    $Lat_destino = $LatLng_destino[0];
+                  if (isset($LatLng_destino[1]))
+                    $Lng_destino = $LatLng_destino[1];
+
+                  if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                    $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                  if ($i == $j) {
+                    $d = INFI;
+                  }
+                  if ($j == 0) {
+                    $d = INFI;
+                  }
+                  $distancias2[$i][$j]['distancia'] = $d;
+                  $distancias2[$i][$j]['origem'] = $enderecos2[$i]["destino"];
+                  $distancias2[$i][$j]['destino'] = $enderecos2[$j]["destino"];
               }
-              $distancias[$i][sizeof($enderecos)-1]["distancia"] = $d;
-              $distancias[$i][sizeof($enderecos)-1]["origem"] = $enderecos[$i]["origem"];
-              $distancias[$i][sizeof($enderecos)-1]["destino"] = $enderecos[$i]["destino"];
+            }
+            // calcular a distancia entre os pontos do caminho e o inicio
+            for ($i=0; $i < sizeof($enderecos2) ;$i++){
+                $LatLng_origem = explode(",", $enderecos2[0]["origem"]);
+
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
+
+                $LatLng_destino = explode(",", $enderecos2[$i]["destino"]);
+
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
+
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == sizeof($enderecos2)-1){
+                  $d = INFI;
+                }
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias2[0][$i]["distancia"] = $d;
+                $distancias2[0][$i]["origem"] = $enderecos2[0]["origem"];
+                $distancias2[0][$i]["destino"] = $enderecos2[$i]["destino"];
+            }
+            // calcular a distancia entre os pontos do caminho e o destino
+            for ($i = 0 ;$i < sizeof($enderecos2);$i++){
+                $LatLng_origem = explode(",", $enderecos2[$i]["destino"]);
+
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
+
+                $LatLng_destino = explode(",", $enderecos2[sizeof($enderecos2)-1]["destino"]);
+
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
+
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias2[sizeof($enderecos2)-1][$i]["distancia"] = $d;
+                $distancias2[sizeof($enderecos2)-1][$i]["origem"] = $enderecos2[$i]["destino"];
+                $distancias2[sizeof($enderecos2)-1][$i]["destino"] = $enderecos2[sizeof($enderecos2)-1]["destino"];
+            }
           }
 
-          // calcular entre os pontos do caminho
-          for ($i=0; $i < sizeof($enderecos2)-1 ;$i++){
-            for ($j=0;$j < sizeof($enderecos2);$j++) {
-                $LatLng_origem = explode(",", $enderecos2[$i]["destino"]);
+          if ($periodo == 't') {
+            // calcular entre os pontos do caminho
+            for ($i=0; $i < sizeof($enderecos)-1 ;$i++){
+              for ($j=0;$j < sizeof($enderecos);$j++) {
+                $LatLng_origem = explode(",", $enderecos[$i]["destino"]);
 
                 if (isset($LatLng_origem[0]))
                   $Lat_origem = $LatLng_origem[0];
                 if (isset($LatLng_origem[1]))
                  $Lng_origem = $LatLng_origem[1];
 
-                $LatLng_destino = explode(",", $enderecos2[$j]["destino"]);
+                $LatLng_destino = explode(",", $enderecos[$j]["destino"]);
 
                 if (isset($LatLng_destino[0]))
                   $Lat_destino = $LatLng_destino[0];
@@ -325,149 +425,64 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 if ($j == 0) {
                   $d = INFI;
                 }
-                $distancias2[$i][$j]['distancia'] = $d;
-                $distancias2[$i][$j]['origem'] = $enderecos2[$i]["destino"];
-                $distancias2[$i][$j]['destino'] = $enderecos2[$j]["destino"];
+                $distancias[$i][$j]['distancia'] = $d;
+                $distancias[$i][$j]['origem'] = $enderecos[$i]["destino"];
+                $distancias[$i][$j]['destino'] = $enderecos[$j]["destino"];
+              }
             }
-          }
-          // calcular a distancia entre os pontos do caminho e o inicio
-          for ($i=0; $i < sizeof($enderecos2) ;$i++){
-              $LatLng_origem = explode(",", $enderecos2[0]["origem"]);
+            // calcular a distancia entre os pontos do caminho e o inicio
+            for ($i=0; $i < sizeof($enderecos) ;$i++){
+                $LatLng_origem = explode(",", $enderecos[0]["origem"]);
 
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
 
-              $LatLng_destino = explode(",", $enderecos2[$i]["destino"]);
+                $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
 
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
 
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == sizeof($enderecos2)-1){
-                $d = INFI;
-              }
-              if ($i == 0) {
-                $d = INFI;
-              }
-              $distancias2[0][$i]["distancia"] = $d;
-              $distancias2[0][$i]["origem"] = $enderecos2[0]["origem"];
-              $distancias2[0][$i]["destino"] = $enderecos2[$i]["destino"];
-          }
-          // calcular a distancia entre os pontos do caminho e o destino
-          for ($i = 0 ;$i < sizeof($enderecos2);$i++){
-              $LatLng_origem = explode(",", $enderecos2[$i]["destino"]);
-
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
-
-              $LatLng_destino = explode(",", $enderecos2[sizeof($enderecos2)-1]["destino"]);
-
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
-
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == 0) {
-                $d = INFI;
-              }
-              $distancias2[sizeof($enderecos2)-1][$i]["distancia"] = $d;
-              $distancias2[sizeof($enderecos2)-1][$i]["origem"] = $enderecos2[$i]["destino"];
-              $distancias2[sizeof($enderecos2)-1][$i]["destino"] = $enderecos2[sizeof($enderecos2)-1]["destino"];
-          }
-        }
-
-        if ($periodo == 't') {
-          // calcular entre os pontos do caminho
-          for ($i=0; $i < sizeof($enderecos)-1 ;$i++){
-            for ($j=0;$j < sizeof($enderecos);$j++) {
-              $LatLng_origem = explode(",", $enderecos[$i]["destino"]);
-
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-               $Lng_origem = $LatLng_origem[1];
-
-              $LatLng_destino = explode(",", $enderecos[$j]["destino"]);
-
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
-
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == $j) {
-                $d = INFI;
-              }
-              if ($j == 0) {
-                $d = INFI;
-              }
-              $distancias[$i][$j]['distancia'] = $d;
-              $distancias[$i][$j]['origem'] = $enderecos[$i]["destino"];
-              $distancias[$i][$j]['destino'] = $enderecos[$j]["destino"];
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == sizeof($enderecos)-1){
+                  $d = INFI;
+                }
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias[0][$i]["distancia"] = $d;
+                $distancias[0][$i]["origem"] = $enderecos[0]["origem"];
+                $distancias[0][$i]["destino"] = $enderecos[$i]["destino"];
             }
-          }
-          // calcular a distancia entre os pontos do caminho e o inicio
-          for ($i=0; $i < sizeof($enderecos) ;$i++){
-              $LatLng_origem = explode(",", $enderecos[0]["origem"]);
+            // calcular a distancia entre os pontos do caminho e o destino
+            for ($i = 0 ;$i < sizeof($enderecos);$i++){
+                $LatLng_origem = explode(",", $enderecos[$i]["destino"]);
 
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
+                if (isset($LatLng_origem[0]))
+                  $Lat_origem = $LatLng_origem[0];
+                if (isset($LatLng_origem[1]))
+                  $Lng_origem = $LatLng_origem[1];
 
-              $LatLng_destino = explode(",", $enderecos[$i]["destino"]);
+                $LatLng_destino = explode(",", $enderecos[sizeof($enderecos)-1]["destino"]);
 
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
+                if (isset($LatLng_destino[0]))
+                  $Lat_destino = $LatLng_destino[0];
+                if (isset($LatLng_destino[1]))
+                  $Lng_destino = $LatLng_destino[1];
 
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == sizeof($enderecos)-1){
-                $d = INFI;
-              }
-              if ($i == 0) {
-                $d = INFI;
-              }
-              $distancias[0][$i]["distancia"] = $d;
-              $distancias[0][$i]["origem"] = $enderecos[0]["origem"];
-              $distancias[0][$i]["destino"] = $enderecos[$i]["destino"];
-          }
-          // calcular a distancia entre os pontos do caminho e o destino
-          for ($i = 0 ;$i < sizeof($enderecos);$i++){
-              $LatLng_origem = explode(",", $enderecos[$i]["destino"]);
-
-              if (isset($LatLng_origem[0]))
-                $Lat_origem = $LatLng_origem[0];
-              if (isset($LatLng_origem[1]))
-                $Lng_origem = $LatLng_origem[1];
-
-              $LatLng_destino = explode(",", $enderecos[sizeof($enderecos)-1]["destino"]);
-
-              if (isset($LatLng_destino[0]))
-                $Lat_destino = $LatLng_destino[0];
-              if (isset($LatLng_destino[1]))
-                $Lng_destino = $LatLng_destino[1];
-
-              if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
-                $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
-              if ($i == 0) {
-                $d = INFI;
-              }
-              $distancias[sizeof($enderecos)-1][$i]["distancia"] = $d;
-              $distancias[sizeof($enderecos)-1][$i]["origem"] = $enderecos[$i]["destino"];
-              $distancias[sizeof($enderecos)-1][$i]["destino"] = $enderecos[sizeof($enderecos)-1]["destino"];
+                if ($Lat_origem && $Lng_origem && $Lat_destino && $Lng_destino)
+                  $d = sqrt(pow(($Lat_origem-$Lat_destino),2) + pow(($Lng_origem-$Lng_destino),2));
+                if ($i == 0) {
+                  $d = INFI;
+                }
+                $distancias[sizeof($enderecos)-1][$i]["distancia"] = $d;
+                $distancias[sizeof($enderecos)-1][$i]["origem"] = $enderecos[$i]["destino"];
+                $distancias[sizeof($enderecos)-1][$i]["destino"] = $enderecos[sizeof($enderecos)-1]["destino"];
+            }
           }
         }
 
@@ -629,6 +644,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
         $menor = json_encode($menor);
         $pontos = json_encode($pontos);
+        $pcondutor = json_encode($enderecocondutor);
     }
 
 ?>        
@@ -644,8 +660,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <div class="col-xs-12 col-md-10 col-md-offset-1">
             <input type=hidden id="address" value='<?php echo $menor; ?>' />
             <input type="hidden" id="pontos" value='<?php echo $pontos; ?>'/>
-            <input type=hidden id="address2" value='<?php echo $menor2; ?>' />
+            <input type="hidden" id="address2" value='<?php echo $menor2; ?>' />
             <input type="hidden" id="pontos2" value='<?php echo $pontos2; ?>'/>
+            <input type="hidden" id="pcondutor" value = '<?php echo $pcondutor;?>'/>
+            <input type="hidden" id="periodo" value= '<?php echo $periodo;?>'/>
             <h1 class="page-header">Mapa</h1>
 				<div id="map" style="height: 500px"></div>
         <div id="map2" style="height: 500px"></div>
@@ -675,6 +693,11 @@ var pontos = $("#pontos").val();
 if (pontos) {
   pontos = jQuery.parseJSON(pontos);
 }
+var pcondutor = $("#pcondutor").val();
+if (pcondutor) {
+  pcondutor = jQuery.parseJSON(pcondutor);
+}
+var periodo = $("#periodo").val();
   directionsDisplay = new google.maps.DirectionsRenderer({
     polylineOptions: {
       strokeColor: "blue"
@@ -694,6 +717,23 @@ if (pontos) {
     travelMode: google.maps.TravelMode.DRIVING
   };
 
+if ((periodo != 't') && pcondutor['origem']) {
+  var cond = pcondutor["origem"].split(",");
+  marker = new google.maps.Marker({
+      position: new google.maps.LatLng(cond[0], cond[1]),
+      label: labels[labelIndex++ % labels.length],
+      map: map
+    });
+  request.origin = marker.getPosition();
+
+     google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(pcondutor['completo']);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+}
+
   var tamanho = Object.keys(pontos).length;
   for (i = 0; i < tamanho; i++) {
     var ponto = pontos[i].split(",");
@@ -710,11 +750,16 @@ if (pontos) {
       }
     })(marker, i));
 
-    if (i == 0) {
+    if (i == 0 && !request.origin) {
       request.origin = marker.getPosition();
     } else {
       if (i == locations.length) {
-        request.destination = marker.getPosition();
+        if (periodo != 't') {
+          request.destination = marker.getPosition();
+        }
+        if (periodo == 't' && !pcondutor['origem']) {
+          request.destination = marker.getPosition();
+        }
       } else {
         if (!request.waypoints) request.waypoints = [];
         request.waypoints.push({
@@ -724,6 +769,23 @@ if (pontos) {
       }
     }
 
+  }
+
+  if ((periodo == 't') && pcondutor['origem']) {
+    var cond = pcondutor["origem"].split(",");
+    marker = new google.maps.Marker({
+        position: new google.maps.LatLng(cond[0], cond[1]),
+        label: labels[labelIndex++ % labels.length],
+        map: map
+      });
+    request.destination = marker.getPosition();
+
+    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(pcondutor['completo']);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
   }
   directionsService.route(request, function(result, status) {
     if (status == google.maps.DirectionsStatus.OK) {
@@ -801,7 +863,7 @@ if (pontos2) {
     if (i == 0) {
       request.origin = marker.getPosition();
     } else {
-      if (i == locations2.length) {
+      if (i == locations2.length && !pcondutor['origem']) {
         request.destination = marker.getPosition();
       } else {
         if (!request.waypoints) request.waypoints = [];
@@ -813,6 +875,22 @@ if (pontos2) {
     }
 
   }
+
+   var cond = pcondutor["origem"].split(",");
+    marker = new google.maps.Marker({
+        position: new google.maps.LatLng(cond[0], cond[1]),
+        label: labels[labelIndex++ % labels.length],
+        map: map2
+      });
+    request.destination = marker.getPosition();
+
+    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(pcondutor['completo']);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    
   directionsService2.route(request, function(result, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       directionsDisplay2.setDirections(result);

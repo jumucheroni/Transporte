@@ -148,7 +148,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         
           $enderecos[$cont] = [
             'origem' => $LatLng_condutor,
-            'destino' => "",
+            'destino' => $LatLng_condutor,
+            'tipo' => 0,
             'escola' => 0,
             'completo' => $rowcondutor['nome']." - ".$rowcondutor['condutor']
           ];
@@ -157,7 +158,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             $cont++;
             $enderecos[$cont] = [
               'origem' => $LatLng_ajudante,
-              'destino' => "",
+              'destino' => $LatLng_ajudante,
+              'tipo' => 0,
               'escola' => 0,
               'completo' => $rowajudante['nome']." - ".$rowajudante['ajudante']
             ];
@@ -198,20 +200,33 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               ];
               $cont2++;
             } else {
-              $enderecos[$cont] = [
-                'origem' => $LatLng_origem,
-                'destino' => $LatLng_destino,
-                'tipo' => $row["Tipo"],
-                'escola' => $row["escola"],
-                'completo' => $row['crianca']." - ".$row['origem']
-              ];
+              if ($row['Tipo'] == 'vt') {
+                $enderecos[$cont] = [
+                  'origem' => $LatLng_origem,
+                  'destino' => $LatLng_destino,
+                  'tipo' => $row["Tipo"],
+                  'escola' => $row["escola"],
+                  'completo' => $row['crianca']." - ".$row['destino']
+                ];
+              } else {
+                $enderecos[$cont] = [
+                  'origem' => $LatLng_origem,
+                  'destino' => $LatLng_destino,
+                  'tipo' => $row["Tipo"],
+                  'escola' => $row["escola"],
+                  'completo' => $row['crianca']." - ".$row['origem']
+                ];
+              }
               $cont++;
             }  
         } 
       }
-
       for ($i = 0; $i < sizeof($enderecos); $i++) {
-        $pontos[$i]['endereco'] = $enderecos[$i]["origem"];
+        if ($enderecos[$i]['tipo'] == 'vm' || $enderecos[$i]['tipo'] == 'vt') {
+          $pontos[$i]['endereco'] = $enderecos[$i]["destino"];
+        } else {
+          $pontos[$i]['endereco'] = $enderecos[$i]["origem"];
+        }
         $pontos[$i]['completo'] = $enderecos[$i]["completo"];
         if (isset($enderecos[$i]['escola'])) {
           $pontos[$i]['escola'] = $enderecos[$i]['escola'];
@@ -225,14 +240,19 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         $pontosfinal[$i]['completo'] = $enderecosescolas[$i]["completo"];
       }
 
+
       if ($periodo == 'a') {
 
         for ($i = 0; $i < sizeof($enderecos2); $i++) {
-        $pontos2[$i]['endereco'] = $enderecos2[$i]["destino"];
-        $pontos2[$i]['completo'] = $enderecos2[$i]["completo"];
-        if (isset($enderecos[$i]['escola'])) {
-          $pontos2[$i]['escola'] = $enderecos2[$i]['escola'];
-        }
+          if ($enderecos2[$i]['tipo'] == 'vm' || $enderecos2[$i]['tipo'] == 'vt') {
+            $pontos2[$i]['endereco'] = $enderecos2[$i]["destino"];
+          } else {
+            $pontos2[$i]['endereco'] = $enderecos2[$i]["origem"];
+          }   
+          $pontos2[$i]['completo'] = $enderecos2[$i]["completo"];
+          if (isset($enderecos[$i]['escola'])) {
+            $pontos2[$i]['escola'] = $enderecos2[$i]['escola'];
+          }
         } 
         for ($i = 0; $i < sizeof($enderecosescolas); $i++){
           $pontosfinal2[$i]['endereco'] = $enderecos2escolas[$i]["origem"];
@@ -433,15 +453,15 @@ if (pontos2.length){
   for (i = 0; i < tamanhoescola; i++) {
     var ponto = pontosfinal2[i]["endereco"].split(",");
     var escola = pontosfinal2[i]["escola"];
-    escolacolor[escola] = colors[i+1];
-    var url = "http://maps.google.com/mapfiles/ms/icons/";
-    url += escolacolor[pontosfinal2[i]["escola"]] + "-dot.png";
+    escolacolor[escola] = pinColor[i+1];
+    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + escolacolor[pontosfinal[i]["escola"]],
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));
     marker = new google.maps.Marker({
       position: new google.maps.LatLng(ponto[0], ponto[1]),
       map: map,
-      icon: {
-        url: url
-      }
+      icon: pinImage
     });
 
     google.maps.event.addListener(marker, 'click', (function(marker, i) {
@@ -455,18 +475,20 @@ if (pontos2.length){
   var tamanho = Object.keys(pontos2).length;
   for (i = 0; i < tamanho; i++) {
     var ponto = pontos2[i]["endereco"].split(",");
-    var url = "http://maps.google.com/mapfiles/ms/icons/";
-    if (typeof escolacolor[pontos2[i]["escola"]] != "undefined") {
-      url += escolacolor[pontos2[i]["escola"]] + "-dot.png";
+     var color = "";
+    if (typeof escolacolor[pontos[i]["escola"]] != "undefined") {
+      color = escolacolor[pontos[i]["escola"]] ;
     } else {
-      url += colors[0] + "-dot.png";
+      color = pinColor[0];
     }
+    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + color,
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));
     marker = new google.maps.Marker({
       position: new google.maps.LatLng(ponto[0], ponto[1]),
       map: map,
-      icon: {
-        url: url
-      }
+      icon: pinImage
     });
 
     google.maps.event.addListener(marker, 'click', (function(marker, i) {
