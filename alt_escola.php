@@ -23,6 +23,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $complemento   = $row["complemento"];
     $cidade        = $row["cidade"];    
     $estado        = $row["estado"];
+    $emanha        = $row["entrada_manha"];
+    $smanha        = $row["saida_manha"];
+    $etarde        = $row["entrada_tarde"];
+    $starde        = $row["saida_tarde"];
 
  ?>
 
@@ -115,6 +119,32 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <input type="hidden" name="cid" id="cid" value="<?php print $cidade?>" />
                      <select class="form-control" type="text" name="cidade" id="cidade">
                      </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3">
+                  <div id="e-manha-form" class="form-group">
+                    <p class="formu-letra">Entrada da manhã</p>
+                    <input class="horario form-control" type="text" name="e-manha" id="e-manha" maxlength="5"  value="<?php print $emanha;?>"/>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div id="s-manha-form" class="form-group">
+                    <p class="formu-letra">Saída da manhã</p>
+                    <input class="horario form-control" type="text" name="s-manha" id="s-manha" maxlength="5"  value="<?php print $smanha;?>"/>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div id="e-tarde-form" class="form-group">
+                    <p class="formu-letra">Entrada da tarde</p>
+                    <input class="horario form-control" type="text" name="e-tarde" id="e-tarde" maxlength="5"  value="<?php print $etarde;?>"/>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div id="s-tarde-form" class="form-group">
+                    <p class="formu-letra">Saída da tarde</p>
+                    <input class="horario form-control" type="text" name="s-tarde" id="s-tarde" maxlength="5"  value="<?php print $starde;?>"/>
                   </div>
                 </div>
               </div>

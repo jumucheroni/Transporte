@@ -31,7 +31,12 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     if ($tipo == "E") {
         $valor = @$_POST['valor'];
 
-        $whereescolas = $valor;
+        $whereescolas = "";
+        foreach ($valor as $escola) {
+          $whereescolas .= $escola.",";
+        }
+        $tame = strlen($whereescolas);
+        $whereescolas = substr($whereescolas,0, $tame-1);
 
         $sql = "select t.id as id_trecho,t.tipo as Tipo,c.nome as Crianca,c.id as id_crianca,o.nome as Condutor,v.placa as Veiculo,  
         CONCAT(t.cep_origem,',',t.logradouro_origem,',',t.numero_origem,',',t.cidade_origem,',',t.estado_origem) as origem,
@@ -40,7 +45,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         inner join condutor o on o.cpf = ct.cpf_condutor
         inner join veiculo v on v.placa = ct.placa_veiculo
         inner join trecho t on t.id = ct.id_trecho
-        where ct.deletado ='N'".$periodo_conducao." and t.id_escola = ".$valor." and v.placa = '".$veiculo."'";
+        where ct.deletado ='N'".$periodo_conducao." and t.id_escola in (".$whereescolas.") and v.placa = '".$veiculo."'";
         $result = $conexao->query($sql);
     }
 
@@ -81,7 +86,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
         if ($rowveiculo['cpf_ajudante']) {
 
-            $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante,nome from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
+            $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante,nome,email from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
             $resultajudante = $conexao->query($sqlajudante); 
 
             $rowajudante = @mysqli_fetch_array($resultajudante);
@@ -97,7 +102,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             }
         }
        
-            $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor,c.nome from condutor c INNER JOIN condutorveiculo cv ON cv.cpf_condutor = c.cpf where cv.placa_veiculo = '".$veiculo."'".$periodo_condutor;
+            $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor,c.nome,c.email from condutor c INNER JOIN condutorveiculo cv ON cv.cpf_condutor = c.cpf where cv.placa_veiculo = '".$veiculo."'".$periodo_condutor;
             $resultcondutor = $conexao->query($sqlcondutor);
             $rowcondutor = @mysqli_fetch_array($resultcondutor);
             $address_condutor = urlencode($rowcondutor['condutor']);
@@ -111,7 +116,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 $LatLng_condutor = $Lat_condutor.",".$Lon_condutor; 
             }
 
-          $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola, e.id,e.nome from escola e 
+          $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola, e.id,e.nome,entrada_manha,saida_manha,entrada_tarde,saida_tarde from escola e 
            inner join trecho t on t.id_escola = e.id
            inner join criancatrecho ct on t.id = ct.id_trecho
             where ct.deletado ='N'".$periodo_conducao." and e.id in (".$whereescolas.") group by e.id";
@@ -131,14 +136,26 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   'origem' => $LatLng_escola,
                   'destino' => $LatLng_escola,
                   'escola' => $rowescola["id"],
-                  'completo' => $rowescola['nome']." - ".$rowescola['escola']
+                  'completo' => $rowescola['nome']." - ".$rowescola['escola'],
+                  'horario' => [
+                    "0" => $rowescola['entrada_manha'],
+                    "1" => $rowescola['saida_manha'],
+                    "2" => $rowescola['entrada_tarde'],
+                    "3" => $rowescola['saida_tarde']
+                  ]
                 ];
               if ($periodo == 'a') {
                 $enderecos2escolas[$cont2final] = [
                   'origem' => $LatLng_escola,
                   'destino' => $LatLng_escola,
                   'escola' => $rowescola["id"],
-                  'completo' => $rowescola['nome']." - ".$rowescola['escola']
+                  'completo' => $rowescola['nome']." - ".$rowescola['escola'],
+                  'horario' => [
+                    "0" => $rowescola['entrada_manha'],
+                    "1" => $rowescola['saida_manha'],
+                    "2" => $rowescola['entrada_tarde'],
+                    "3" => $rowescola['saida_tarde']
+                  ]
                 ];
                 $cont2final++;
               }
@@ -267,6 +284,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           $arrpontosfinal = $pontosfinal;
           $pontosfinal = json_encode($pontosfinal);
           $arrpontoscompleto = array_merge($arrpontos,$arrpontosfinal);
+
+          $enderecosescolas = json_encode($enderecosescolas);
+          $enderecos2escolas = json_encode($enderecos2escolas);
         }
         if (isset($pontos2)) {
           $pontos2 = json_encode($pontos2);
@@ -288,6 +308,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <input type="hidden" id="pontos2" value='<?php  if (isset($pontos2)) echo $pontos2; else echo "" ; ?>'/>
             <input type="hidden" id="pontosfinal" value='<?php if (isset($pontosfinal)) echo $pontosfinal; else echo "" ; ?>'/>
             <input type="hidden" id="pontosfinal2" value='<?php if (isset($pontosfinal2)) echo $pontosfinal2; else echo "" ; ?>'/>
+            <input type="hidden" id="enderecosescolas" value='<?php if (isset($enderecosescolas)) echo $enderecosescolas; else echo "" ; ?>'/>
+            <input type="hidden" id="enderecos2escolas" value='<?php if (isset($enderecos2escolas)) echo $enderecos2escolas; else echo "" ; ?>'/>
+            <input type="hidden" id="condutor" value='<?php print $rowcondutor["email"]; ?>' />
+            <input type="hidden" id="ajudante" value='<?php print $rowajudante["email"]; ?>' />
+            <input type="hidden" id="periodo" value= '<?php echo $periodo;?>'/>
             <h1 class="page-header">Mapa</h1>
         <?php if (isset($pontos)) { ?>
 				  <div id="map" style="height: 500px"></div>
@@ -300,24 +325,30 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <h2>Não há transportes a ser realizado para estes dados</h2>
             </div>
         <?php } ?>
-        <div id= "cenderecos"> 
-          <h3>Criar Roteiro</h3>
-            <p>
-              Escolha um endereço e adicione ou exclua para montar o roteiro: 
-              <select class="input-formu" id="combo" name="combo" >
-                <?php foreach ($arrpontoscompleto as $key => $value) {;?>
-                  <option value="<?php print $key?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
-                <?php } ?>
-              </select>
-              <button class="btn btn-success " id="adicionar" type="button">Adicionar</button>
-              <button class="btn btn-danger " id="remover" type="button">Remover</button>
-            </p>
-            <div id="roteiro">
-              
-            </div>
-          <div id="maproteiros" style="height: 500px"></div>
-        </div>
-        <div id="right-panel"></div>
+        <?php if (isset($pontos)) { ?>
+          <div id= "cenderecos"> 
+            <h3>Criar Roteiro</h3>
+              <p>
+                Escolha um endereço e adicione ou exclua para montar o roteiro: 
+                <select class="input-formu" id="combo" name="combo" >
+                  <?php foreach ($arrpontoscompleto as $key => $value) {;?>
+                    <option value="<?php print $key?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
+                  <?php } ?>
+                </select>
+                <button class="btn btn-success " id="adicionar" type="button">Adicionar</button>
+                <button class="btn btn-danger " id="remover" type="button">Remover</button>
+              </p>
+              <div id="roteiro">
+                
+              </div>
+              <button type="button" name="epdf" id="epdf">Exportar roteiro e enviar por email</button>
+              <div id="pdf">
+                <div id="right-panel"></div>
+                <div id="maproteiros" style="height: 500px"></div>
+              </div>
+              <div id="show_img"></div>
+          </div>
+        <?php } ?>
 			</div>
 		</div>
 
@@ -325,6 +356,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 <script src="js/itinerario.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&callback=initMap"
     async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 <script type="text/javascript">
 
 function initMap() {

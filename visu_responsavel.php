@@ -29,48 +29,32 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
             </div>
-              <div class="row">
-                <div class="caixa-f">
-                <div class="col-md-3">
-                  <p class="formu-letra">CPF</p>
-                </div>
-                <div class="col-md-5">
-                  <p class="formu-letra">Nome</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Parentesco</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Opções</p>
-                </div>
-              </div>
-              </div>
-              <div id="resultado" class="row">
+              <table class="table table-responsive" style="background-color: #eff5f5">
+                <thead>
+                  <th>CPF</th>
+                  <th>Nome</th>
+                  <th>Parentesco</th>
+                  <th>Opções</th>
+                </thead> 
+                <tbody>
                 <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                <tr>
                  <form id="<?php print $row['cpf']?>" method="POST">
                     <input type="hidden" name="cpf" value ="<?php print $row['cpf'] ?>" />
                     <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
-                  <div class="caixa-fl">
-                    <div class="col-md-3">
-                      <p class="letra-fi "><?php print $row["cpf"];?></p>
-                    </div>
-                    <div class="col-md-5">
-                      <p class="letra-fi "><?php print $row["nome"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["parentesco"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi">
+                  <td><?php print $row["cpf"];?></td>
+                    <td><?php print $row["nome"];?></td>
+                    <td><?php print $row["parentesco"];?></td>
+                  <td>
                         <a href="alt_responsavel.php?id=<?php print $row["cpf"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-responsavel" type="button"></button></a>
                         <button class="btn btn-sm btn-danger fa fa-trash dele-responsavel" id="<?php print $row['cpf'].'-dele'; ?>" type="button"></button>
                         <a href="deta_responsavel.php?id=<?php print $row["cpf"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-responsavel" type="button"></button></a>
-                      </p>
-                    </div>
-                  </div>
+                      </td>
                   </form>
+                </tr>
                    <?php }?>
-                </div>
+                </tbody>
+              </table>
           
 
               

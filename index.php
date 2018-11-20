@@ -170,7 +170,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         <div class="row wow fadeInUp">
           <div class="col-lg-6 col-md-6">
             <div class="member">
-              <div class="pic"><img src="img/Juliana.jpg" alt=""></div>
+              <div class="pic"><img src="img/Juliana.jpeg" alt="" width="45%" height="100%"></div>
               <h4>Juliana Carvalho Mucheroni</h4>
               <span>151021121</span>
             </div>
@@ -178,7 +178,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
           <div class="col-lg-6 col-md-6">
             <div class="member">
-              <div class="pic"><img src="img/Mariana.jpg" alt=""></div>
+              <div class="pic"><img src="img/Mariana.jpeg" alt="" width="45%" height="100%"></div>
               <h4>Mariana Xavier Moreira</h4>
               <span>151020531</span>
             </div>

@@ -29,48 +29,32 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
             </div>
-              <div class="row">
-                <div class="caixa-f">
-                <div class="col-md-4">
-                  <p class="formu-letra">Data</p>
-                </div>
-                <div class="col-md-4">
-                  <p class="formu-letra">Valor</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Veiculo</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Opções</p>
-                </div>
-              </div>
-              </div>
-              <div id="resultado" class="row">
+              <table class="table table-responsive" style="background-color: #eff5f5">
+                <thead>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Vaículo</th>
+                  <th>Opções</th>
+                </thead> 
+                <tbody>
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
+              <tr>
               <form id="<?php print $row['id']?>" method="POST">
                   <input type="hidden" name="id" value ="<?php print $row['id'] ?>" />
                   <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
-                  <div class="caixa-fl">
-                    <div class="col-md-4">
-                      <p class="letra-fi "><?php print DbtoDt($row["data_gasto"]);?></p>
-                    </div>
-                    <div class="col-md-4">
-                      <p class="letra-fi "><?php print $row["valor_gasto"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["placa"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi">
+                  <td><?php print DbtoDt($row["data_gasto"]);?></td>
+                    <td><?php print $row["valor_gasto"];?></td>
+                    <td><?php print $row["placa"];?></td>
+                    <td>
                         <a href="alt_despesas.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-despesas" type="button"></button></a>
                         <button class="btn btn-sm btn-danger fa fa-trash dele-despesas" id="<?php print $row['id'].'-dele'; ?>" type="button"></button>
                         <a href="deta_despesas.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-despesas" type="button"></button></a>
-                      </p>
-                    </div>
-                  </div>
+                      </td>
                 </form>
+              </tr>
                   <?php }?>
-                </div>
+                </tbody>
+              </table>
           
 
               

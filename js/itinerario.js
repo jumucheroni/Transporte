@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	$("#gerar").click(function(){
+		$("#modal").show();
+	});
 	 $('input[type=radio][name=relatorio]').change(function() {
           if (this.value == 'T') {
               $("#escolas").hide();
@@ -7,6 +10,10 @@ $(document).ready(function(){
               $("#escolas").show();
           }
       });
+
+	if ($('input[type=radio][name=relatorio]').val() == 'E'){
+		$("#escolas").show();
+	}
 
 	 var roteiro = {};
 	 var nroteiro = {};
@@ -27,6 +34,15 @@ $(document).ready(function(){
 	 		roteiro[selecionado] = nroteiro[selecionado];
 	 		nroteiro[selecionado] = "";
 	 		roteirizado.push(roteiro[selecionado]);
+	 		escolas = $("#enderecosescolas").val();
+	 		if (escolas) {
+	 			escolas = jQuery.parseJSON(escolas);
+	 		}
+	 		escolas2 = $("#enderecos2escolas").val();
+	 		if (escolas2) {
+	 			escolas2 = jQuery.parseJSON(escolas2);
+	 		}
+	 		periodo = $("#periodo").val(); 
 	 		$.ajax({
                     url: "geo.php",
                     type: "post",
@@ -39,7 +55,7 @@ $(document).ready(function(){
                        		pontos[roteirizado.length-1] = result;
                        	}
 				 		if (roteirizado.length > 1) {
-				 			maparoteiro(roteirizado,pontos);
+				 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo);
 				 		}
                     }
                 });
@@ -70,7 +86,7 @@ $(document).ready(function(){
 
 
 
-	 function maparoteiro(roteiro,pontoslatlong) {
+	 function maparoteiro(roteiro,pontoslatlong,escolas = null, escolas2 = null, periodo = null) {
 	 	var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var pinColor = ['000080','FFFF00','00CED1','CD5C5C','006400','2E8B57']
 		var labelIndex = 0;
@@ -139,7 +155,7 @@ $(document).ready(function(){
 		      var distanciatotal = 0;
 		      var j = labelIndex-rotas-1;
 		      for (i=0;i<rotas;i++) {
-		        panel.innerHTML += "<li>Caminho "+labels[j % labels.length]+" para "+labels[++j % labels.length]+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</li>";
+		        panel.innerHTML += "<p>Caminho "+labels[j % labels.length]+" - "+result.routes[0].legs[i].start_address+"  para "+labels[++j % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
 
 		        tempototal += result.routes[0].legs[i].duration.value;
 		        distanciatotal += result.routes[0].legs[i].distance.value;
@@ -149,9 +165,64 @@ $(document).ready(function(){
 
 		      tempototal = tempototal / 60;
 		      tempototal = tempototal.toFixed(0);
-		      panel.innerHTML += "<li> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</li>" ;
+		      panel.innerHTML += "<p> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</p>" ;
 		    }
 		  });
 		}
 	 }
+
+	function export_to_pdf() {
+		var roteiro = $("#right-panel").html();
+		if (!roteiro) {
+			roteiro = $("#panel").html();
+		}
+		var img = $("#show_img").html();
+		var condutor = $("#condutor").val();
+		var ajudante = $("#ajudante").val();
+		$.ajax({
+            url: "downloadpdf.php",
+            type: "post",
+            data: {
+            	'html': roteiro,
+            	'img': img,
+            	'condutor': condutor,
+            	'ajudante': ajudante
+            },
+            success: function(result){
+            	window.open("http://localhost/Transporte/"+result,'_blank');
+            }
+        });
+	}
+
+	$("#epdf").click(function() { 
+        html2canvas($("#maproteiros"), {
+	        useCORS: true,
+	        onrendered: function (canvas) {
+					
+		        var img = canvas.toDataURL("image/png");
+
+	          $('#img_val').val(canvas.toDataURL("image/png"));
+	          $('#show_img').html("");
+		        $("#show_img").append('<img src="' + img + '"/>');
+		        $("#show_img").hide();
+		       export_to_pdf();
+	        }
+	    });
+    });
+
+    $("#epdf_otimizado").click(function() { 
+        html2canvas($("#maps"), {
+	        useCORS: true,
+	        onrendered: function (canvas) {
+					
+		        var img = canvas.toDataURL("image/png");
+
+	          $('#img_val').val(canvas.toDataURL("image/png"));
+	          $('#show_img').html("");
+		        $("#show_img").append('<img src="' + img + '"/>');
+		        $("#show_img").hide();
+		        export_to_pdf();
+	        }
+	    });
+    });
 });

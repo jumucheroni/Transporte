@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version 5.5.5-10.1.22-MariaDB)
-# Date: 2018-11-06 21:47:14
+# Date: 2018-11-19 22:20:25
 # Generator: MySQL-Front 6.0  (Build 2.20)
 
 
@@ -67,7 +67,7 @@ CREATE TABLE `escola` (
   `saida_tarde` varchar(255) DEFAULT NULL,
   `deletado` varchar(1) DEFAULT 'N',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 #
 # Structure for table "responsavel"

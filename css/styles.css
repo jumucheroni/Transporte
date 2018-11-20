@@ -1144,4 +1144,28 @@ p.back-link {
         overflow: auto;
       }
 
+#panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #panel select, #panel input {
+        font-size: 15px;
+      }
+
+      #panel select {
+        width: 100%;
+      }
+
+      #panel i {
+        font-size: 12px;
+      }
+      #panel {
+        height: 100%;
+        float: center;
+        width: 100%;
+        overflow: auto;
+      }
+
 

@@ -28,52 +28,36 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             </div>
             <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
-            </div>              
-            <div class="row">
-                <div class="caixa-f">
-                <div class="col-md-4">
-                  <p class="formu-letra">Criança</p>
-                </div>
-                <div class="col-md-4">
-                  <p class="formu-letra">Mensalidade</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Vencimento</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Opções</p>
-                </div>
-              </div>
-              </div>
-              <div id="resultado" class="row">
+            </div>   
+            <table class="table table-responsive" style="background-color: #eff5f5">
+                <thead>
+                  <th>Criança</th>
+                  <th>Mensalidade</th>
+                  <th>Vencimento</th>
+                  <th>Opções</th>
+                </thead> 
+                <tbody>           
               <?php while ($row = @mysqli_fetch_array($result)){ ?>
+              <tr>
                <form id="<?php print $row['id']?>" method="POST">
                   <input type="hidden" name="id" value ="<?php print $row['id'] ?>" />
                   <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
                   <input type="hidden" name="inativo" id="inativo" value="<?php print $row['deletado']; ?>" />
-                  <div class="caixa-fl">
-                    <div class="col-md-4">
-                      <p class="letra-fi "><?php print $row["nome"];?></p>
-                    </div>
-                    <div class="col-md-4">
-                      <p class="letra-fi "><?php print $row["mensalidade"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["dia_vencimento_mensalidade"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi">
+                  <td><?php print $row["nome"];?></td>
+                  <td><?php print $row["mensalidade"];?></td>
+                  <td><?php print $row["dia_vencimento_mensalidade"];?></td>
+                  <td>
                         <!--<a href="alt_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-contrato" type="button"></button></a>-->
                         <?php if ($row["deletado"] == "N"){ $class="remove";$color="danger"; ?>
                         <button class="btn btn-sm btn-<?php print $color; ?> fa fa-<?php print $class; ?> dele-contrato" id="<?php print $row['id'].'-dele'; ?>" type="button"></button>
                         <?php } ?>
                         <a href="deta_contrato.php?id=<?php print $row["id"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-contrato" type="button"></button></a>
-                      </p>
-                    </div>
-                  </div>
+                      </td>
                 </form>
+                </tr>
                   <?php }?>
-                </div>
+                </tbody>
+              </table>
           
 
               

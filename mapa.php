@@ -6,20 +6,27 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     include './inc/conexao.php';
 
     $tipo = @$_POST["relatorio"];
+    if (!$tipo) {
+      $tipo = 'E';
+    }
     $periodo = @$_POST["periodo"];
     $veiculo = @$_POST["veiculo"];
 
     if ($periodo == 'm') {
       $periodo_conducao = " and ct.periodo_conducao in ('im')"; 
       $periodo_condutor = " and cv.periodo in ('im')"; 
+      $titulo_mapa = "Periodo ida-manhã";
     } 
     if ($periodo == "a") {
       $periodo_conducao = " and ct.periodo_conducao in ('vm','it')"; 
       $periodo_condutor = " and cv.periodo in ('vm','it')"; 
+      $titulo_mapa2 = "Periodo volta-manhã";
+      $titulo_mapa = "Periodo ida-tarde";
     }
     if ($periodo == "t") {
       $periodo_conducao = " and ct.periodo_conducao in ('vt')"; 
       $periodo_condutor = " and cv.periodo in ('vt')"; 
+      $titulo_mapa = "Periodo volta-tarde";
     }
     if ($tipo == "E") {
         $valor = @$_POST['valor'];
@@ -43,7 +50,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           if ($rowveiculo['cpf_ajudante']) {
               $enderecos = array();
 
-              $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
+              $sqlajudante = "select CONCAT(cep,',',logradouro,',',numero,',',cidade,',',estado) as ajudante, email from ajudante where cpf = '".$rowveiculo['cpf_ajudante']."'";
               $resultajudante = $conexao->query($sqlajudante); 
 
               $rowajudante = @mysqli_fetch_array($resultajudante);
@@ -59,7 +66,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               }
           } 
 
-          $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor,c.nome from condutor c INNER JOIN condutorveiculo cv ON cv.cpf_condutor = c.cpf where cv.placa_veiculo = '".$veiculo."'".$periodo_condutor;
+          $sqlcondutor = "select CONCAT(c.cep,',',c.logradouro,',',c.numero,',',c.cidade,',',c.estado) as condutor,c.nome,c.email from condutor c INNER JOIN condutorveiculo cv ON cv.cpf_condutor = c.cpf where cv.placa_veiculo = '".$veiculo."'".$periodo_condutor;
           $resultcondutor = $conexao->query($sqlcondutor);
           $rowcondutor = @mysqli_fetch_array($resultcondutor);
           $address_condutor = urlencode($rowcondutor['condutor']);
@@ -91,8 +98,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               'destino' => ""
             ];
           } 
-          if ($periodo == 't' || $periodo == 'a') {
-            $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola from escola e where id = ".$valor;
+
+            $sqlescola = "select CONCAT(e.cep,',',e.logradouro,',',e.numero,',',e.cidade,',',e.estado) as escola,entrada_manha,saida_manha,entrada_tarde,saida_tarde from escola e where id = ".$valor;
             $resultescola = $conexao->query($sqlescola);
             $rowescola = @mysqli_fetch_array($resultescola);
             $address_escola = urlencode($rowescola['escola']);
@@ -118,7 +125,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               ];
               $cont2++;
             }
-          }
+
+            $horarios[0] = $rowescola['entrada_manha'];
+            $horarios[1] = $rowescola['saida_manha'];
+            $horarios[2] = $rowescola['entrada_tarde'];
+            $horarios[3] = $rowescola['saida_tarde'];
 
           $cont++;
 
@@ -495,77 +506,79 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
          $pontos2 = "";
          $menor2 = "";
        }
-        for ($i=0; $i<  sizeof($enderecos)-1; $i++) {
-            $menor[$i] = [
-                'distancia' => 9999999999,
-                'origem' => '',
-                'destino' => ''
-            ];
+       if (isset($enderecos)) {
+          for ($i=0; $i<  sizeof($enderecos)-1; $i++) {
+              $menor[$i] = [
+                  'distancia' => 9999999999,
+                  'origem' => '',
+                  'destino' => ''
+              ];
 
-        }
+          }
 
-        $n = sizeof($distancias)-1;
-        $visitados = array();
-        $otimizado = array();
-        $peso = INFI;
+          $n = sizeof($distancias)-1;
+          $visitados = array();
+          $otimizado = array();
+          $peso = INFI;
 
-        for($i = 0; $i < sizeof($distancias); $i++){
-          if($distancias[0][$i]["distancia"] > 0 && $distancias[0][$i]["distancia"] < $peso){
-            $peso = $distancias[0][$i]["distancia"];
-            $v2 = $i;
-          } 
-        }
-        $visitados[0] = 0;
-        array_push($otimizado, 0);
-        $visitados[$v2] = $v2;
-        array_push($otimizado, $v2);
+          for($i = 0; $i < sizeof($distancias); $i++){
+            if($distancias[0][$i]["distancia"] > 0 && $distancias[0][$i]["distancia"] < $peso){
+              $peso = $distancias[0][$i]["distancia"];
+              $v2 = $i;
+            } 
+          }
+          $visitados[0] = 0;
+          array_push($otimizado, 0);
+          $visitados[$v2] = $v2;
+          array_push($otimizado, $v2);
 
-        $distancias[0][$v2]["distancia"] = -1;
-        $distancias[$v2][0]["distancia"] = -1;
+          $distancias[0][$v2]["distancia"] = -1;
+          $distancias[$v2][0]["distancia"] = -1;
 
-        while(sizeof($visitados) < $n){ 
-          $p = INFI;
-            foreach ($visitados as $locais) {
-              $v = -1;
-              $peso2 = INFI;
-             
-              for($j = 0; $j < sizeof($distancias)-1; $j++){
-                if($distancias[$locais][$j]["distancia"] > 0 && $distancias[$locais][$j]["distancia"] < $peso2){
-                  if(!in_array($j, $visitados)){
-                    $peso2 = $distancias[$locais][$j]["distancia"];
-                    $v = $j;  
+          while(sizeof($visitados) < $n){ 
+            $p = INFI;
+              foreach ($visitados as $locais) {
+                $v = -1;
+                $peso2 = INFI;
+               
+                for($j = 0; $j < sizeof($distancias)-1; $j++){
+                  if($distancias[$locais][$j]["distancia"] > 0 && $distancias[$locais][$j]["distancia"] < $peso2){
+                    if(!in_array($j, $visitados)){
+                      $peso2 = $distancias[$locais][$j]["distancia"];
+                      $v = $j;  
+                    }
                   }
                 }
+
+                if($v > -1){ 
+                  $peso = $distancias[$locais][$v]['distancia'];
+                  if($peso < $p && $peso > 0 && !in_array($v, $visitados)){
+                    $v1 = $locais;
+                    $v2 = $v;
+                    $p = $peso;
+
+                    $distancias[$v1][$v2]["distancia"] = -1; //marco como aresta escolhida
+                    $distancias[$v2][$v1]["distancia"] = -1; //fazer isso pq a matriz é simétrica
+                    $visitados[$v2] = $v2; //Adiciono os vértices na lista de vértices visitados
+                    array_push($otimizado, $v2);
+                  }
+                }             
               }
-
-              if($v > -1){ 
-                $peso = $distancias[$locais][$v]['distancia'];
-                if($peso < $p && $peso > 0 && !in_array($v, $visitados)){
-                  $v1 = $locais;
-                  $v2 = $v;
-                  $p = $peso;
-
-                  $distancias[$v1][$v2]["distancia"] = -1; //marco como aresta escolhida
-                  $distancias[$v2][$v1]["distancia"] = -1; //fazer isso pq a matriz é simétrica
-                  $visitados[$v2] = $v2; //Adiciono os vértices na lista de vértices visitados
-                  array_push($otimizado, $v2);
-                }
-              }             
-            }
-        }
-        array_push($otimizado, sizeof($distancias)-1);
-
-        for ($i = 0; $i < sizeof($distancias)-1; $i++) {
-          $indice = $otimizado[$i];
-          $proximo = $otimizado[$i+1];
-          $menor[$indice]['origem'] = $distancias[$indice][$proximo]['origem'];
-          $menor[$indice]['destino'] = $distancias[$indice][$proximo]['destino']; 
-          $pontos[$i] = $distancias[$indice][$proximo]["origem"];
-          if ($proximo == sizeof($distancias)-1) {
-            $pontos[$proximo] = $distancias[$indice][$proximo]["destino"];
           }
-        } 
+          array_push($otimizado, sizeof($distancias)-1);
 
+          for ($i = 0; $i < sizeof($distancias)-1; $i++) {
+            $indice = $otimizado[$i];
+            $proximo = $otimizado[$i+1];
+            $menor[$indice]['origem'] = $distancias[$indice][$proximo]['origem'];
+            $menor[$indice]['destino'] = $distancias[$indice][$proximo]['destino']; 
+            $pontos[$i] = $distancias[$indice][$proximo]["origem"];
+            if ($proximo == sizeof($distancias)-1) {
+              $pontos[$proximo] = $distancias[$indice][$proximo]["destino"];
+            }
+          } 
+        }
+      if (isset($enderecos2)) {
         if ($periodo == 'a') {
             for ($i=0; $i<  sizeof($enderecos2)-1; $i++) {
                 $menor2[$i] = [
@@ -637,16 +650,23 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 $pontos2[$proximo] = $distancias2[$indice][$proximo]["destino"];
               }
             }
-
-            $pontos2 = json_encode($pontos2);
-            $menor2 = json_encode($menor2);
         }
+      }
 
+      if (is_array($pontos2)) {
+        $pontos2 = json_encode($pontos2);
+        $menor2 = json_encode($menor2);
+      }
         $menor = json_encode($menor);
-        $pontos = json_encode($pontos);
-        $pcondutor = json_encode($enderecocondutor);
-    }
 
+        $pontos = json_encode($pontos);
+        if (isset($enderecocondutor)) {
+          $pcondutor = json_encode($enderecocondutor);
+        }
+        if (isset($horarios)) {
+          $horarios = json_encode($horarios);
+        }
+    }
 ?>        
             <div class="row">
               <ol class="breadcrumb">
@@ -662,18 +682,40 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <input type="hidden" id="pontos" value='<?php echo $pontos; ?>'/>
             <input type="hidden" id="address2" value='<?php echo $menor2; ?>' />
             <input type="hidden" id="pontos2" value='<?php echo $pontos2; ?>'/>
-            <input type="hidden" id="pcondutor" value = '<?php echo $pcondutor;?>'/>
+            <input type="hidden" id="pcondutor" value = '<?php if (isset($pcondutor)) echo $pcondutor; else echo "" ;?>'/>
             <input type="hidden" id="periodo" value= '<?php echo $periodo;?>'/>
+            <input type="hidden" id="horarios" value= '<?php if (isset($horarios)) echo $horarios; else echo "" ;?>'/>
+            <input type="hidden" id="condutor" value='<?php if (isset($rowcondutor["email"])) echo $rowcondutor["email"]; else echo "" ; ?>' />
+            <input type="hidden" id="ajudante" value='<?php if (isset($rowajudante["email"])) echo $rowajudante["email"]; else echo "" ; ?>' />
             <h1 class="page-header">Mapa</h1>
-				<div id="map" style="height: 500px"></div>
-        <div id="map2" style="height: 500px"></div>
-        <div id="right-panel"></div>
+        <div id ="maps">
+        <?php if (isset($otimizado)) { ?>
+          <h3 class="page-header"><?php print $titulo_mapa; ?></h3>
+				  <div id="map" style="height: 600px"></div>
+         <?php } ?>
+        <?php if (isset($otimizado2)) { ?>
+            <h3 class="page-header"><?php print $titulo_mapa2; ?></h3>
+            <div id="map2" style="height: 600px"></div>
+        <?php } ?>
+        </div>
+        <?php if (!isset($otimizado) && !isset($otimizado2)) { ?>
+            <div id="erro"> 
+              <h2>Não há transportes a ser realizado para estes dados</h2>
+            </div>
+        <?php } else { ?>
+          <h3 class="page-header">Roteiro Detalhado <button style="float: right;" class="btn btn-info" type="button" name="epdf_otimizado" id="epdf_otimizado">Exportar e enviar por email</button></h3>
+          <div id="panel"></div>
+          
+          <div id="show_img"></div>
+        <?php } ?>
 			</div>
 		</div>
 
 <?php include './inc/footer.php'; ?>
+<script src="js/itinerario.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2bniFa-QuG1YD6Il7TV3SLBYiqXrpQg&callback=initMap"
     async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 <script type="text/javascript">
 
 function initMap() {
@@ -697,6 +739,10 @@ var pcondutor = $("#pcondutor").val();
 if (pcondutor) {
   pcondutor = jQuery.parseJSON(pcondutor);
 }
+var horarios = $("#horarios").val();
+if (horarios) {
+  horarios = jQuery.parseJSON(horarios);
+}
 var periodo = $("#periodo").val();
   directionsDisplay = new google.maps.DirectionsRenderer({
     polylineOptions: {
@@ -704,7 +750,7 @@ var periodo = $("#periodo").val();
     }, suppressMarkers: true
   });
 
-
+if (pontos.length > 0) {
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 10,
     center: new google.maps.LatLng(-22.331980, -49.029568),
@@ -759,6 +805,12 @@ if ((periodo != 't') && pcondutor['origem']) {
         }
         if (periodo == 't' && !pcondutor['origem']) {
           request.destination = marker.getPosition();
+        } else {
+          if (!request.waypoints) request.waypoints = [];
+          request.waypoints.push({
+            location: marker.getPosition(),
+            stopover: true
+          });
         }
       } else {
         if (!request.waypoints) request.waypoints = [];
@@ -790,12 +842,12 @@ if ((periodo != 't') && pcondutor['origem']) {
   directionsService.route(request, function(result, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       directionsDisplay.setDirections(result);
-      var panel = document.getElementById("right-panel");
+      var panel = document.getElementById("panel");
       var rotas = result.routes[0].legs.length;
       var tempototal = 0;
       var distanciatotal = 0;
       for (i=0;i<rotas;i++) {
-        panel.innerHTML += "<li>Caminho "+labels[i % labels.length]+" para "+labels[i+1 % labels.length]+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</li>";
+        panel.innerHTML += "<p>Caminho "+labels[i % labels.length]+" - "+result.routes[0].legs[i].start_address+" para "+labels[i+1 % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
 
         tempototal += result.routes[0].legs[i].duration.value;
         distanciatotal += result.routes[0].legs[i].distance.value;
@@ -805,9 +857,32 @@ if ((periodo != 't') && pcondutor['origem']) {
 
       tempototal = tempototal / 60;
       tempototal = tempototal.toFixed(0);
-      panel.innerHTML += "<li> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</li>" ;
-    }
+      panel.innerHTML += "<p> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</p>" ;
+      if (periodo == 'm' || periodo == 'a') {
+        if (periodo == 'm') {
+          hIni = horarios[0].split(':'); 
+        }
+        if (periodo == 'a') {
+          hIni = horarios[2].split(':'); 
+        }
+        minutosTotal = parseInt(hIni[1], 10) - parseInt(tempototal); 
+        horasTotal = parseInt(hIni[0], 10); 
+        if(minutosTotal < 0)
+        { 
+          minutosTotal += 60; horasTotal -= 1; 
+        }
+        if (minutosTotal < 10) {
+          minutosTotal = "0"+minutosTotal;
+        }
+        if (horasTotal < 10) {
+          horasTotal = "0"+horasTotal;
+        }
+        timetotal = horasTotal+":"+minutosTotal;
+        panel.innerHTML += "<p> Para chegar na escola no horário da entrada o condutor deve sair no máximo: "+timetotal+ " </p>" ;
+       }
+     } 
   });
+}
 
 
 var directionsDisplay2;
@@ -823,7 +898,7 @@ if (pontos2) {
   pontos2 = jQuery.parseJSON(pontos2);
 }
 
-if (pontos2) {
+if (pontos2.length > 0) {
 
    var map2 = new google.maps.Map(document.getElementById('map2'), {
     zoom: 10,
@@ -890,17 +965,17 @@ if (pontos2) {
           infowindow.open(map, marker);
         }
       })(marker, i));
-    
+
   directionsService2.route(request, function(result, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       directionsDisplay2.setDirections(result);
-      var panel = document.getElementById("right-panel");
+      var panel = document.getElementById("panel");
       var rotas = result.routes[0].legs.length;
       var tempototal = 0;
       var distanciatotal = 0;
       var j = labelIndex-rotas-1;
       for (i=0;i<rotas;i++) {
-        panel.innerHTML += "<li>Caminho "+labels[j % labels.length]+" para "+labels[++j % labels.length]+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</li>";
+        panel.innerHTML += "<p>Caminho "+labels[j % labels.length]+" - "+result.routes[0].legs[i].start_address+" para "+labels[++j % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
 
         tempototal += result.routes[0].legs[i].duration.value;
         distanciatotal += result.routes[0].legs[i].distance.value;
@@ -910,7 +985,7 @@ if (pontos2) {
 
       tempototal = tempototal / 60;
       tempototal = tempototal.toFixed(0);
-      panel.innerHTML += "<li> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</li>" ;
+      panel.innerHTML += "<p> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</p>" ;
     }
   });
 }

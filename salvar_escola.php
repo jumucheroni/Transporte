@@ -16,10 +16,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $complemento   = @$_POST["complemento"];
       $estado        = @$_POST["estado"];
       $cidade        = @$_POST["cidade"];
+      $emanha        = @$_POST['e-manha'];
+      $smanha        = @$_POST['s-manha'];
+      $etarde        = @$_POST['e-tarde'];
+      $starde        = @$_POST['s-tarde'];
 
     if ($acao=="SALVARCADASTRO"){
 
-        $insertsql = "insert into escola (nome,tipo,logradouro, numero, bairro, cep, complemento,cidade,estado) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."','".$cidade."','".$estado."')";
+        $insertsql = "insert into escola (nome, tipo, logradouro, numero, bairro, cep, complemento, cidade, estado, entrada_manha, saida_manha, entrada_tarde, saida_tarde) values ('".$nome."','".$tipo."','".$logradouro."','".$numero."','".$bairro."','".$cep."','".$complemento."','".$cidade."','".$estado."','".$emanha."','".$smanha."','".$etarde."','".$starde."')";
         $insertresult = $conexao->query($insertsql);
 
         if ($insertresult){
@@ -37,7 +41,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
     if ($acao =="SALVARUPDATE"){
           
-          $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' , estado = '".$estado."' , cidade = '".$cidade."' where id='".$n_ident."'";
+          $updatesql = "update escola set nome = '".$nome."', tipo = '".$tipo."', logradouro = '".$logradouro."' , numero = '".$numero."' , bairro = '".$bairro."' , cep = '".$cep."' , complemento = '".$complemento."' , estado = '".$estado."' , cidade = '".$cidade."' , entrada_manha = '".$emanha."' , saida_manha = '".$smanha."' , entrada_tarde = '".$etarde."' , saida_tarde = '".$starde."' where id='".$n_ident."'";
           $updateresult = $conexao->query($updatesql);
 
           if ($updateresult){

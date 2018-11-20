@@ -5,6 +5,7 @@ $(document).ready(function(){
 	$(".money").maskMoney({allowNegative: true, thousands:'', decimal:',', affixesStay: false});
 	$(".cep").mask("99999-999");
 	$(".nasc").mask("99/99/9999");
+	$(".horario").mask("99:99");
 	$(".placa").inputmask({mask: 'AAA-9999'});
 
 	//preencher os estados e cidades

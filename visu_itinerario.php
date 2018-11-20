@@ -51,7 +51,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
 
-              <h1 class="page-header">Itinerário otimizado</h1>
+              <?php if ($tipo != "roteiro") { ?>
+                <h1 class="page-header">Mapa de pontos</h1>
+              <?php } else { ?>
+                <h1 class="page-header">Itinerário otimizado</h1>
+              <?php } ?>
         
               <div class="row">
                 <div class="col-md-12">
@@ -61,9 +65,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <div class="row">
                 <div id="opcoes" class="col-md-6">
                   <div style="padding: 20px;" class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-default">
-                      <input checked type="radio" name="relatorio" value="T">Todos<br>
-                    </label>
+                    <?php if ($tipo != "roteiro") { ?>
+                      <label class="btn btn-default">
+                        <input checked type="radio" name="relatorio" value="T">Todos<br>
+                      </label>
+                    <?php } ?>
                     <label class="btn btn-default">
                       <input class="input" type="radio" name="relatorio" value="E"> Escola<br>
                     </label>
@@ -84,11 +90,19 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   </select>
                   <div hidden id="escolas" >
                     <p class="letra-fi">Escola</p>
-                    <select class="input-formu" id="select" name="valor" >
-                      <?php while ($row = @mysqli_fetch_array($result)){ ?>
-                        <option value="<?php print $row['id_escola'];?>" id="<?php print $row['id_escola'];?>" ><?php print $row["escola"];?></option>
-                      <?php } ?>
-                    </select>
+                    <?php if ($tipo != "roteiro") { ?>
+                      <select multiple class="input-formu" id="select" name="valor[]" >
+                        <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                          <option value="<?php print $row['id_escola'];?>" id="<?php print $row['id_escola'];?>" ><?php print $row["escola"];?></option>
+                        <?php } ?>
+                      </select>
+                    <?php } else {?>
+                      <select class="input-formu" id="select" name="valor" >
+                        <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                          <option value="<?php print $row['id_escola'];?>" id="<?php print $row['id_escola'];?>" ><?php print $row["escola"];?></option>
+                        <?php } ?>
+                      </select>
+                    <?php } ?>
                   </div>
                 </div>  
 

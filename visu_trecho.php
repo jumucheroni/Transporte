@@ -33,63 +33,39 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div hidden id="alert"></div>
             </div>
               
-              <div class="row">
-                <div class="caixa-f">
-                  <div class="col-md-3">
-                    <p class="formu-letra">Nome da Criança</p>
-                  </div>
-                  <div class="col-md-3">
-                    <p class="formu-letra">Veiculo</p>
-                  </div>
-                  <div class="col-md-2">
-                    <p class="formu-letra">Contudor</p>
-                  </div>
-                  <div class="col-md-2">
-                    <p class="formu-letra">Tipo</p>
-                  </div>
-                  <div class="col-md-2">
-                    <p class="formu-letra">Opções</p>
-                  </div>
-                </div>
-              </div>
-              <div id="resultado" class="row">
-                <?php while ($row = @mysqli_fetch_array($result)){ ?>
-                <form id="<?php print $row['id_trecho']?>" method="POST">
-                  <input type="hidden" name="id_trecho" value ="<?php print $row['id_trecho'] ?>" />
-                  <input type="hidden" name="crianca" value ="<?php print $row['id_crianca'] ?>" />
-                  <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
-                  <input type="hidden" name="inativo" id="inativo" value="<?php print $row['deletado']; ?>" />
-                  <div class="caixa-fl">
-                    <div class="col-md-3">
-                      <p class="letra-fi "><?php print $row["Crianca"];?></p>
-                    </div>
-                    <div class="col-md-3">
-                      <p class="letra-fi "><?php print $row["Veiculo"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php print $row["Condutor"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php if($row["Tipo"]=='im') print "Ida-Manhã"; if($row["Tipo"]=='vm') print "Volta-Manhã"; if($row["Tipo"]=='it') print "Ida-Tarde"; if($row["Tipo"]=='vt') print "Volta-Tarde"; ?>
-                      </p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi">
-                        <?php if (!$row["Contrato"]) { ?>
-                            <a href="alt_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-trecho" type="button"></button></a>
-                            <?php if ($row["deletado"] == "N"){ $class="remove";$color="danger";} else { $class="check";$color="success"; } ?>
-                              <button class="btn btn-sm btn-<?php print $color; ?> fa fa-<?php print $class; ?> dele-trecho" id="<?php print $row['id_trecho'].'-dele'; ?>" type="button"></button>
-                        <?php } ?>
-                        <a href="deta_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-trecho" type="button"></button></a>
-                      </p>
-                    </div>
-                  </div>
-                  </form>
-                  <?php }?>
-                </div>
-          
-
-              
+              <table class="table table-responsive" style="background-color: #eff5f5">
+                <thead>
+                  <th>Nome da Criança</th>
+                  <th>Veiculo</th>
+                  <th>Contudor</th>
+                  <th>Tipo</th>
+                  <th>Opções</th>
+                </thead> 
+                <tbody>
+                  <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                  <tr>
+                    <form id="<?php print $row['id_trecho']?>" method="POST">
+                      <input type="hidden" name="id_trecho" value ="<?php print $row['id_trecho'] ?>" />
+                      <input type="hidden" name="crianca" value ="<?php print $row['id_crianca'] ?>" />
+                      <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
+                      <input type="hidden" name="inativo" id="inativo" value="<?php print $row['deletado']; ?>" />
+                      <td><?php print $row["Crianca"];?></td>
+                      <td><?php print $row["Veiculo"];?></td>
+                      <td><?php print $row["Condutor"];?></td>
+                      <td><?php if($row["Tipo"]=='im') print "Ida-Manhã"; if($row["Tipo"]=='vm') print "Volta-Manhã"; if($row["Tipo"]=='it') print "Ida-Tarde"; if($row["Tipo"]=='vt') print "Volta-Tarde"; ?>
+                          </td>
+                      <td>    <?php if (!$row["Contrato"]) { ?>
+                                <a href="alt_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-trecho" type="button"></button></a>
+                                <?php if ($row["deletado"] == "N"){ $class="remove";$color="danger";} else { $class="check";$color="success"; } ?>
+                                  <button class="btn btn-sm btn-<?php print $color; ?> fa fa-<?php print $class; ?> dele-trecho" id="<?php print $row['id_trecho'].'-dele'; ?>" type="button"></button>
+                            <?php } ?>
+                            <a href="deta_trecho.php?id_trecho=<?php print $row["id_trecho"];?>&id_crianca=<?php print $row["id_crianca"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-trecho" type="button"></button></a>
+                          </td>
+                      </form>
+                      </tr>
+                    <?php }?>
+                    </tbody>
+              </table>              
             </div>         
           </div>
 <?php include './inc/footer.php'; ?>

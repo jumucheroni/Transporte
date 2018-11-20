@@ -31,51 +31,34 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
                 <div hidden id="alert"></div>
             </div>
-              
-              <div class="row">
-                <div class="caixa-f">
-                <div class="col-md-5">
-                  <p class="formu-letra">Condutor</p>
-                </div>
-                <div class="col-md-3">
-                  <p class="formu-letra">Veiculo</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Periodo</p>
-                </div>
-                <div class="col-md-2">
-                  <p class="formu-letra">Opções</p>
-                </div>
-              </div>
-              </div>
-              <div id="resultado" class="row">
-                <?php while ($row = @mysqli_fetch_array($result)){ ?>
-                <form id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"]?>" method="POST">
-                    <input type="hidden" name="veiculo" value ="<?php print $row['placa_veiculo'] ?>" />
-                    <input type="hidden" name="condutor" value ="<?php print $row['cpf_condutor'] ?>" />
-                    <input type="hidden" name="periodo" value ="<?php print $row['periodo'] ?>" />
-                    <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
-                  <div class="caixa-fl">
-                    <div class="col-md-5">
-                      <p class="letra-fi "><?php print $row["nome"];?></p>
-                    </div>
-                    <div class="col-md-3">
-                      <p class="letra-fi "><?php print $row["placa"];?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi "><?php if($row["periodo"]=='im') print "Ida-Manhã"; if($row["periodo"]=='vm') print "Volta-Manhã"; if($row["periodo"]=='it') print "Ida-Tarde"; if($row["periodo"]=='vt') print "Volta-Tarde"; ?></p>
-                    </div>
-                    <div class="col-md-2">
-                      <p class="letra-fi">
-                        <a href="alt_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-condveic" type="button" ></button></a>
-                        <button class="btn btn-sm btn-danger fa fa-trash dele-condveic" id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"].'-dele'; ?>" type="button"></button>
-                        <a href="deta_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-condveic" type="button"></button></a>
-                      </p>
-                    </div>
-                  </div>
-                </form>
-                <?php }?>
-                </div>
+              <table class="table table-responsive" style="background-color: #eff5f5">
+                <thead>
+                  <th>Condutor</th>
+                  <th>Veículo</th>
+                  <th>Período</th>
+                  <th>Opções</th>
+                </thead> 
+                <tbody>
+                  <?php while ($row = @mysqli_fetch_array($result)){ ?>
+                  <tr>
+                  <form id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"]?>" method="POST">
+                      <input type="hidden" name="veiculo" value ="<?php print $row['placa_veiculo'] ?>" />
+                      <input type="hidden" name="condutor" value ="<?php print $row['cpf_condutor'] ?>" />
+                      <input type="hidden" name="periodo" value ="<?php print $row['periodo'] ?>" />
+                      <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
+                    <td><?php print $row["nome"];?></td>
+                    <td><?php print $row["placa"];?></td>
+                    <td><?php if($row["periodo"]=='im') print "Ida-Manhã"; if($row["periodo"]=='vm') print "Volta-Manhã"; if($row["periodo"]=='it') print "Ida-Tarde"; if($row["periodo"]=='vt') print "Volta-Tarde"; ?></td>
+                      <td>
+                          <a href="alt_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-info fa fa-pencil" id="manu-condveic" type="button" ></button></a>
+                          <button class="btn btn-sm btn-danger fa fa-trash dele-condveic" id="<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"].'-dele'; ?>" type="button"></button>
+                          <a href="deta_condveic.php?id=<?php print $row["cpf_condutor"].'-'.$row["placa_veiculo"].'-'.$row["periodo"];?>"><button class="btn btn-sm btn-warning fa fa-plus" id="deta-condveic" type="button"></button></a>
+                        </td>
+                  </form>
+                  </tr>
+                  <?php }?>
+                </tbody>
+              </table>
           
 
               
