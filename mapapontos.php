@@ -15,14 +15,18 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     if ($periodo == 'm') {
       $periodo_conducao = " and ct.periodo_conducao in ('im')"; 
       $periodo_condutor = " and cv.periodo in ('im')"; 
+      $titulo_mapa = "Periodo ida-manhã";
     } 
     if ($periodo == "a") {
       $periodo_conducao = " and ct.periodo_conducao in ('vm','it')"; 
       $periodo_condutor = " and cv.periodo in ('vm','it')"; 
+      $titulo_mapa2 = "Periodo volta-manhã";
+      $titulo_mapa = "Periodo ida-tarde";
     }
     if ($periodo == "t") {
       $periodo_conducao = " and ct.periodo_conducao in ('vt')"; 
-      $periodo_condutor = " and cv.periodo in ('vt')"; 
+      $periodo_condutor = " and cv.periodo in ('vt')";
+      $titulo_mapa = "Periodo volta-tarde"; 
     }
 
    $enderecos = array();
@@ -255,6 +259,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         $pontosfinal[$i]['endereco'] = $enderecosescolas[$i]["origem"];
         $pontosfinal[$i]['escola'] = $enderecosescolas[$i]['escola'];
         $pontosfinal[$i]['completo'] = $enderecosescolas[$i]["completo"];
+        $pontosfinal[$i]['isescola'] = true;
       }
 
 
@@ -275,6 +280,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           $pontosfinal2[$i]['endereco'] = $enderecos2escolas[$i]["origem"];
           $pontosfinal2[$i]['escola'] = $enderecos2escolas[$i]['escola'];
           $pontosfinal2[$i]['completo'] = $enderecos2escolas[$i]["completo"];
+          $pontosfinal2[$i]['isescola'] = true;
         } 
                
       }
@@ -289,8 +295,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           $enderecos2escolas = json_encode($enderecos2escolas);
         }
         if (isset($pontos2)) {
+          $arrpontos2 = $pontos2;
           $pontos2 = json_encode($pontos2);
+          $arrpontosfinal2 = $pontosfinal2;
           $pontosfinal2 = json_encode($pontosfinal2);
+          $arrpontoscompleto = array_merge($arrpontoscompleto,$arrpontos2);
         }
 
 ?>        
@@ -310,14 +319,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <input type="hidden" id="pontosfinal2" value='<?php if (isset($pontosfinal2)) echo $pontosfinal2; else echo "" ; ?>'/>
             <input type="hidden" id="enderecosescolas" value='<?php if (isset($enderecosescolas)) echo $enderecosescolas; else echo "" ; ?>'/>
             <input type="hidden" id="enderecos2escolas" value='<?php if (isset($enderecos2escolas)) echo $enderecos2escolas; else echo "" ; ?>'/>
-            <input type="hidden" id="condutor" value='<?php print $rowcondutor["email"]; ?>' />
-            <input type="hidden" id="ajudante" value='<?php print $rowajudante["email"]; ?>' />
+            <input type="hidden" id="condutor" value='<?php if (isset($rowcondutor["email"])) echo $rowcondutor["email"]; else echo "" ; ?>' />
+            <input type="hidden" id="ajudante" value='<?php if (isset($rowajudante["email"])) echo $rowajudante["email"]; else echo "" ; ?>' />
             <input type="hidden" id="periodo" value= '<?php echo $periodo;?>'/>
             <h1 class="page-header">Mapa</h1>
         <?php if (isset($pontos)) { ?>
+          <h3 class="page-header"><?php print $titulo_mapa; ?></h3>
 				  <div id="map" style="height: 500px"></div>
         <?php } ?>
         <?php if (isset($pontos2)) { ?>
+          <h3 class="page-header"><?php print $titulo_mapa2; ?></h3>
           <div id="map2" style="height: 500px"></div>
         <?php } ?>
         <?php if (!isset($pontos)) { ?>
@@ -331,9 +342,12 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <p>
                 Escolha um endereço e adicione ou exclua para montar o roteiro: 
                 <select class="input-formu" id="combo" name="combo" >
-                  <?php foreach ($arrpontoscompleto as $key => $value) {;?>
-                    <option value="<?php print $key?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
-                  <?php } ?>
+                  <?php foreach ($arrpontoscompleto as $key => $value) { 
+                    if (isset($value['isescola'])) { ?>
+                    <option value="<?php print $key.'_'.$value['escola'];?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
+                  <?php } else { ?>
+                    <option value="<?php print $key.'_0'?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
+                  <?php } }?>
                 </select>
                 <button class="btn btn-success " id="adicionar" type="button">Adicionar</button>
                 <button class="btn btn-danger " id="remover" type="button">Remover</button>
@@ -341,10 +355,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <div id="roteiro">
                 
               </div>
-              <button type="button" name="epdf" id="epdf">Exportar roteiro e enviar por email</button>
+              <h3 class="page-header">Roteiro Detalhado <button style="float: right;" class="btn btn-info" type="button" name="epdf" id="epdf">Exportar e enviar por email</button></h3>
               <div id="pdf">
-                <div id="right-panel"></div>
                 <div id="maproteiros" style="height: 500px"></div>
+                <div id="panel"></div>
               </div>
               <div id="show_img"></div>
           </div>

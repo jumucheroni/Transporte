@@ -19,16 +19,30 @@ $(document).ready(function(){
 	 var nroteiro = {};
 	 var roteirizado = [];
 	 var pontos = [];
+	 var escolasnoroteiro = [];
 
 	 comboelement = document.getElementById('combo');
 	 if (comboelement) {
 		 for (i = 0; i< comboelement.length; i++) {
-		 	nroteiro[comboelement.options[i].value] = comboelement.options[i].text;
+		 	c = comboelement.options[i].value.split("_");
+		 	nroteiro[c[0]] = comboelement.options[i].text;
 		 }
 	}
 
 	 $("#adicionar").click(function(){
-	 	var selecionado = $("#combo option:selected").val();
+	 	var select = $("#combo option:selected").val();
+	 	var escola = 0;
+	 	var selecionado = 0;
+	 	if (select.indexOf('_') > -1) {
+	 		select = select.split("_");
+	 		selecionado = select[0];
+	 		escola = select[1];
+	 		if (escola) {
+	 			escolasnoroteiro[roteirizado.length] = escola;
+	 		}
+	 	} else {
+	 		selecionado = select;
+	 	}
 	 	if ((nroteiro[selecionado])) {
 	 		$("#roteiro").append("<p id=end"+selecionado+">"+nroteiro[selecionado]+"</p>");
 	 		roteiro[selecionado] = nroteiro[selecionado];
@@ -55,7 +69,7 @@ $(document).ready(function(){
                        		pontos[roteirizado.length-1] = result;
                        	}
 				 		if (roteirizado.length > 1) {
-				 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo);
+				 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo,escolasnoroteiro);
 				 		}
                     }
                 });
@@ -64,7 +78,38 @@ $(document).ready(function(){
 	 	}
 	 });
 	 $("#remover").click(function(){
-	 	var selecionado = $("#combo option:selected").val();
+	 	var select = $("#combo option:selected").val();
+	 	var escola = 0;
+	 	var selecionado = 0;
+	 	if (select.indexOf('_') > -1) {
+	 		select = select.split("_");
+	 		selecionado = select[0];
+	 		escola = select[1];
+	 		if (escola > 0) {
+	 			for (i = 0; i< escolasnoroteiro.length; i++) {
+	 				if (escolasnoroteiro[i] == escola) {
+	 					escolasnoroteiro.splice(i,1);
+	 				}
+	 			}
+	 		} else {
+	 			for (i = 0; i < roteirizado.length; i++) {
+	 				if (roteirizado[i] === roteiro[selecionado]) {
+	 					indice = i;
+	 				}
+	 			}
+	 			for (i = 0; i< escolasnoroteiro.length; i++) {
+	 				if (indice < i){
+	 					escolasnoroteiro[i-1] = escolasnoroteiro[i];
+	 					escolasnoroteiro.splice(i,1);
+	 				}
+	 				if (indice == i) {
+	 					escolasnoroteiro.splice(i,1);
+	 				}
+	 			}
+	 		}
+	 	} else {
+	 		selecionado = select;
+	 	}
 	 	if ((roteiro[selecionado])) {
 	 		$("#end"+selecionado).remove();
 	 		for (i = 0; i < roteirizado.length; i++) {
@@ -75,8 +120,17 @@ $(document).ready(function(){
 	 		}
 	 		nroteiro[selecionado] = roteiro[selecionado];
 	 		roteiro[selecionado] = "";
+	 		escolas = $("#enderecosescolas").val();
+	 		if (escolas) {
+	 			escolas = jQuery.parseJSON(escolas);
+	 		}
+	 		escolas2 = $("#enderecos2escolas").val();
+	 		if (escolas2) {
+	 			escolas2 = jQuery.parseJSON(escolas2);
+	 		}
+	 		periodo = $("#periodo").val(); 
 	 		if (roteirizado.length > 1) {
-	 			maparoteiro(roteirizado,pontos);
+	 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo,escolasnoroteiro);
 	 		}
 
 	 	} else {
@@ -86,7 +140,7 @@ $(document).ready(function(){
 
 
 
-	 function maparoteiro(roteiro,pontoslatlong,escolas = null, escolas2 = null, periodo = null) {
+	 function maparoteiro(roteiro,pontoslatlong,escolas = null, escolas2 = null, periodo = null, escolasnoroteiro = null) {
 	 	var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var pinColor = ['000080','FFFF00','00CED1','CD5C5C','006400','2E8B57']
 		var labelIndex = 0;
@@ -144,11 +198,10 @@ $(document).ready(function(){
 		      }
 		    }  
 		  }
-
 		  directionsService.route(request, function(result, status) {
 		    if (status == google.maps.DirectionsStatus.OK) {
 		      directionsDisplay.setDirections(result);
-		      var panel = document.getElementById("right-panel");
+		      var panel = document.getElementById("panel");
 		      panel.innerHTML = ""; 
 		      var rotas = result.routes[0].legs.length;
 		      var tempototal = 0;
@@ -159,6 +212,60 @@ $(document).ready(function(){
 
 		        tempototal += result.routes[0].legs[i].duration.value;
 		        distanciatotal += result.routes[0].legs[i].distance.value;
+
+		        if (escolasnoroteiro[i+1] > 0) {
+		        	if (periodo == 'm' || periodo == 'a') {
+				        if (periodo == 'm') {
+				          for (p = 0; p < escolas.length; p++) {
+				          	if (escolas[p]['escola'] == escolasnoroteiro[i+1]) {
+				          		hIni = escolas[p]['horario'][0].split(':'); 
+				          		esc = escolas[p]['completo'].split(" - ");
+				          	}
+				          }
+				        }
+				        if (periodo == 'a') {
+				          hIni = horarios[2].split(':'); 
+				        }
+				        minutosTotal = parseInt(hIni[1], 10) - parseInt(tempototal / 60); 
+				        horasTotal = parseInt(hIni[0], 10); 
+				        if(minutosTotal < 0)
+				        { 
+				          minutosTotal += 60; 
+				          horasTotal -= 1; 
+				        }
+				        if (minutosTotal < 10) {
+				          minutosTotal = "0"+minutosTotal;
+				        }
+				        if (horasTotal < 10) {
+				          horasTotal = "0"+horasTotal;
+				        }
+				        timetotal = horasTotal+":"+minutosTotal;
+				        panel.innerHTML += "<p> Para chegar na escola "+esc[0]+" no horário da entrada o condutor deve sair no máximo: "+timetotal+ " </p>" ;
+		        	}
+		        	if (periodo == 't') {
+				        for (p = 0; p < escolas.length; p++) {
+				          	if (escolas[p]['escola'] == escolasnoroteiro[i+1]) {
+				          		hIni = escolas[p]['horario'][3].split(':'); 
+				          		esc = escolas[p]['completo'].split(" - ");
+				          	}
+				        }
+				        minutosTotal = parseInt(hIni[1], 10) - parseInt(tempototal / 60); 
+				        horasTotal = parseInt(hIni[0], 10); 
+				        if(minutosTotal < 0)
+				        { 
+				          minutosTotal += 60; 
+				          horasTotal -= 1; 
+				        }
+				        if (minutosTotal < 10) {
+				          minutosTotal = "0"+minutosTotal;
+				        }
+				        if (horasTotal < 10) {
+				          horasTotal = "0"+horasTotal;
+				        }
+				        timetotal = horasTotal+":"+minutosTotal;
+				        panel.innerHTML += "<p> Para chegar na escola "+esc[0]+" no horário da saída o condutor deve sair no máximo: "+timetotal+ " </p>" ;
+		        	}
+		      	}
 		      }
 		      distanciatotal = distanciatotal / 1000;
 		      distanciatotal = distanciatotal.toFixed(1);
@@ -172,10 +279,7 @@ $(document).ready(function(){
 	 }
 
 	function export_to_pdf() {
-		var roteiro = $("#right-panel").html();
-		if (!roteiro) {
-			roteiro = $("#panel").html();
-		}
+		var	roteiro = $("#panel").html();
 		var img = $("#show_img").html();
 		var condutor = $("#condutor").val();
 		var ajudante = $("#ajudante").val();
