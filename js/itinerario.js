@@ -101,6 +101,7 @@ $(document).ready(function(){
 	 				if (indice < i){
 	 					escolasnoroteiro[i-1] = escolasnoroteiro[i];
 	 					escolasnoroteiro.splice(i,1);
+	 					i = escolasnoroteiro.length;
 	 				}
 	 				if (indice == i) {
 	 					escolasnoroteiro.splice(i,1);
@@ -207,6 +208,8 @@ $(document).ready(function(){
 		      var tempototal = 0;
 		      var distanciatotal = 0;
 		      var j = labelIndex-rotas-1;
+		      var hIni,hIni2,timetotal,timetotal2;
+		      console.log(escolasnoroteiro);
 		      for (i=0;i<rotas;i++) {
 		        panel.innerHTML += "<p>Caminho "+labels[j % labels.length]+" - "+result.routes[0].legs[i].start_address+"  para "+labels[++j % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
 
@@ -224,23 +227,57 @@ $(document).ready(function(){
 				          }
 				        }
 				        if (periodo == 'a') {
-				          hIni = horarios[2].split(':'); 
+				          for (p = 0; p < escolas.length; p++) {
+				          	if (escolas[p]['escola'] == escolasnoroteiro[i+1]) {
+				          		hIni = escolas[p]['horario'][2].split(':'); 
+				          		esc = escolas[p]['completo'].split(" - ");
+				          	}
+				          }
+				          for (q = 0; q < escolas.length; q++) {
+				          	if (escolas[q]['escola'] == escolasnoroteiro[i+1]) {
+				          		hIni2 = escolas[q]['horario'][1].split(':'); 
+				          		esc2 = escolas[q]['completo'].split(" - ");
+				          	}
+				          }
 				        }
-				        minutosTotal = parseInt(hIni[1], 10) - parseInt(tempototal / 60); 
-				        horasTotal = parseInt(hIni[0], 10); 
-				        if(minutosTotal < 0)
-				        { 
-				          minutosTotal += 60; 
-				          horasTotal -= 1; 
-				        }
-				        if (minutosTotal < 10) {
-				          minutosTotal = "0"+minutosTotal;
-				        }
-				        if (horasTotal < 10) {
-				          horasTotal = "0"+horasTotal;
-				        }
-				        timetotal = horasTotal+":"+minutosTotal;
-				        panel.innerHTML += "<p> Para chegar na escola "+esc[0]+" no horário da entrada o condutor deve sair no máximo: "+timetotal+ " </p>" ;
+				        if (hIni) {
+					        minutosTotal = parseInt(hIni[1], 10) - parseInt(tempototal / 60); 
+					        horasTotal = parseInt(hIni[0], 10); 
+					        if(minutosTotal < 0)
+					        { 
+					          minutosTotal += 60; 
+					          horasTotal -= 1; 
+					        }
+					        if (minutosTotal < 10) {
+					          minutosTotal = "0"+minutosTotal;
+					        }
+					        if (horasTotal < 10) {
+					          horasTotal = "0"+horasTotal;
+					        }
+					        timetotal = horasTotal+":"+minutosTotal;
+					    }
+				        if (hIni2) {
+				        	minutosTotal2 = parseInt(hIni2[1], 10) - parseInt(tempototal / 60); 
+					        horasTotal2 = parseInt(hIni2[0], 10); 
+					        if(minutosTotal2 < 0)
+					        { 
+					          minutosTotal2 += 60; 
+					          horasTotal2 -= 1; 
+					        }
+					        if (minutosTotal2 < 10) {
+					          minutosTotal2 = "0"+minutosTotal2;
+					        }
+					        if (horasTotal2 < 10) {
+					          horasTotal2 = "0"+horasTotal2;
+					        }
+					        timetotal2 = horasTotal2+":"+minutosTotal2;
+					    }
+				        if (timetotal) {
+				        	panel.innerHTML += "<p> Para chegar na escola "+esc[0]+" no horário da entrada o condutor deve sair no máximo: "+timetotal+ " </p>" ;
+		        		} 
+		        		if (timetotal2) {
+		        			panel.innerHTML += "<p> Para chegar na escola "+esc2[0]+" no horário da saída o condutor deve sair no máximo: "+timetotal2+ " </p>" ;
+		        		}
 		        	}
 		        	if (periodo == 't') {
 				        for (p = 0; p < escolas.length; p++) {
