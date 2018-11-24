@@ -70,6 +70,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 </tr>
               </table>  
               <div id="trechos_crianca">
+                <h2 class="page-header"> Transportes </h2>
              <?php while ($row = @mysqli_fetch_array($resultrecho)){ ?>  
                 <hr>
                 <div class="row">
@@ -133,7 +134,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <div class="col-md-3">
                       <p class="formu-letra"><?php print $row['cidade_destino']; ?></p>
                     </div>
-                </div>  
+                </div> 
+                <h4></h4> 
               <?php } ?>
               </div>       
             </div>         

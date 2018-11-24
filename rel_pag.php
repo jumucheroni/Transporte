@@ -1,6 +1,13 @@
 <?php session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
-  include './inc/header.php'; ?>
+
+  include './inc/conexao.php';
+  include './inc/header.php'; 
+
+  $criancasql = "select id,nome from crianca where deletado = 'N' ";
+  $criancaresult = $conexao->query($criancasql);
+
+  ?>
   <div class="row">
       <div class="row">
         <ol class="breadcrumb">
@@ -43,12 +50,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-5">
                   <p class="letra-fi">Data</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
-                  <select hidden class="input-formu" id="select" name="valor" >
-                      <option value="" >Todos</option>
+                  <select hidden multiple class="input-formu" id="select" name="val[]" >
                       <option value="N">Em aberto</option>
                       <option value="A">Em atraso</option>
-                      <option value="F">Falta valor</option>
+                      <option value="F">Incompleto</option>
                       <option value="P">Pago</option>
+                  </select>
+                  <select hidden multiple class="input-formu" id="cri" name="cri[]" >
+                     <?php while ($criancarow = @mysqli_fetch_array($criancaresult)){ ?>
+                        <option  value="<?php print $criancarow['id'];?>"><?php print $criancarow['nome'];?></option>
+                      <?php } ?>
                   </select>
                 </div>  
               </div>   
@@ -68,6 +79,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $('input[type=radio][name=relatorio]').change(function() {
           if (this.value == 'D') {
               $(".letra-fi").html("Data");
+              $("#cri").hide();
               $("#select").hide();
               $("#text").show();
               $("#text").addClass("dtrel");
@@ -75,6 +87,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           }
           if (this.value == 'V') {
               $(".letra-fi").html("Data");
+              $("#cri").hide();
               $("#select").hide();
               $("#text").show();
               $("#text").addClass("dtrel");
@@ -82,6 +95,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           }
           if (this.value == 'S') {
               $(".letra-fi").html("Status");
+              $("#cri").hide();
               $("#select").show();
               $("#text").hide();
               $(".dtrel").unmask();
@@ -89,8 +103,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           }
           if (this.value == 'C') {
               $(".letra-fi").html("Criança");
+              $("#cri").show();
               $("#select").hide();
-              $("#text").show();
+              $("#text").hide();
               $(".dtrel").unmask();
               $("#text").removeClass("dtrel");
           }

@@ -6,7 +6,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $acao = "CADASTRAR";
 
-    $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo)";
+    $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo) and deletado='N'";
     $ajudresult = $conexao->query($ajudsql);
 
 ?>
@@ -73,7 +73,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <?php } ?>
                   </select>
                 </div>
-              </div>                 
+              </div> 
+            </div>                
           
              <div class="row">
                 <div class="col-md-12">

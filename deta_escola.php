@@ -145,7 +145,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-success btn-right" id="escola-salvar" type="button">Salvar</button> 
                   <a href="visu_escola.php" class="btn btn-link  btn-right" type="button">Voltar</a>                  
                 </div>
               </div>

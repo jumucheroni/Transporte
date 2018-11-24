@@ -70,8 +70,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <p class="formu-letra">Condução</p>
                      <select class="form-control" type="text" name="conducao" id="conducao" >
                      <option></option>
-                      <?php while ($conducaorow = @mysqli_fetch_array($conducaoresult)){ ?>
-                        <option value="<?php print $conducaorow['cpf_condutor'].';'.$conducaorow['placa_veiculo'].';'.$conducaorow['periodo'];?>"><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo']."-".$conducaorow['periodo'];?></option>
+                      <?php while ($conducaorow = @mysqli_fetch_array($conducaoresult)){ 
+                        if($conducaorow['periodo']=='im') 
+                              $p_conducao = "Ida-Manhã"; 
+                          if($conducaorow['periodo']=='vm') 
+                              $p_conducao = "Volta-Manhã"; 
+                          if($conducaorow['periodo']=='it') 
+                              $p_conducao = "Ida-Tarde"; 
+                          if($conducaorow['periodo']=='vt') 
+                              $p_conducao = "Volta-Tarde";?>
+                        <option value="<?php print $conducaorow['cpf_condutor'].';'.$conducaorow['placa_veiculo'].';'.$conducaorow['periodo'];?>"><?php print $conducaorow['cpf_condutor']."-".$conducaorow['placa_veiculo']."-".$p_conducao;?></option>
                       <?php } ?>
                     </select>
                   </div>

@@ -4,6 +4,8 @@
 	$img = $_POST['img'];
 	$condutor = $_POST['condutor'];
 	$ajudante = $_POST['ajudante'];
+	$assunto = $_POST['assunto'];
+	$corpo = $_POST['corpo'];
 	$tudo = $html.$img;
 	require_once './vendor/autoload.php';
 	use PHPMailer\PHPMailer\PHPMailer;
@@ -25,11 +27,11 @@
 	$email->SMTPSecure = 'ssl';
 	$email->SMTPAuth = true;
 	$email->Username = 'juhmucheroni@gmail.com';
-	$email->Password = '******';
+	$email->Password = 'duusempre';
 	$email->From      = 'juhmucheroni@gmail.com';
-	$email->FromName  = 'Seu nome';
-	$email->Subject   = 'Roteiro';
-	$email->Body      = 'Corpo do email';
+	$email->FromName  = 'Sistema ROTE';
+	$email->Subject   = $assunto;
+	$email->Body      = $corpo;
 	if ($condutor) {
 		$email->AddAddress( $condutor ,'Condutor');
 	}

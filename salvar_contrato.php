@@ -83,7 +83,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         $updateresult = $conexao->query($updatesql);
       }
 
-      $selectsql = "select id from criancatrecho where id_contrato = ".$id.;
+      $selectsql = "select id from criancatrecho where id_contrato = ".$id;
       $selectresult = $conexao->query($selectsql);
 
       while ($row = @mysqli_fetch_array($result)){ 

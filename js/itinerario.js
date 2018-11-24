@@ -20,6 +20,31 @@ $(document).ready(function(){
 	 var roteirizado = [];
 	 var pontos = [];
 	 var escolasnoroteiro = [];
+	 var lotacao = 0;
+	 var criancaescola = {};
+	 var criancaescolail = {};
+	 var criancaescolavl = {};
+
+	 if ($("#criancaescolav").val()) {
+	 	var criancaescolav = jQuery.parseJSON($("#criancaescolav").val());
+	 	var tam = Object.keys(criancaescolav).length;
+		for (var i = 0; i < tam; i++) {
+			if (!criancaescola[criancaescolav[i]['escola']]) {
+				criancaescola[criancaescolav[i]['escola']] = 1;
+			}  else {
+				criancaescola[criancaescolav[i]['escola']] += 1;
+			}
+			if (!criancaescolavl[criancaescolav[i]['escola']]) {
+				criancaescolavl[criancaescolav[i]['escola']] = 1;
+			}  else {
+				criancaescolavl[criancaescolav[i]['escola']] += 1;
+			}
+		}
+	 }
+
+	 if ($("#criancaescolai").val()) {
+	 	var criancaescolai = jQuery.parseJSON($("#criancaescolai").val());
+	 }
 
 	 comboelement = document.getElementById('combo');
 	 if (comboelement) {
@@ -43,105 +68,206 @@ $(document).ready(function(){
 	 	} else {
 	 		selecionado = select;
 	 	}
-	 	if ((nroteiro[selecionado])) {
-	 		$("#roteiro").append("<p id=end"+selecionado+">"+nroteiro[selecionado]+"</p>");
-	 		roteiro[selecionado] = nroteiro[selecionado];
-	 		nroteiro[selecionado] = "";
-	 		roteirizado.push(roteiro[selecionado]);
-	 		escolas = $("#enderecosescolas").val();
-	 		if (escolas) {
-	 			escolas = jQuery.parseJSON(escolas);
-	 		}
-	 		escolas2 = $("#enderecos2escolas").val();
-	 		if (escolas2) {
-	 			escolas2 = jQuery.parseJSON(escolas2);
-	 		}
-	 		periodo = $("#periodo").val(); 
-	 		$.ajax({
-                    url: "geo.php",
-                    type: "post",
-                    dataType: "json",
-                    data: {
-                    	'roteiro':roteirizado[roteirizado.length-1]
-                    },
-                    success: function(result){
-                    	if (result) {
-                       		pontos[roteirizado.length-1] = result;
-                       	}
-				 		if (roteirizado.length > 1) {
-				 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo,escolasnoroteiro);
-				 		}
-                    }
-                });
-	 	} else {
-	 		alert("Ponto já incluído");
-	 	}
+	 	var lotveiculo = $("#lotacao").val();
+	 	var periodo = $("#periodo").val();
+	 	if ((periodo == 't' && escola == 0) || (periodo == 'a' && select[3]=='vm')) {
+	 		hasescola = false;
+		 	for (i = 0; i< escolasnoroteiro.length; i++){
+		 		if (escolasnoroteiro[i] == select[2]){
+		 			hasescola = true;
+		 		}
+		 	}
+		 	if (!hasescola) {
+		 		alert('Esta criança ainda não foi pega na escola');
+			 	return false;
+		 	}
+		}
+		if (periodo == 'a' && escola > 0) {
+			var tami = Object.keys(criancaescolai).length;
+			var tamv = Object.keys(criancaescolav).length;
+			var indo = false;
+			var voltando = false;
+			for (i = 0;i < tami; i++) {
+				if (criancaescolai[i]['escola'] == escola) {
+					indo = true;
+				}
+			}
+			for (j = 0;j < tamv; j++) {
+				if (criancaescolav[j]['escola'] == escola) {
+					voltando = true;
+				}
+			}
+
+			if (indo && voltando) {
+				if ((criancaescolail[escola] == 0 || !criancaescolail[escola]) && (criancaescolavl[escola] - criancaescolail[escola] + lotacao > lotveiculo)) { 
+		 			alert('Não há crianças para serem deixadas nessa escola');
+		 			return false;
+		 		}
+			} else  {
+				if (indo) {
+					if ((criancaescolail[escola] == 0 || !criancaescolail[escola])) { 
+			 			alert('Não há crianças para serem deixadas nessa escola');
+			 			return false;
+			 		}
+				}
+				if (voltando) {
+					if ((criancaescolavl[escola] + lotacao > lotveiculo)) {
+			 			alert('Não é possível pegar as criancas dessa escola, pois ultrapassa o limite do transporte');
+			 			return false;
+		 			}
+				}
+			}
+		}
+	 	if (lotacao < lotveiculo || escola > 0) {
+		 	if ((nroteiro[selecionado])) {
+		 		if (periodo == 'm' && (criancaescola[escola] == 0 || !criancaescola[escola]) && escola > 0) { 
+		 			alert('Não há crianças para serem deixadas nessa escola');
+		 			return false;
+		 		}
+		 		if (periodo == 't' && (criancaescola[escola] + lotacao > lotveiculo)) {
+		 			alert('Não é possível pegar as criancas dessa escola, pois ultrapassa o limite do transporte');
+		 			return false;
+		 		}
+		 		if (periodo == 't' ){
+
+		 		}
+		 		$("#roteiro").append("<p id=end"+selecionado+">"+nroteiro[selecionado]+"</p>");
+		 		roteiro[selecionado] = nroteiro[selecionado];
+		 		nroteiro[selecionado] = "";
+		 		roteirizado.push(roteiro[selecionado]);
+		 		escolas = $("#enderecosescolas").val();
+		 		if (escolas) {
+		 			escolas = jQuery.parseJSON(escolas);
+		 		}
+		 		escolas2 = $("#enderecos2escolas").val();
+		 		if (escolas2) {
+		 			escolas2 = jQuery.parseJSON(escolas2);
+		 		}
+		 		periodo = $("#periodo").val(); 
+		 		$.ajax({
+	                    url: "geo.php",
+	                    type: "post",
+	                    dataType: "json",
+	                    data: {
+	                    	'roteiro':roteirizado[roteirizado.length-1]
+	                    },
+	                    success: function(result){
+	                    	if (result) {
+	                       		pontos[roteirizado.length-1] = result;
+	                       		if (periodo == 'm') {
+		                       		if (escola == 0) {
+		                       			lotacao++; 
+		                       			if (!criancaescola[select[2]]) {
+		                       				criancaescola[select[2]] = 1;
+		                       			} else { 
+											criancaescola[select[2]] += 1;
+		                       			}
+		                       		} else {
+		                       			lotacao -= criancaescola[escola]; 
+		                       			criancaescola[escola] = 0;
+		                       		}
+		                       	}
+		                       	if (periodo == 'a') {
+		                       		if (escola == 0) {
+		                       			if (select[3]=='vm') {
+			                       			lotacao--; 
+											criancaescolavl[select[2]] -= 1;
+										} 
+										if (select[3]=='0') {
+											lotacao++;
+										}
+										if (select[3] == 'it') {
+											lotacao++; 
+			                       			if (!criancaescolail[select[2]]) {
+			                       				criancaescolail[select[2]] = 1;
+			                       			} else { 
+												criancaescolail[select[2]] += 1;
+			                       			}
+										}
+		                       		} else {
+		                       			if (indo && voltando) {
+											lotacao -= criancaescolail[escola]; 
+		                       				criancaescolail[escola] = 0;
+		                       				lotacao += criancaescolavl[escola];
+										} else  {
+											if (indo) {
+												lotacao -= criancaescolail[escola]; 
+		                       					criancaescolail[escola] = 0;
+											}
+											if (voltando) {
+												lotacao += criancaescolavl[escola]; 
+											}
+										}
+		                       		}
+		                       	}
+		                       	if (periodo == 't') {
+		                       		if (escola == 0) {
+		                       			if (select[2] == 0){
+		                       				lotacao++;
+		                       			} else {
+			                       			lotacao--; 
+											criancaescola[select[2]] -= 1;
+										}
+		                       		} else {
+		                       			lotacao += criancaescola[escola]; 
+		                       		}
+		                       	}
+	                       	}
+					 		if (roteirizado.length > 1) {
+					 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo,escolasnoroteiro);
+					 		}
+	                    }
+	                });
+		 	} else {
+		 		alert("Ponto já incluído");
+		 	}
+		 } else {
+		 	alert("Lotação do veículo atingida");
+		 }
 	 });
 	 $("#remover").click(function(){
-	 	var select = $("#combo option:selected").val();
-	 	var escola = 0;
-	 	var selecionado = 0;
-	 	if (select.indexOf('_') > -1) {
-	 		select = select.split("_");
-	 		selecionado = select[0];
-	 		escola = select[1];
-	 		if (escola > 0) {
-	 			for (i = 0; i< escolasnoroteiro.length; i++) {
-	 				if (escolasnoroteiro[i] == escola) {
-	 					escolasnoroteiro.splice(i,1);
-	 				}
-	 			}
-	 		} else {
-	 			for (i = 0; i < roteirizado.length; i++) {
-	 				if (roteirizado[i] === roteiro[selecionado]) {
-	 					indice = i;
-	 				}
-	 			}
-	 			for (i = 0; i< escolasnoroteiro.length; i++) {
-	 				if (indice < i){
-	 					escolasnoroteiro[i-1] = escolasnoroteiro[i];
-	 					escolasnoroteiro.splice(i,1);
-	 					i = escolasnoroteiro.length;
-	 				}
-	 				if (indice == i) {
-	 					escolasnoroteiro.splice(i,1);
-	 				}
-	 			}
-	 		}
-	 	} else {
-	 		selecionado = select;
-	 	}
-	 	if ((roteiro[selecionado])) {
-	 		$("#end"+selecionado).remove();
-	 		for (i = 0; i < roteirizado.length; i++) {
-	 			if (roteirizado[i] === roteiro[selecionado]) {
-	 				roteirizado.splice(i,1);
-	 				pontos.splice(i,1);
-	 			}
-	 		}
-	 		nroteiro[selecionado] = roteiro[selecionado];
-	 		roteiro[selecionado] = "";
-	 		escolas = $("#enderecosescolas").val();
-	 		if (escolas) {
-	 			escolas = jQuery.parseJSON(escolas);
-	 		}
-	 		escolas2 = $("#enderecos2escolas").val();
-	 		if (escolas2) {
-	 			escolas2 = jQuery.parseJSON(escolas2);
-	 		}
-	 		periodo = $("#periodo").val(); 
-	 		if (roteirizado.length > 1) {
-	 			maparoteiro(roteirizado,pontos,escolas,escolas2,periodo,escolasnoroteiro);
-	 		}
+	 	roteiro = {};
+	    nroteiro = {};
+	    roteirizado = [];
+	    pontos = [];
+	    escolasnoroteiro = [];
+	    lotacao = 0;
+	    criancaescola = {};
+	    criancaescolail = {};
+	    criancaescolavl = {};
 
-	 	} else {
-	 		alert("Ponto não está no roteiro");
-	 	}
+		 comboelement = document.getElementById('combo');
+		 if (comboelement) {
+			 for (i = 0; i< comboelement.length; i++) {
+			 	c = comboelement.options[i].value.split("_");
+			 	nroteiro[c[0]] = comboelement.options[i].text;
+			 }
+		}
+
+		if ($("#criancaescolav").val()) {
+		 	var criancaescolav = jQuery.parseJSON($("#criancaescolav").val());
+		 	var tam = Object.keys(criancaescolav).length;
+			for (var i = 0; i < tam; i++) {
+				if (!criancaescola[criancaescolav[i]['escola']]) {
+					criancaescola[criancaescolav[i]['escola']] = 1;
+				}  else {
+					criancaescola[criancaescolav[i]['escola']] += 1;
+				}
+			}
+		 }
+
+		if ($("#criancaescolai").val()) {
+		 	var criancaescolai = jQuery.parseJSON($("#criancaescolai").val());
+		}
+
+	 	$("#roteiro").html("");
+	 	$("#pdf").hide();
 	 });
 
 
 
 	 function maparoteiro(roteiro,pontoslatlong,escolas = null, escolas2 = null, periodo = null, escolasnoroteiro = null) {
+	 	$("#pdf").show();
 	 	var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		var pinColor = ['000080','FFFF00','00CED1','CD5C5C','006400','2E8B57']
 		var labelIndex = 0;
@@ -209,7 +335,6 @@ $(document).ready(function(){
 		      var distanciatotal = 0;
 		      var j = labelIndex-rotas-1;
 		      var hIni,hIni2,timetotal,timetotal2;
-		      console.log(escolasnoroteiro);
 		      for (i=0;i<rotas;i++) {
 		        panel.innerHTML += "<p>Caminho "+labels[j % labels.length]+" - "+result.routes[0].legs[i].start_address+"  para "+labels[++j % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
 
@@ -320,6 +445,8 @@ $(document).ready(function(){
 		var img = $("#show_img").html();
 		var condutor = $("#condutor").val();
 		var ajudante = $("#ajudante").val();
+		var assunto = $("#assunto").val();
+		var corpo = $("#corpo").val();
 		$.ajax({
             url: "downloadpdf.php",
             type: "post",
@@ -327,7 +454,9 @@ $(document).ready(function(){
             	'html': roteiro,
             	'img': img,
             	'condutor': condutor,
-            	'ajudante': ajudante
+            	'ajudante': ajudante,
+            	'assunto': assunto,
+            	'corpo':corpo
             },
             success: function(result){
             	window.open("http://localhost/Transporte/"+result,'_blank');

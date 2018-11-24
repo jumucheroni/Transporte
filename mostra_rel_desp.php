@@ -6,6 +6,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $tipo = @$_POST["relatorio"];
     $valor = @$_POST["valor"];
+    $rel_tipo = "";
 
     if ($tipo == "D"){
       $valorbanco = DtToDB($valor);
@@ -15,28 +16,34 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $rel_tipo = "pagas em ".$valor;
     }
     if ($tipo == "T"){
-      if ($valor){
-        $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-        where g.tipo = '".$valor."' and g.deletado='N'";
-      } else {
-        $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-        where g.deletado='N'";
-      }
-      $result = $conexao->query($sql);
+      $val = @$_POST['val'];
+        
+        $whereperiodo = "";
+        foreach ($val as $periodo) {
+          $whereperiodo .= "'".$periodo."',";
 
-      if ($valor == 'c')
-        $rel_tipo = "de Combustível";
-      if ($valor == 'i')
-        $rel_tipo = "de IPVA";
-      if ($valor == 'o')
-        $rel_tipo = "de Oficina";
-      if ($valor == "") 
-        $rel_tipo = " de todos os tipos";
+          if ($periodo == 'c')
+            $rel_tipo .= "de Combustível,";
+          if ($periodo == 'i')
+            $rel_tipo .= "de IPVA,";
+          if ($periodo == 'o')
+            $rel_tipo .= "de Oficina,";
+        }
+
+        $tam = strlen($whereperiodo);
+        $whereperiodo = substr($whereperiodo,0, $tam-1);
+        $tamr = strlen($rel_tipo);
+        $rel_tipo = substr($rel_tipo,0,$tamr-1);
+
+        $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
+        where g.tipo in (".$whereperiodo.") and g.deletado='N'";
+    
+      $result = $conexao->query($sql);
 
     }
     if ($tipo == "V"){
       $sql = "select g.data_gasto,g.valor_gasto,g.tipo,g.placa_veiculo from gastos as g
-      where g.placa_veiculo = '".$valor."' and g.deletado='N'";
+      where g.placa_veiculo like '%".$valor."%' and g.deletado='N'";
       $result = $conexao->query($sql);
       $rel_tipo = "do veículo ".$valor;
     }
@@ -56,7 +63,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <div class="col-xs-12 col-md-10 col-md-offset-1">
                 <div class="row imprime">
                   <div class="col-lg-6">
-                    <h1 class="page-header imprime">Despesas <?php print $rel_tipo;?></h1>
+                    <h3 class="page-header imprime">Despesas <?php print $rel_tipo;?></h3>
                   </div>
                   <div class="col-lg-6">
                     <button class="btn-criar nao-imprime" id="print">Imprimir</button>
@@ -99,7 +106,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <table  width="10%">
                   <tr>
                     <td width="5%">
-                      <p class="formu-letra">Total</p>
+                      <p class="formu-letra">Total </p>
                     </td>
                     <td width="5%">
                       <p class="formu-letra"><?php print $total;?></p>
@@ -108,6 +115,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </table>                    
             </div>         
           </div>
+        </div>
+      </div>
 
 <?php include './inc/footer.php'; ?>
 

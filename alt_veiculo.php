@@ -21,10 +21,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $lotacao       = $row["lotacao"];
     $cpf_ajudante  = $row["cpf_ajudante"];
 
-    $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo)";
+    $ajudsql = "select cpf,nome from ajudante where cpf not in (select cpf_ajudante from veiculo) and deletado='N'";
     $ajudresult = $conexao->query($ajudsql);
 
-    $sqlajud = "select cpf,nome from ajudante where cpf = ".$cpf_ajudante;
+    $sqlajud = "select cpf,nome from ajudante where cpf = ".$cpf_ajudante. " and deletado='N'";
     $resultajud = $conexao->query($sqlajud);
     $rowajud = @mysqli_fetch_array($resultajud);
 
@@ -87,13 +87,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div id="cpf_ajudante-form" class="form-group">
                   <p class="formu-letra">CPF do Ajudante</p>
                   <select class="form-control" type="text" name="cpf_ajudante" id="cpf_ajudante">
-                    <option selected="true" value="<?php print $rowajud['cpf']; ?>"><?php print $rowajud['cpf']." - ".$rowajud['nome'];?> </option>
+                    <?php if ($resultajud->num_rows) { ?>
+                      <option selected="true" value="<?php print $rowajud['cpf']; ?>"><?php print $rowajud['cpf']." - ".$rowajud['nome'];?> </option>
+                    <?php } ?>
                     <?php while ($ajudrow = @mysqli_fetch_array($ajudresult)){ ?>
                       <option <?php if ($cpf_ajudante == $ajudrow['cpf']) { echo 'selected="true"'; } ?> value="<?php print $ajudrow['cpf'];?>"><?php print $ajudrow['cpf']." - ".$ajudrow['nome'];?></option>
                   <?php } ?>
                   </select>
                 </div>
-              </div>                 
+              </div>   
+            </div>              
           
              <div class="row">
                 <div class="col-md-12">

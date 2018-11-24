@@ -89,14 +89,25 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                     <input  class="form-control money" type="text" name="mensalidade" id="mensalidade" />
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-9">
                   <div id="trecho-form" class="form-group">
                     <p class="formu-letra">Transportes</p>
                     <!-- ver qual crianca ta selecionada e mostrar os trechos diponiveis dela -->
                     <!-- ao selecionar um trecho de um tipo não deixar selecionar mais de um desse tipo -->
                     <select class="form-control" type="text" name="trecho[]" id="trecho" multiple>
-                    <?php while ($trechorow = @mysqli_fetch_array($trechoresult)){ ?>
-                        <option hidden value="<?php print $trechorow['id'].'-'.$trechorow['id_crianca'].'-'.$trechorow['periodo_conducao'];?>"><?php print $trechorow['cep_origem']." - ".$trechorow['cep_destino']." - ".$trechorow["periodo_conducao"];?></option>
+                    <?php while ($trechorow = @mysqli_fetch_array($trechoresult)){ 
+                          $endereco_origem = $trechorow["logradouro_origem"].", ".$trechorow['numero_origem'];
+                          $endereco_destino = $trechorow["logradouro_destino"].", ".$trechorow['numero_destino'];
+                          if($trechorow['periodo_conducao']=='im') 
+                              $p_conducao = "Ida-Manhã"; 
+                          if($trechorow['periodo_conducao']=='vm') 
+                              $p_conducao = "Volta-Manhã"; 
+                          if($trechorow['periodo_conducao']=='it') 
+                              $p_conducao = "Ida-Tarde"; 
+                          if($trechorow['periodo_conducao']=='vt') 
+                              $p_conducao = "Volta-Tarde";
+                      ?>  
+                        <option hidden value="<?php print $trechorow['id'].'-'.$trechorow['id_crianca'].'-'.$trechorow['periodo_conducao'];?>"><?php print $endereco_origem." - ".$endereco_destino." - ".$p_conducao;?></option>
                     <?php } ?>
                     </select>
                   </div>

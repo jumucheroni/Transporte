@@ -703,10 +703,22 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <h2>Não há transportes a ser realizado para estes dados</h2>
             </div>
         <?php } else { ?>
-          <h3 class="page-header">Roteiro Detalhado <button style="float: right;" class="btn btn-info" type="button" name="epdf_otimizado" id="epdf_otimizado">Exportar e enviar por email</button></h3>
+          <h3 class="page-header">Roteiro Detalhado </h3>
           <div id="panel"></div>
           
           <div id="show_img"></div>
+          <div class = "row">
+            <h5 class="page-header">Preencha o assunto e a mensagem do email para exportar, caso não preencha será enviado sem assunto e sem mensagem.</h5>
+            <div class="col-md-4" >
+               <p> Assunto: <input class="form-control" type="text" name="assunto" id="assunto" value="" /></p>
+              </div>
+            <div class="col-md-4" >
+              <p>Mensagem: <input class="form-control" type="textarea" name="corpo" id="corpo" value="" /></p>
+            </div>
+            <div class="col-md-4" >
+              <button style="float: right;" class="btn btn-info" type="button" name="epdf_otimizado" id="epdf_otimizado">Exportar e enviar por email</button>
+            </div>
+          </div>
         <?php } ?>
 			</div>
 		</div>

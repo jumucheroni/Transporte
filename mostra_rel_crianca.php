@@ -6,9 +6,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $tipo = @$_POST["relatorio"];
     $valor = @$_POST["valor"];
+    $rel_tipo = "";
 
     if ($tipo=='R'){
-      $sql = "select id,nome as Crianca from crianca where cpf_responsavel = '".$valor."' and deletado='N'";
+      $sql = "select c.id,c.nome as Crianca from crianca c INNER JOIN responsavel r on c.cpf_responsavel = r.cpf where r.nome like '%".$valor."%' and c.deletado='N' and r.deletado='N'";
       $rel_tipo = "Responsável ".$valor;
     }
     if ($tipo=='E'){
@@ -17,27 +18,30 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $rel_tipo = "Escola ".$valor;
     }
     if ($tipo=='P'){
-      if ($valor){
-        $sql = "select distinct c.id,c.nome as Crianca from crianca as c
-        inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
-        where ct.periodo_conducao = '".$valor."' and c.deletado='N' ";
-      } else {
-        $sql = "select distinct c.id,c.nome as Crianca from crianca as c
-        inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
-        where c.deletado='N' ";
-      }
+        $val = @$_POST['val'];
+        
+        $whereperiodo = "";
+        foreach ($val as $periodo) {
+          $whereperiodo .= "'".$periodo."',";
 
-      if ($valor == 'im')
-        $rel_tipo = "Período da Ida-Manhã";
-      if ($valor == 'it')
-        $rel_tipo = "Período da Ida-Tarde";
-      if ($valor == 'vm')
-        $rel_tipo = "Período da Volta-Manhã";
-      if ($valor == 'vt')
-        $rel_tipo = "Período da Volta-Tarde";
-      if ($valor == "") 
-        $rel_tipo = "Todos os períodos";
-    }
+          if ($periodo == 'im')
+            $rel_tipo .= "Período da Ida-Manhã,";
+          if ($periodo == 'it')
+            $rel_tipo .= "Período da Ida-Tarde,";
+          if ($periodo == 'vm')
+            $rel_tipo .= "Período da Volta-Manhã,";
+          if ($periodo == 'vt')
+            $rel_tipo .= "Período da Volta-Tarde,";
+        }
+        $tam = strlen($whereperiodo);
+        $whereperiodo = substr($whereperiodo,0, $tam-1);
+        $tamr = strlen($rel_tipo);
+        $rel_tipo = substr($rel_tipo,0,$tamr-1);
+        
+        $sql = "select distinct c.id,c.nome as Crianca from crianca as c
+        inner join criancatrecho ct on c.id = ct.id_crianca and ct.deletado='N'
+        where ct.periodo_conducao in (".$whereperiodo.") and c.deletado='N' ";
+      } 
 
     if ($tipo=='V'){
       $sql = "select distinct c.id,c.nome as Crianca from crianca c
@@ -56,16 +60,16 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <em class="fa fa-home"></em>
           </a></li>
           <li class="active">Relatorio</li>
-          <li class="active">Crianca</li>
+          <li class="active">Crianças</li>
         </ol>
       </div>
          <div id="p1" class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
                 <div class="row imprime">
-                  <div class="col-lg-6">
-                    <h1 class="page-header imprime">Crianças do <?php print $rel_tipo;?></h1>
+                  <div class="col-lg-8">
+                    <h3 class="page-header imprime">Crianças do <?php print $rel_tipo;?></h3>
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-4">
                     <button class="btn-criar nao-imprime" id="print">Imprimir</button>
                   </div>
                 </div>
@@ -92,6 +96,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </table>              
             </div>         
           </div>
+        </div>
+      </div>
 
 <?php include './inc/footer.php'; ?>
 

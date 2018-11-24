@@ -43,10 +43,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <p class="letra-fi">CPF do Responsável</p>
+                  <p class="letra-fi">Nome do Responsável</p>
                   <input class="form-control" id="text" type="text" name="valor" />
-                  <select hidden class="input-formu" id="select" name="valor" >
-                        <option value="" id="todos">Todos</option>
+                  <select hidden multiple class="input-formu" id="select" name="val[]" >
                         <option value="im" id="im">Ida-Manhã</option>
                         <option value="it" id="it">Ida-Tarde</option>
                         <option value="vm" id="vm">Volta-Manhã</option>
@@ -71,7 +70,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     $(document).ready(function(){
       $('input[type=radio][name=relatorio]').change(function() {
           if (this.value == 'R') {
-              $(".letra-fi").html("CPF do Responsavel");
+              $(".letra-fi").html("Nome do Responsavel");
               $("#select").hide();
               $("#text").show();
           }

@@ -6,10 +6,11 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
 
     $tipo = @$_POST["relatorio"];
     $valor = @$_POST["valor"];
+    $rel_tipo = "";
 
     if ($tipo == "D"){
       $valorbanco = DtToDB($valor);
-      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,t.mensalidade,p.status as Status from crianca as c
       inner join responsavel as r on c.cpf_responsavel=r.cpf  and r.deletado='N'
       inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
       inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
@@ -19,7 +20,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
     }
     if ($tipo == "V"){
       $valorbanco = DtToDB($valor);
-      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,t.mensalidade,p.status as Status from crianca as c
       inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
       inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
       inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
@@ -28,40 +29,51 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
       $rel_tipo = "vencidos em ".$valor;
     }
     if ($tipo == "S"){
-      if ($valor){
-        $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      $val = @$_POST['val'];
+        
+        $whereperiodo = "";
+        foreach ($val as $periodo) {
+          $whereperiodo .= "'".$periodo."',";
+
+          if ($periodo == 'N')
+            $rel_tipo .= "em Aberto,";
+          if ($periodo == 'A')
+            $rel_tipo .= "em Atraso,";
+          if ($periodo == 'F')
+            $rel_tipo .= "Incompletos,";
+          if ($periodo == 'P')
+            $rel_tipo .= "Pagos,";
+        }
+        $tam = strlen($whereperiodo);
+        $whereperiodo = substr($whereperiodo,0, $tam-1);
+        $tamr = strlen($rel_tipo);
+        $rel_tipo = substr($rel_tipo,0,$tamr-1);
+
+        $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,t.mensalidade,p.status as Status from crianca as c
         inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
         inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
         inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-        where p.status = '".$valor."' and c.deletado='N'";
-      } else {
-        $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
-        inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
-        inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
-        inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-        where c.deletado='N'";
-      }
+        where p.status in (".$whereperiodo.") and c.deletado='N'";
+
       $result = $conexao->query($sql);
 
-      if ($valor == 'N')
-        $rel_tipo = "em Aberto";
-      if ($valor == 'A')
-        $rel_tipo = "em Atraso";
-      if ($valor == 'F')
-        $rel_tipo = "Falta Valor";
-      if ($valor == 'P')
-        $rel_tipo = "Pago";
-      if ($valor == "") 
-        $rel_tipo = " em todos os status";
     }
     if ($tipo == "C"){
-      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,p.status as Status from crianca as c
+      $cri = @$_POST['cri'];
+        
+        $whereperiodo = "";
+        foreach ($cri as $periodo) {
+          $whereperiodo .= $periodo.",";
+        }
+        $tam = strlen($whereperiodo);
+        $whereperiodo = substr($whereperiodo,0, $tam-1);
+
+      $sql = "select c.nome as Crianca ,r.nome as Responsavel,p.valor_pago as Valor,t.mensalidade,p.status as Status from crianca as c
       inner join responsavel as r on c.cpf_responsavel=r.cpf and r.deletado='N'
       inner join contrato as t on t.id_crianca = c.id and t.deletado='N'
       inner join pagamentos as p on p.id_contrato = t.id and p.deletado='N'
-      where c.nome like '%".$valor."%' and c.deletado='N'";
+      where c.id in (".$whereperiodo.") and c.deletado='N'";
       $result = $conexao->query($sql);
-      $rel_tipo = "de ".$valor;
     }
 
     $total = 0;
@@ -80,10 +92,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
          <div class="row">
               <div class="col-xs-12 col-md-10 col-md-offset-1">
                 <div class="row imprime">
-                  <div class="col-lg-6">
-                    <h1 class="page-header imprime">Pagamentos <?php print $rel_tipo;?></h1>
+                  <div class="col-lg-8">
+                    <h3 class="page-header imprime">Pagamentos <?php print $rel_tipo;?></h3>
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-4">
                     <button class="btn-criar nao-imprime" id="print">Imprimir</button>
                   </div>
                 </div>
@@ -113,10 +125,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                       <p class="letra-fi "><?php print $row["Crianca"];?></p>
                     </td>
                     <td width="20%">
-                      <p class="letra-fi "><?php print $row["Valor"]; $total += $row["Valor"];?></p>
+                      <p class="letra-fi "><?php if ($row['Valor'] > 0 ) {print $row["Valor"]; $total += $row["Valor"]; } else { print $row["mensalidade"]; $total += $row["mensalidade"];}?></p>
                     </td>
                     <td width="20%">
-                      <p class="letra-fi "><?php if ($row["Status"] == 'N') print "Em Aberto"; if ($row["Status"] == 'A') print "Em Atraso"; if ($row["Status"] == 'F') print "Falta valor"; if ($row["Status"] == 'P') print "Pago";?></p>
+                      <p class="letra-fi "><?php if ($row["Status"] == 'N') print "Em Aberto"; if ($row["Status"] == 'A') print "Em Atraso"; if ($row["Status"] == 'F') print "Incompleto"; if ($row["Status"] == 'P') print "Pago";?></p>
                     </td>
                   </tr>
                 <?php } ?>
@@ -124,7 +136,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <table  width="10%">
                   <tr>
                     <td width="5%">
-                      <p class="formu-letra">Total</p>
+                      <p class="formu-letra">Total </p>
                     </td>
                     <td width="5%">
                       <p class="formu-letra"><?php print $total;?></p>
@@ -133,6 +145,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               </table>          
             </div>         
           </div>
+        </div>
+      </div>
 
 <?php include './inc/footer.php'; ?>
 

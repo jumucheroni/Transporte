@@ -74,7 +74,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         $result = $conexao->query($sql);
     }
 
-        $sqlveiculo = "select cpf_ajudante from veiculo where placa = '".$veiculo."'";
+        $sqlveiculo = "select cpf_ajudante, lotacao from veiculo where placa = '".$veiculo."'";
         $resultveiculo = $conexao->query($sqlveiculo);
         $rowveiculo = @mysqli_fetch_array($resultveiculo);
 
@@ -220,6 +220,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 'completo' => $row['crianca']." - ".$row['destino']
               ];
               $cont2++;
+              $criancaescolav[] = [
+                  'escola' => $row["escola"]
+              ];
             } else {
               if ($row['Tipo'] == 'vt') {
                 $enderecos[$cont] = [
@@ -229,6 +232,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   'escola' => $row["escola"],
                   'completo' => $row['crianca']." - ".$row['destino']
                 ];
+                $criancaescolav[] = [
+                  'escola' => $row["escola"]
+                ];
               } else {
                 $enderecos[$cont] = [
                   'origem' => $LatLng_origem,
@@ -236,6 +242,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   'tipo' => $row["Tipo"],
                   'escola' => $row["escola"],
                   'completo' => $row['crianca']." - ".$row['origem']
+                ];
+                $criancaescolai[] = [
+                  'escola' => $row["escola"]
                 ];
               }
               $cont++;
@@ -254,6 +263,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
         } else {
           $pontos[$i]['escola'] = 0;
         }
+        $pontos[$i]['tipo'] = $enderecos[$i]["tipo"];
       } 
       for ($i = 0; $i < sizeof($enderecosescolas); $i++){
         $pontosfinal[$i]['endereco'] = $enderecosescolas[$i]["origem"];
@@ -272,9 +282,10 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             $pontos2[$i]['endereco'] = $enderecos2[$i]["origem"];
           }   
           $pontos2[$i]['completo'] = $enderecos2[$i]["completo"];
-          if (isset($enderecos[$i]['escola'])) {
+          if (isset($enderecos2[$i]['escola'])) {
             $pontos2[$i]['escola'] = $enderecos2[$i]['escola'];
           }
+          $pontos2[$i]['tipo'] = $enderecos2[$i]["tipo"];
         } 
         for ($i = 0; $i < sizeof($enderecosescolas); $i++){
           $pontosfinal2[$i]['endereco'] = $enderecos2escolas[$i]["origem"];
@@ -302,6 +313,13 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           $arrpontoscompleto = array_merge($arrpontoscompleto,$arrpontos2);
         }
 
+        if (isset($criancaescolav)) {
+          $criancaescolav = json_encode($criancaescolav);
+        }
+        if (isset($criancaescolai)) {
+          $criancaescolai = json_encode($criancaescolai);
+        }
+
 ?>        
             <div class="row">
               <ol class="breadcrumb">
@@ -322,6 +340,9 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
             <input type="hidden" id="condutor" value='<?php if (isset($rowcondutor["email"])) echo $rowcondutor["email"]; else echo "" ; ?>' />
             <input type="hidden" id="ajudante" value='<?php if (isset($rowajudante["email"])) echo $rowajudante["email"]; else echo "" ; ?>' />
             <input type="hidden" id="periodo" value= '<?php echo $periodo;?>'/>
+            <input type="hidden" id="lotacao" value= '<?php echo $rowveiculo["lotacao"];?>'/>
+            <input type="hidden" id="criancaescolai" value = '<?php if (isset($criancaescolai)) echo $criancaescolai; else echo "";?>' />
+            <input type="hidden" id="criancaescolav" value = '<?php if (isset($criancaescolav)) echo $criancaescolav; else echo ""; ?>' />
             <h1 class="page-header">Mapa</h1>
         <?php if (isset($pontos)) { ?>
           <h3 class="page-header"><?php print $titulo_mapa; ?></h3>
@@ -340,27 +361,39 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
           <div id= "cenderecos"> 
             <h3>Criar Roteiro</h3>
               <p>
-                Escolha um endereço e adicione ou exclua para montar o roteiro: 
+                Escolha um endereço e adicione, caso necessario comece novamente: 
                 <select class="input-formu" id="combo" name="combo" >
                   <?php foreach ($arrpontoscompleto as $key => $value) { 
                     if (isset($value['isescola'])) { ?>
                     <option value="<?php print $key.'_'.$value['escola'];?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
                   <?php } else { ?>
-                    <option value="<?php print $key.'_0'?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
+                    <option value="<?php print $key.'_0_'.$value['escola'].'_'.$value['tipo'];?>" id="<?php print $key;?>" ><?php print $value['completo'];?></option>
                   <?php } }?>
                 </select>
                 <button class="btn btn-success " id="adicionar" type="button">Adicionar</button>
-                <button class="btn btn-danger " id="remover" type="button">Remover</button>
+                <button class="btn btn-warning " id="remover" type="button">Recomeçar</button>
               </p>
               <div id="roteiro">
                 
               </div>
-              <h3 class="page-header">Roteiro Detalhado <button style="float: right;" class="btn btn-info" type="button" name="epdf" id="epdf">Exportar e enviar por email</button></h3>
+              <h3 class="page-header">Roteiro Detalhado </h3>
               <div id="pdf">
                 <div id="maproteiros" style="height: 500px"></div>
                 <div id="panel"></div>
               </div>
               <div id="show_img"></div>
+              <div class = "row">
+                <h5 class="page-header">Preencha o assunto e a mensagem do email para exportar, caso não preencha será enviado sem assunto e sem mensagem.</h5>
+                <div class="col-md-4" >
+                   <p> Assunto: <input class="form-control" type="text" name="assunto" id="assunto" value="" /></p>
+                  </div>
+                <div class="col-md-4" >
+                  <p>Mensagem: <input class="form-control" type="textarea" name="corpo" id="corpo" value="" /></p>
+                </div>
+                <div class="col-md-4" >
+                  <button style="float: right;" class="btn btn-info" type="button" name="epdf" id="epdf">Exportar e enviar por email</button>
+                </div>
+              </div>
           </div>
         <?php } ?>
 			</div>
@@ -493,13 +526,13 @@ if (pontos2.length){
     travelMode: google.maps.TravelMode.DRIVING
   };
 
-  var escolacolor = {}; 
+  var escolacolor2 = {}; 
 
   var tamanhoescola = Object.keys(pontosfinal2).length;
   for (i = 0; i < tamanhoescola; i++) {
     var ponto = pontosfinal2[i]["endereco"].split(",");
     var escola = pontosfinal2[i]["escola"];
-    escolacolor[escola] = pinColor[i+1];
+    escolacolor2[escola] = pinColor[i+1];
     var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + escolacolor[pontosfinal[i]["escola"]],
         new google.maps.Size(21, 34),
         new google.maps.Point(0,0),
@@ -522,8 +555,8 @@ if (pontos2.length){
   for (i = 0; i < tamanho; i++) {
     var ponto = pontos2[i]["endereco"].split(",");
      var color = "";
-    if (typeof escolacolor[pontos[i]["escola"]] != "undefined") {
-      color = escolacolor[pontos[i]["escola"]] ;
+    if (typeof escolacolor2[pontos2[i]["escola"]] != "undefined") {
+      color = escolacolor2[pontos2[i]["escola"]] ;
     } else {
       color = pinColor[0];
     }

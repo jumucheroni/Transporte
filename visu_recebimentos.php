@@ -3,7 +3,7 @@ session_start();
 if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION['id'])) {
     include './inc/header.php'; 
     include './inc/conexao.php';
-    $sql = "select p.id,a.nome,c.mensalidade,COALESCE(p.data_realizada_pgto,p.data_prevista_pgto) as data_pagamento, p.status from contrato c
+    $sql = "select p.id,a.nome,c.mensalidade,COALESCE(p.data_realizada_pgto,p.data_prevista_pgto) as data_pagamento, p.status,p.valor_pago from contrato c
     inner join crianca a on c.id_crianca = a.id
     inner join pagamentos p on c.id = p.id_contrato";
     $result = $conexao->query($sql);
@@ -31,6 +31,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <thead>
                   <th>Criança</th>
                   <th>Mensalidade</th>
+                  <th>Valor Pago</th>
                   <th>Data de Vencimento</th>
                   <th>Status</th>
                   <th>Opções</th>
@@ -43,13 +44,14 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                   <input type="hidden" name="acao" id="acao" value="SALVARDELETE"/>
                   <td><?php print $row["nome"];?></td>
                     <td><?php print $row["mensalidade"];?></td>
+                    <td><?php print $row["valor_pago"];?></td>
                     <td><?php print DbtoDt($row["data_pagamento"]);?></td>
                     <td>
                     <?php if ($row["status"] == "N") $class = "letra-fi-yellow";?>
                     <?php if ($row["status"] == "A") $class = "letra-fi-red";?>
                     <?php if ($row["status"] == "F") $class = "letra-fi-red";?>
                     <?php if ($row["status"] == "P") $class = "letra-fi-green";?>
-                      <p class="<?php print $class;?>"><?php if ($row["status"] == "N") print "Em aberto"; if ($row["status"] == "A") print "Em atraso"; if ($row["status"] == "F") print "Falta Valor"; if ($row["status"] == "P") print "Pagamento recebido";?></p>
+                      <p class="<?php print $class;?>"><?php if ($row["status"] == "N") print "Em aberto"; if ($row["status"] == "A") print "Em atraso"; if ($row["status"] == "F") print "Incompleto"; if ($row["status"] == "P") print "Pagamento recebido";?></p>
                     </td>
                     <td>
                       <?php if ($row["status"] != "P") { ?>

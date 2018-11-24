@@ -40,8 +40,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <div class="col-md-6">
                   <p class="letra-fi">Data</p>
                   <input class="input-formu" id="text" type="text" name="valor" />
-                  <select hidden class="input-formu" id="select" name="valor" >
-                      <option value="" id="todos">Todos</option>
+                  <select hidden multiple class="input-formu" id="select" name="val[]" >
                       <option value="c" id="c">Combustível</option>
                       <option value="i" id="i">IPVA</option>
                       <option value="o" id="o">Oficina</option>
