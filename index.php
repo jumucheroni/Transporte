@@ -63,7 +63,12 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
                 <li><a href="./visu_itinerario.php?id=roteiro">Itinerário Otimizado</a></li>
           	</ul>
           </li> 
-          <li><a href="logout.php">Sair</a></li>
+          <li class="menu-has-children"><a href="">Configurações</a>
+            <ul>
+                <li><a href="./cad_conta.php">Cadastrar Conta</a></li>
+                <li><a href="logout.php">Sair</a></li>
+            </ul>
+          </li> 
         </ul>
       </nav>
     </div>
