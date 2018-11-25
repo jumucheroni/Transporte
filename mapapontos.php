@@ -379,6 +379,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['senha']) && isset($_SESSION[
               <h3 class="page-header">Roteiro Detalhado </h3>
               <div id="pdf">
                 <div id="maproteiros" style="height: 500px"></div>
+                <br><br>
                 <div id="panel"></div>
               </div>
               <div id="show_img"></div>

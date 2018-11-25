@@ -17,7 +17,7 @@ include './inc/conexao.php';
 
     $valorpagototal = 0;
  
-     $sql = "Select r.nome as Responsavel,p.valor_pago,co.mensalidade,p.data_realizada_pgto,c.nome as Crianca, ct.periodo_conducao from crianca as c
+     $sql = "Select DISTINCT r.nome as Responsavel,p.valor_pago,co.mensalidade,p.data_realizada_pgto,c.nome as Crianca from crianca as c
      INNER JOIN responsavel r ON c.cpf_responsavel = r.cpf
      INNER JOIN contrato co ON co.id_crianca = c.id
      INNER JOIN pagamentos p ON p.id_contrato = co.id 
@@ -34,20 +34,7 @@ include './inc/conexao.php';
       $crianca     = $row["Crianca"];
       $data_realizada_pgto = $row["data_realizada_pgto"];
       $valorpagototal += $row["valor_pago"];
-      if ($tipo==""){ 
-       	if (($row["periodo_conducao"]=="im") || ($row["periodo_conducao"]=="it")){
-       			$tipo="Ida";
-       	}
-      }
-      if (($tipo=="") || ($tipo == "Ida")){
-       	if (($row["periodo_conducao"]=="vm") || ($row["periodo_conducao"]=="vt")){
-       		if ($tipo==""){
-       			$tipo="Volta";
-       		}else{
-       			$tipo.="/Volta";
-       		}
-       	}
-      }
+      $tipo = "Ida/Volta";
     }
  }
 

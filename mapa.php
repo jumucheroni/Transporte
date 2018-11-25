@@ -737,6 +737,9 @@ var map;
 var directionsDisplay;
 var directionsService = new google.maps.DirectionsService();
 var infowindow = new google.maps.InfoWindow();
+var  tabela = document.createElement("table");
+var  cabecalho = document.createElement("thead");
+var  corpo = document.createElement("tbody");
 
 var locations = $("#address").val();
 if (locations) {
@@ -856,10 +859,54 @@ if ((periodo != 't') && pcondutor['origem']) {
       directionsDisplay.setDirections(result);
       var panel = document.getElementById("panel");
       var rotas = result.routes[0].legs.length;
+      if (periodo == 'm' || periodo == 'a') {
+        rotas = rotas - 1;
+      }
       var tempototal = 0;
       var distanciatotal = 0;
+
+      tabela.className = "table table-responsive";
+      tabela.style.cssText = "background-color: #eff5f5";
+
+      tabela.appendChild(cabecalho);
+      tabela.appendChild(corpo);
+
+      var th = document.createElement("th");
+      var texto = document.createTextNode("Origem");
+      th.appendChild(texto);
+      cabecalho.appendChild(th);
+      var th = document.createElement("th");
+      texto = document.createTextNode("Destino");
+      th.appendChild(texto);
+      cabecalho.appendChild(th);
+      var th = document.createElement("th");
+      texto = document.createTextNode("Distância");
+      th.appendChild(texto);
+      cabecalho.appendChild(th);
+      var th = document.createElement("th");
+      texto = document.createTextNode("Tempo");
+      th.appendChild(texto);
+      cabecalho.appendChild(th);
+
       for (i=0;i<rotas;i++) {
-        panel.innerHTML += "<p>Caminho "+labels[i % labels.length]+" - "+result.routes[0].legs[i].start_address+" para "+labels[i+1 % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
+        var tr = document.createElement("tr");
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].start_address);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].end_address);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].distance.text);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].duration.text);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        corpo.appendChild(tr);
 
         tempototal += result.routes[0].legs[i].duration.value;
         distanciatotal += result.routes[0].legs[i].distance.value;
@@ -869,7 +916,29 @@ if ((periodo != 't') && pcondutor['origem']) {
 
       tempototal = tempototal / 60;
       tempototal = tempototal.toFixed(0);
-      panel.innerHTML += "<p> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</p>" ;
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      var texto = document.createTextNode("Total");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode("");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode(distanciatotal+" km");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode(tempototal+" min");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      corpo.appendChild(tr);
+
+      if (periodo == 'm' || periodo == 't') {
+        panel.appendChild(tabela);
+      }
+
       if (periodo == 'm' || periodo == 'a') {
         if (periodo == 'm') {
           hIni = horarios[0].split(':'); 
@@ -987,7 +1056,24 @@ if (pontos2.length > 0) {
       var distanciatotal = 0;
       var j = labelIndex-rotas-1;
       for (i=0;i<rotas;i++) {
-        panel.innerHTML += "<p>Caminho "+labels[j % labels.length]+" - "+result.routes[0].legs[i].start_address+" para "+labels[++j % labels.length]+" - "+result.routes[0].legs[i].end_address+": Distância - "+ result.routes[0].legs[i].distance.text + "; Tempo - "+result.routes[0].legs[i].duration.text+"</p>";
+        var tr = document.createElement("tr");
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].start_address);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].end_address);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].distance.text);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        var td = document.createElement("td");
+        var texto = document.createTextNode(result.routes[0].legs[i].duration.text);
+        td.appendChild(texto);
+        tr.appendChild(td);
+        corpo.appendChild(tr);
 
         tempototal += result.routes[0].legs[i].duration.value;
         distanciatotal += result.routes[0].legs[i].distance.value;
@@ -997,10 +1083,30 @@ if (pontos2.length > 0) {
 
       tempototal = tempototal / 60;
       tempototal = tempototal.toFixed(0);
-      panel.innerHTML += "<p> Caminho Total: Distancia - "+distanciatotal+" km; Tempo - "+tempototal+ " minutos</p>" ;
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      var texto = document.createTextNode("Total");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode("");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode(distanciatotal+" km");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      var td = document.createElement("td");
+      var texto = document.createTextNode(tempototal+" min");
+      td.appendChild(texto);
+      tr.appendChild(td);
+      corpo.appendChild(tr);
+
+      panel.appendChild(tabela);
     }
   });
 }
+
 }
 </script>
 
